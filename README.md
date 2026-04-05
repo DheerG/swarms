@@ -69,7 +69,7 @@ The `/swarm:launch` command checks this automatically and guides you through ena
 
 ## Customizing Rules
 
-The plugin ships with default hard rules in `references/rules/hard-rules.md`. On first run, these are copied to your persistent plugin data directory where you can edit them freely. Plugin upgrades replace the defaults but never overwrite your personal copy.
+Hard rules are embedded in `commands/launch.md` under the "Hard Rules" section. To customize, edit that section directly. When upgrading the plugin, re-apply your rule edits to the new version of launch.md.
 
 ## Ubiquitous Language
 

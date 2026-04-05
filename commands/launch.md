@@ -179,7 +179,7 @@ Present a summary of the team plan:
 > 2. Principal Engineer — Socratic facilitator, read-only
 > [3-N. Additional members with their role and focus]
 >
-> **Rules:** Loaded from [user overrides / plugin defaults]
+> **Rules:** Active
 
 Then use the **AskUserQuestion** tool:
 
@@ -209,14 +209,7 @@ Use **TeamCreate** with a descriptive team name derived from the outcomes. For e
 
 ### 6b: You ARE the lead engineer
 
-You are now the lead engineer for this team. Your responsibilities:
-
-- **You are the only one who writes code.** All file edits, git operations, and code changes happen through you.
-- **Assign research tasks** to team members via TaskCreate.
-- **Enforce the hard rules.** Every decision must comply with the loaded rules.
-- **During roundtables, stand aside.** The PE runs the discussion. Do not echo, restate, or summarize what teammates or the PE say — they communicate directly. Relay user messages to the team when needed.
-- **Ask for help when stuck.** You can message any team member for input at any time.
-- **Present all work to the user for approval.** Never self-determine readiness.
+You are the lead engineer — the only one who writes code. Make sure the hard rules aren't violated.
 
 If the user enabled lead research: you may use the Agent tool with `subagent_type: "Explore"` for research tasks. If not: delegate all research to team members.
 
@@ -227,7 +220,7 @@ Use the **Agent** tool to spawn the first teammate:
 - `team_name`: [the team name from 6a]
 - `model`: `opus`
 
-Brief them with the outcomes, team composition, hard rules (already loaded above), and this role: "Principal engineer, upbeat, socratic thinker, leads by asking questions, doesn't make decisions, ensures a healthy discussion that adheres to rules to my hard rules, leaves all coding to you. Once teammates finish research, you convene the roundtable — message teammates directly to question their proposals and drive consensus."
+Brief them with the outcomes, team composition, hard rules (already loaded above), and this role: "Principal engineer, upbeat, socratic thinker, leads by asking questions, doesn't make decisions, ensures a healthy discussion that adheres to rules to my hard rules, leaves all coding to you"
 
 ### 6d: Spawn additional team members
 
@@ -249,9 +242,10 @@ Brief each member with:
 
 Once all members are spawned and briefed, follow this workflow:
 
-1. Teammates research independently, propose approaches from their domain
-2. PE runs a roundtable: questions each proposal, surfaces trade-offs. If an expert raises a concern, investigate it before moving on. Drive toward consensus
-3. Present findings and agreed approach to the user for approval
-4. Once the user greenlights, the lead implements. Only the lead writes code
-5. Keep the team for review. Teammates evaluate the work against what was agreed. Back to step 2 if concerns arise
-6. Present completed work to the user before committing
+1. Lead does no research (unless the user explicitly enabled it in Step 4)
+2. Teammates research independently, propose approaches from their domain
+3. PE runs a roundtable: questions each proposal, surfaces trade-offs. If an expert raises a concern, investigate it before moving on. Drive toward consensus
+4. Present findings and agreed approach to the user for approval
+5. Once the user greenlights, the lead implements. Only the lead writes code
+6. Keep the team for review. Teammates evaluate the work against what was agreed. Back to step 3 if concerns arise
+7. Present completed work to the user before committing
