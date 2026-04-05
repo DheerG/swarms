@@ -45,46 +45,50 @@ If TeamCreate is NOT available, agent teams are **DISABLED**. Use the **AskUserQ
 
 ## Step 1: Hard Rules
 
-The following rules govern all team behavior. They are non-negotiable. Include them in every team member's briefing.
+### General Rules
 
-### Troubleshooting
+These rules govern all team behavior. They are non-negotiable. Use judgment to apply these to technical and non-technical members as needed.
+
+#### Troubleshooting
 
 - **Dig Deep for Root Cause.** A root cause must identify the specific line of code that breaks. If your theory can't do that, keep tracing through actual source code — don't reason from documentation or convention.
 - **Training and memory goes stale.** Research on the web often.
 
-### Planning & Approval
+#### Planning & Approval
 
-- **Never enter plan mode.** If a plan exists, implement it directly.
 - **Confirm plan is final before building.** Even after "greenlight," ask if the user has remaining inputs. The cost of asking is zero; building on an incomplete plan means a full revert.
-- **Never revert code without being asked.** Process feedback != "delete the work." Ask before running destructive git commands.
 
-### Agent Teams
+#### Agent Teams
 
-- **Always use TeamCreate.** When user says "agent team," use TeamCreate + Agent with `team_name`. Never substitute with Explore agents or manual coordination.
 - **Readonly members.** All members apart from the lead are read-only members.
-- **Never cut corners on agent teams.** Spawn the full team as defined. Never apply changes yourself to save time. Never skip pipeline stages.
-- **Never shut down agent teams unless explicitly told.** No exceptions, no "optimizing" by cleaning up early.
 - **Use Opus for all substantive work.** Match the team lead's model and reasoning effort.
 - **Lead asking team members for help.** If the lead is feeling stuck, they should ask team members for help. Their option isn't limited to wait for the review round to show them their thinking. Ask one or more relevant members for help to get unblocked.
 
-### Agent Team Member Response Style
+#### Agent Team Member Response Style
 
 - **Favor brevity during round tables and discussions.** Experts know how to summarize their statements.
 
-### Review Process
+#### Review Process
 
 - **Wait for ALL reviews before making changes.** Never fix findings mid-review. Wait for every team member to respond, then batch fixes.
 - **No code changes during review.** Reviewers must verify current state, not stale code.
 - **Present findings to user and wait for explicit go-ahead.** Never self-determine readiness. After every review cycle: compile -> present -> wait for confirmation -> then act.
 - **Reviews must reach 9/10+ confidence before shipping.** Keep plan docs updated every cycle. Run gap analysis every cycle.
 
-### Transparency & Honesty
+#### Transparency & Honesty
 
 - **No performative shortcuts.** The user has tooling that shows every agent message, every paraphrase, every routing decision. Never misrepresent what was done. When told "verbatim," send their exact words. When told "send to the team," send to the team — not one person.
 - **ASK before implementing uncertain fixes.** If the right approach isn't obvious, ask. Never pick a fix that contradicts the intent of recent work. If a test fails because your fix contradicts its intent, stop — don't rewrite the test.
 
-### Code Ownership
+### Lead Rules
 
+These apply to the lead engineer only.
+
+- **Never enter plan mode.** If a plan exists, implement it directly.
+- **Never revert code without being asked.** Process feedback != "delete the work." Ask before running destructive git commands.
+- **Always use TeamCreate.** When user says "agent team," use TeamCreate + Agent with `team_name`. Never substitute with Explore agents or manual coordination.
+- **Never cut corners on agent teams.** Spawn the full team as defined. Never apply changes yourself to save time. Never skip pipeline stages.
+- **Never shut down agent teams unless explicitly told.** No exceptions, no "optimizing" by cleaning up early.
 - **Keep code edits in the main agent.** Sub-agents for research/analysis only. All file edits, promotions, and git operations in the main agent.
 
 ---
@@ -220,7 +224,7 @@ Use the **Agent** tool to spawn the first teammate:
 - `team_name`: [the team name from 6a]
 - `model`: `opus`
 
-Brief them with the outcomes, team composition, hard rules (already loaded above), and this role: "Principal engineer, upbeat, socratic thinker, leads by asking questions, doesn't make decisions, ensures a healthy discussion that adheres to rules to my hard rules, leaves all coding to you"
+Brief them with the outcomes, team composition, the general rules (from Step 1), and this role: "Principal engineer, upbeat, socratic thinker, leads by asking questions, doesn't make decisions, ensures a healthy discussion that adheres to rules to my hard rules, leaves all coding to you"
 
 ### 6d: Spawn additional team members
 
@@ -233,7 +237,7 @@ For each additional member the user specified, use the **Agent** tool:
 Brief each member with:
 1. Their specific role and focus area
 2. The outcomes the team is working toward
-3. The full hard rules
+3. The general rules (from Step 1)
 4. The team composition (who else is on the team)
 5. Their constraint: **read-only** — research and advise only, no code changes
 6. Share findings with the team when the roundtable begins — not just the lead
