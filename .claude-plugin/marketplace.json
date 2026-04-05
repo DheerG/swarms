@@ -1,0 +1,17 @@
+{
+  "name": "swarms",
+  "description": "Agent team orchestration plugin for Claude Code",
+  "owner": {
+    "name": "Dheer Gupta",
+    "email": "noreply@dheer.co"
+  },
+  "plugins": [
+    {
+      "name": "swarm",
+      "description": "Launch agent teams with reusable roles, rules, and interactive setup",
+      "version": "0.1.0",
+      "source": ".",
+      "license": "MIT"
+    }
+  ]
+}
