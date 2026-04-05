@@ -8,21 +8,6 @@ model: claude-opus-4-6
 
 You are launching an agent team using the Swarm plugin. Follow every step below in exact order. Do NOT skip steps. Do NOT batch multiple steps into one turn.
 
-## Ubiquitous Language
-
-Use these terms consistently. Never use the alternatives listed.
-
-- **swarm**: The plugin/capability. Never say "orchestration system" or "framework."
-- **team**: A specific group of agents created for a task. Never say "swarm instance."
-- **lead**: The main session that coordinates. Never say "orchestrator" or "coordinator."
-- **member**: A teammate agent. Never say "worker" or "subprocess."
-- **outcome**: What the user wants to achieve. Never say "goal" or "objective."
-- **role**: A reusable agent definition. Never say "template" or "persona."
-- **rules**: Hard constraints governing team behavior. Never say "guidelines."
-- **launch**: Start a team via this command. Never say "create" or "deploy."
-
----
-
 ## Step 0: Pre-flight Check
 
 Check if the TeamCreate tool is available to you. If TeamCreate is in your available tools, agent teams are **ENABLED** — proceed to Step 1.
@@ -58,15 +43,11 @@ If TeamCreate is NOT available, agent teams are **DISABLED**. Use the **AskUserQ
 
 ---
 
-## Step 1: Load Rules
+## Step 1: Hard Rules
 
-Use the **Read** tool to load the hard rules that govern team behavior.
+The following rules govern all team behavior. Include them in every team member's briefing.
 
-First, try to read `${CLAUDE_PLUGIN_DATA}/rules/hard-rules.md` (user's custom rules).
-
-If that file does not exist, read `${CLAUDE_PLUGIN_ROOT}/references/rules/hard-rules.md` (plugin defaults).
-
-These rules must be included in every team member's briefing.
+!`cat "${CLAUDE_PLUGIN_ROOT}/references/rules/hard-rules.md"`
 
 ---
 
@@ -86,7 +67,17 @@ Use the **AskUserQuestion** tool:
 
 **If "Help me define outcomes"**: Invoke the `/swarm:refine-outcomes` skill. Work through the refinement process with the user until outcomes are finalized.
 
-**STOP HERE. Wait for the user's outcomes before proceeding to Step 3.**
+Once outcomes are stated, use **AskUserQuestion** to confirm:
+
+- question: "Are these outcomes right?"
+- header: "Outcomes"
+- options:
+  - label: "Yes, move on"
+    description: "These capture what I'm trying to achieve"
+  - label: "I want to adjust"
+    description: "Let me refine or add to these"
+
+**STOP HERE. Wait for confirmation before proceeding to Step 3.**
 
 ---
 
@@ -104,9 +95,19 @@ Use the **AskUserQuestion** tool:
 
 **If "I'll specify the team"**: Ask the user (as a regular text message) to describe the additional members they want — by role (e.g., "security reviewer, test engineer") or by focus area (e.g., "two agents focused on API design"). Advisory: 3-5 total members is the sweet spot, up to 8 is viable. Wait for their response.
 
-**If "Suggest a team for me"**: Invoke the `/swarm:suggest-members` skill with the outcomes from Step 2. Present the suggestions to the user and let them confirm or adjust.
+**If "Suggest a team for me"**: Invoke the `/swarm:suggest-members` skill with the outcomes from Step 2. Present the suggestions, then use **AskUserQuestion**:
 
-**STOP HERE. Wait for the team composition to be finalized before proceeding to Step 4.**
+- question: "Does this team look right?"
+- header: "Team"
+- options:
+  - label: "Yes, looks good"
+    description: "Proceed with this team composition"
+  - label: "I want to adjust"
+    description: "Let me add, remove, or change members"
+
+If adjusting, ask what they'd like to change (free text), apply changes, then confirm again with AskUserQuestion.
+
+**STOP HERE. Wait for the team composition to be confirmed before proceeding to Step 4.**
 
 ---
 
@@ -182,19 +183,12 @@ If the user enabled lead research: you may use the Agent tool with `subagent_typ
 
 ### 6c: Spawn the Principal Engineer
 
-First, use the **Read** tool to read the PE agent definition at `${CLAUDE_PLUGIN_ROOT}/agents/principal-engineer.md`. Use its content as the basis for the PE's prompt.
-
-Then use the **Agent** tool to spawn the first teammate:
+Use the **Agent** tool to spawn the first teammate:
 - `name`: `principal-engineer`
 - `team_name`: [the team name from 6a]
 - `model`: `opus`
-- `prompt`: The content from the PE agent definition file, plus the briefing below
 
-Brief the PE with:
-1. The outcomes the team is working toward
-2. The full hard rules
-3. The team composition (who else is on the team)
-4. Their role: Socratic facilitator — ask questions, surface trade-offs, ensure hard rule compliance, drive toward consensus. Do NOT write code.
+Brief them with the outcomes, team composition, hard rules (already loaded above), and this role: "Principal engineer, upbeat, socratic thinker, leads by asking questions, doesn't make decisions, ensures a healthy discussion that adheres to rules to my hard rules, leaves all coding to you"
 
 ### 6d: Spawn additional team members
 
@@ -213,25 +207,11 @@ Brief each member with:
 
 ### 6e: Begin work
 
-Once all members are spawned and briefed:
-1. Create tasks using **TaskCreate** for the work to be done
-2. Assign research/analysis tasks to team members
-3. Follow the team workflow: research -> roundtable -> present to user -> implement after approval -> review -> present completed work
+Once all members are spawned and briefed, follow this workflow:
 
----
-
-## Hard Rules Reference
-
-The following rules are always in effect. Read and internalize the full rules file at the path determined in Step 1.
-
-Key rules that affect team operations:
-- **Always use TeamCreate** — never substitute with manual coordination
-- **All members apart from the lead are read-only**
-- **Never cut corners** — spawn the full team, never skip stages
-- **Never shut down teams unless explicitly told**
-- **Use Opus for all substantive work**
-- **Wait for ALL reviews before making changes**
-- **No code changes during review**
-- **Present findings to user and wait for go-ahead**
-- **Reviews must reach 9/10+ confidence before shipping**
-- **Keep code edits in the main agent**
+1. Teammates research independently, propose approaches from their domain
+2. PE runs a roundtable: questions each proposal, surfaces trade-offs. If an expert raises a concern, investigate it before moving on. Drive toward consensus
+3. Present findings and agreed approach to the user for approval
+4. Once the user greenlights, the lead implements. Only the lead writes code
+5. Keep the team for review. Teammates evaluate the work against what was agreed. Back to step 2 if concerns arise
+6. Present completed work to the user before committing

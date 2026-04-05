@@ -1,44 +1,12 @@
 ---
 name: refine-outcomes
 description: |
-  Use when a user describes what they want to build but frames it as implementation steps rather than outcomes.
-  Helps reframe "what to build" into "what success looks like" so the team works toward results, not tasks.
+  Helps reframe implementation steps into customer/business outcomes.
+  Use when the user describes what to build rather than what success looks like.
 ---
 
-# Refine Outcomes
+The user has described what they want. Check if they've stated outcomes or implementations.
 
-The user has described what they want. Your job is to determine whether they've stated **outcomes** (what success looks like) or **implementations** (specific things to build). If they've stated implementations, help them reframe.
+An outcome says what changes for the user or business. An implementation says what to build. If they wrote implementations, help them restate as outcomes. If they wrote outcomes, confirm them and move on.
 
-## The Distinction
-
-- **Outcome**: "Reduce auth-related bug rate by isolating authentication concerns into a testable module"
-- **Implementation**: "Refactor the auth module"
-
-- **Outcome**: "Users can reset their password in under 30 seconds without contacting support"
-- **Implementation**: "Add a password reset flow"
-
-- **Outcome**: "Deploy frequency increases from weekly to daily with zero rollback incidents"
-- **Implementation**: "Set up CI/CD pipeline"
-
-## What To Do
-
-1. Read what the user wrote
-2. For each statement, classify it: **outcome** or **implementation**?
-3. If it's already an outcome, confirm it: "This is a clear outcome — no changes needed."
-4. If it's an implementation, ask a reframing question:
-   - "What problem does this solve?"
-   - "What changes for the user when this is done?"
-   - "How would you measure success?"
-5. Suggest a reframed outcome based on their answer
-6. Present all refined outcomes back to the user for confirmation
-
-## Response Format
-
-For each item the user provided:
-
-> **Original**: [what they said]
-> **Classification**: Outcome / Implementation
-> **Reframed** (if needed): [suggested outcome statement]
-> **Question** (if unsure): [clarifying question to surface the real outcome]
-
-Keep it concise. Don't over-explain the methodology — just do the reframing.
+Keep outcomes short — one or two lines each, in plain language. Do not add technical detail, metrics, or architecture. Do not make outcomes longer or more formal than what the user wrote. Simplify, never elaborate.
