@@ -25,18 +25,25 @@ Use these terms consistently. Never use the alternatives listed.
 
 ## Step 0: Pre-flight Check
 
-Use the **Bash** tool to check if agent teams are enabled:
+Check if the TeamCreate tool is available to you. If TeamCreate is in your available tools, agent teams are **ENABLED** — proceed to Step 1.
 
-```bash
-cat ~/.claude/settings.json 2>/dev/null | grep -c CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS
-```
+If TeamCreate is NOT available, agent teams are **DISABLED**. Use the **AskUserQuestion** tool:
 
-If the output is `0` (not found), agent teams are **DISABLED**. Present the user with two options:
+- question: "Agent teams are not enabled. Want me to enable it?"
+- header: "Setup"
+- options:
+  - label: "Yes, enable it (Recommended)"
+    description: "I'll add the setting to your project or global config"
+  - label: "No, I'll do it myself"
+    description: "I'll show you what to add to your settings"
 
-> Agent teams are not enabled. To use `/swarm:launch`, you need to enable them:
->
-> **Option A**: I can add it to your settings now (requires your permission).
-> **Option B**: Add this manually to `~/.claude/settings.json`:
+**If "Yes"**: Check if `.claude/settings.json` exists in the current project directory. If it does, use the Read tool to read it, then use the Edit tool to add `"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"` to the `env` object (create the `env` object if it doesn't exist). If `.claude/settings.json` does not exist in the project, do the same in `~/.claude/settings.json` instead. Then tell the user:
+
+> Done. Restart Claude Code for the change to take effect, then run `/swarm:launch` again.
+
+**If "No"**: Tell the user:
+
+> Add this to your `.claude/settings.json` (project) or `~/.claude/settings.json` (global), then restart Claude Code:
 > ```json
 > {
 >   "env": {
@@ -44,9 +51,6 @@ If the output is `0` (not found), agent teams are **DISABLED**. Present the user
 >   }
 > }
 > ```
-> Then restart Claude Code.
-
-If the user chooses Option A, use the Edit tool to add the setting to `~/.claude/settings.json`, then inform them they need to restart Claude Code for it to take effect.
 
 **STOP HERE if agent teams are not enabled. Do NOT proceed until confirmed enabled.**
 
@@ -54,79 +58,77 @@ If the user chooses Option A, use the Edit tool to add the setting to `~/.claude
 
 ---
 
-## Step 1: First-Run Setup
+## Step 1: Load Rules
 
-Use the **Bash** tool to check if the user has customized rules:
+Use the **Read** tool to load the hard rules that govern team behavior.
 
-```bash
-test -f "${CLAUDE_PLUGIN_DATA}/rules/hard-rules.md" && echo "USER_RULES_EXIST" || echo "NO_USER_RULES"
-```
+First, try to read `${CLAUDE_PLUGIN_DATA}/rules/hard-rules.md` (user's custom rules).
 
-**If NO_USER_RULES**: Use the **Bash** tool to create the user's persistent rules directory and copy the defaults:
+If that file does not exist, read `${CLAUDE_PLUGIN_ROOT}/references/rules/hard-rules.md` (plugin defaults).
 
-```bash
-mkdir -p "${CLAUDE_PLUGIN_DATA}/rules"
-```
-
-Then use the **Read** tool to read `${CLAUDE_PLUGIN_ROOT}/references/rules/hard-rules.md` and use the **Write** tool to write its contents to `${CLAUDE_PLUGIN_DATA}/rules/hard-rules.md`, prepending this header line:
-
-```
-# This is your personal copy. Edit freely — plugin upgrades won't overwrite it.
-```
-
-**If USER_RULES_EXIST**: Load the rules from `${CLAUDE_PLUGIN_DATA}/rules/hard-rules.md`.
-
-Use the **Read** tool to load the rules file now. These rules govern the entire team and must be included in every team member's briefing.
+These rules must be included in every team member's briefing.
 
 ---
 
 ## Step 2: Ask About Outcomes
 
-Ask the user:
+Use the **AskUserQuestion** tool:
 
-> **What outcomes are you trying to achieve?**
->
-> Describe what success looks like — not the implementation steps, but the results you want.
->
-> If you'd like help framing your outcomes, I can use `/swarm:refine-outcomes`.
+- question: "Do you have outcomes defined, or would you like help?"
+- header: "Outcomes"
+- options:
+  - label: "I'll provide my outcomes"
+    description: "I know what success looks like and will describe it"
+  - label: "Help me define outcomes"
+    description: "Use /swarm:refine-outcomes to reframe my ideas into outcome statements"
 
-**STOP HERE. Wait for the user's response before proceeding to Step 3.**
+**If "I'll provide my outcomes"**: Ask the user (as a regular text message) to describe their outcomes — what success looks like, not implementation steps. Wait for their response.
+
+**If "Help me define outcomes"**: Invoke the `/swarm:refine-outcomes` skill. Work through the refinement process with the user until outcomes are finalized.
+
+**STOP HERE. Wait for the user's outcomes before proceeding to Step 3.**
 
 ---
 
 ## Step 3: Ask About Team Members
 
-Ask the user:
+Use the **AskUserQuestion** tool:
 
-> **What team members would you like on this team?**
->
-> The **lead engineer** (me) and **principal engineer** are always included. Who else should join?
->
-> You can specify by role (e.g., "security reviewer, test engineer") or by focus area (e.g., "two agents focused on API design").
->
-> If you'd like me to suggest a team based on your outcomes, I can use `/swarm:suggest-members`.
->
-> Advisory: Teams of 3-5 members work best. Up to 8 is viable. Beyond 8 is diminishing returns.
+- question: "How would you like to choose team members? (Lead + Principal Engineer are always included)"
+- header: "Team"
+- options:
+  - label: "I'll specify the team"
+    description: "I know which roles or focus areas I want"
+  - label: "Suggest a team for me"
+    description: "Use /swarm:suggest-members to recommend roles based on my outcomes"
 
-**STOP HERE. Wait for the user's response before proceeding to Step 4.**
+**If "I'll specify the team"**: Ask the user (as a regular text message) to describe the additional members they want — by role (e.g., "security reviewer, test engineer") or by focus area (e.g., "two agents focused on API design"). Advisory: 3-5 total members is the sweet spot, up to 8 is viable. Wait for their response.
+
+**If "Suggest a team for me"**: Invoke the `/swarm:suggest-members` skill with the outcomes from Step 2. Present the suggestions to the user and let them confirm or adjust.
+
+**STOP HERE. Wait for the team composition to be finalized before proceeding to Step 4.**
 
 ---
 
 ## Step 4: Ask About Lead Research
 
-Ask the user:
+Use the **AskUserQuestion** tool:
 
-> **Should the lead engineer be able to do research?** (Default: no)
->
-> If yes, the lead can delegate research tasks to Explore subagents. If no, the lead focuses purely on coordination and code — teammates handle all research.
+- question: "Should the lead engineer be able to do research?"
+- header: "Research"
+- options:
+  - label: "No (Recommended)"
+    description: "Lead focuses on coordination and code — teammates handle research"
+  - label: "Yes"
+    description: "Lead can delegate research to Explore subagents in addition to teammates"
 
-**STOP HERE. Wait for the user's response before proceeding to Step 5.**
+**STOP HERE. Wait for the user's selection before proceeding to Step 5.**
 
 ---
 
 ## Step 5: Confirmation
 
-Present a summary and ask for explicit confirmation:
+Present a summary of the team plan:
 
 > **Team Plan**
 >
@@ -139,10 +141,22 @@ Present a summary and ask for explicit confirmation:
 > [3-N. Additional members with their role and focus]
 >
 > **Rules:** Loaded from [user overrides / plugin defaults]
->
-> **Is this plan final, or do you have remaining inputs?**
 
-**STOP HERE. Do NOT proceed until the user explicitly confirms. If they have changes, go back to the relevant step.**
+Then use the **AskUserQuestion** tool:
+
+- question: "Is this plan final, or do you have remaining inputs?"
+- header: "Confirm"
+- options:
+  - label: "Launch the team"
+    description: "Plan is final — start creating the team now"
+  - label: "I have changes"
+    description: "Let me adjust outcomes, members, or settings first"
+
+**If "Launch the team"**: Proceed to Step 6.
+
+**If "I have changes"**: Ask what they'd like to change and go back to the relevant step.
+
+**STOP HERE. Do NOT proceed until the user explicitly confirms.**
 
 ---
 
@@ -154,11 +168,7 @@ Once the user confirms, execute the following:
 
 Use **TeamCreate** with a descriptive team name derived from the outcomes. For example, if the outcome is "Build a REST API for user management," use team name `user-management-api`.
 
-### 6b: Load hard rules
-
-Read the hard rules from `${CLAUDE_PLUGIN_DATA}/rules/hard-rules.md` (or `${CLAUDE_PLUGIN_ROOT}/references/rules/hard-rules.md` if no user copy exists). You will inject these into every team member's briefing.
-
-### 6c: You ARE the lead engineer
+### 6b: You ARE the lead engineer
 
 You are now the lead engineer for this team. Your responsibilities:
 
@@ -170,7 +180,7 @@ You are now the lead engineer for this team. Your responsibilities:
 
 If the user enabled lead research: you may use the Agent tool with `subagent_type: "Explore"` for research tasks. If not: delegate all research to team members.
 
-### 6d: Spawn the Principal Engineer
+### 6c: Spawn the Principal Engineer
 
 First, use the **Read** tool to read the PE agent definition at `${CLAUDE_PLUGIN_ROOT}/agents/principal-engineer.md`. Use its content as the basis for the PE's prompt.
 
@@ -186,7 +196,7 @@ Brief the PE with:
 3. The team composition (who else is on the team)
 4. Their role: Socratic facilitator — ask questions, surface trade-offs, ensure hard rule compliance, drive toward consensus. Do NOT write code.
 
-### 6e: Spawn additional team members
+### 6d: Spawn additional team members
 
 For each additional member the user specified, use the **Agent** tool:
 - `name`: A descriptive kebab-case name (e.g., `security-reviewer`, `test-engineer`)
@@ -201,7 +211,7 @@ Brief each member with:
 4. The team composition (who else is on the team)
 5. Their constraint: **read-only** — research and advise only, no code changes
 
-### 6f: Begin work
+### 6e: Begin work
 
 Once all members are spawned and briefed:
 1. Create tasks using **TaskCreate** for the work to be done

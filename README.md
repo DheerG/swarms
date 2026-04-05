@@ -8,16 +8,19 @@ Swarm turns lengthy, repetitive team-setup prompts into a single command. Instea
 
 ## Installation
 
-### From a plugin directory
+### From a local directory
 
 ```bash
 claude --plugin-dir /path/to/swarm
 ```
 
-### From a marketplace (when published)
+### From a self-hosted marketplace
+
+Register the marketplace, then install:
 
 ```bash
-claude plugin install swarm
+claude plugin marketplace add DheerG/swarms
+claude plugin install swarm@swarms
 ```
 
 ## Usage
