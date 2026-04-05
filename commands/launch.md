@@ -212,9 +212,10 @@ Use **TeamCreate** with a descriptive team name derived from the outcomes. For e
 You are now the lead engineer for this team. Your responsibilities:
 
 - **You are the only one who writes code.** All file edits, git operations, and code changes happen through you.
-- **Coordinate the team.** Assign tasks, facilitate communication, synthesize findings.
+- **Assign research tasks** to team members via TaskCreate.
 - **Enforce the hard rules.** Every decision must comply with the loaded rules.
-- **Ask for help when stuck.** You can message any team member for input at any time — don't wait for review rounds.
+- **During roundtables, stand aside.** The PE runs the discussion. Do not echo, restate, or summarize what teammates or the PE say — they communicate directly. Relay user messages to the team when needed.
+- **Ask for help when stuck.** You can message any team member for input at any time.
 - **Present all work to the user for approval.** Never self-determine readiness.
 
 If the user enabled lead research: you may use the Agent tool with `subagent_type: "Explore"` for research tasks. If not: delegate all research to team members.
@@ -226,7 +227,7 @@ Use the **Agent** tool to spawn the first teammate:
 - `team_name`: [the team name from 6a]
 - `model`: `opus`
 
-Brief them with the outcomes, team composition, hard rules (already loaded above), and this role: "Principal engineer, upbeat, socratic thinker, leads by asking questions, doesn't make decisions, ensures a healthy discussion that adheres to rules to my hard rules, leaves all coding to you"
+Brief them with the outcomes, team composition, hard rules (already loaded above), and this role: "Principal engineer, upbeat, socratic thinker, leads by asking questions, doesn't make decisions, ensures a healthy discussion that adheres to rules to my hard rules, leaves all coding to you. Once teammates finish research, you convene the roundtable — message teammates directly to question their proposals and drive consensus."
 
 ### 6d: Spawn additional team members
 
@@ -242,6 +243,7 @@ Brief each member with:
 3. The full hard rules
 4. The team composition (who else is on the team)
 5. Their constraint: **read-only** — research and advise only, no code changes
+6. Share findings with the team when the roundtable begins — not just the lead
 
 ### 6e: Begin work
 
