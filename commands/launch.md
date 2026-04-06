@@ -93,9 +93,17 @@ These apply to the lead engineer only.
 
 ---
 
+## User-Provided Context
+
+$ARGUMENTS
+
+---
+
 ## Step 2: Ask About Outcomes
 
-Use the **AskUserQuestion** tool:
+**If the User-Provided Context section above is non-empty**, the user already provided context with the command. Skip the "Do you have outcomes?" question below. Present their input verbatim as their stated outcomes, then go directly to the confirmation prompt below.
+
+**If the User-Provided Context section above is empty**, use the **AskUserQuestion** tool:
 
 - question: "Do you have outcomes defined, or would you like help?"
 - header: "Outcomes"
@@ -107,7 +115,7 @@ Use the **AskUserQuestion** tool:
 
 **If "I'll provide my outcomes"**: Ask the user (as a regular text message) to describe their outcomes — what success looks like, not implementation steps. Wait for their response.
 
-**If "Help me define outcomes"**: Invoke the `/swarm:refine-outcomes` skill. Work through the refinement process with the user until outcomes are finalized.
+**If "Help me define outcomes"**: You MUST use the **Skill** tool to invoke `swarm:refine-outcomes`, passing the user's context as the `args` parameter. Do NOT perform this step yourself.
 
 Once outcomes are stated, use **AskUserQuestion** to confirm:
 
@@ -118,6 +126,10 @@ Once outcomes are stated, use **AskUserQuestion** to confirm:
     description: "These capture what I'm trying to achieve"
   - label: "I want to adjust"
     description: "Let me refine or add to these"
+  - label: "Help me refine these into outcomes"
+    description: "Reframe what I described into outcome statements"
+
+**If "Help me refine these into outcomes"**: You MUST use the **Skill** tool to invoke `swarm:refine-outcomes`, passing the user's stated outcomes as the `args` parameter. Do NOT perform this step yourself. After refinement, return to this confirmation prompt.
 
 **STOP HERE. Wait for confirmation before proceeding to Step 3.**
 
@@ -130,14 +142,14 @@ Use the **AskUserQuestion** tool:
 - question: "How would you like to choose team members? (Lead, Principal Engineer, and Quality Reviewer are always included)"
 - header: "Team"
 - options:
+  - label: "Suggest a team for me (Recommended)"
+    description: "Use /swarm:suggest-members to recommend roles based on my outcomes"
   - label: "I'll specify the team"
     description: "I know which roles or focus areas I want"
-  - label: "Suggest a team for me"
-    description: "Use /swarm:suggest-members to recommend roles based on my outcomes"
 
 **If "I'll specify the team"**: Ask the user (as a regular text message) to describe the additional members they want — by role (e.g., "security reviewer, test engineer") or by focus area (e.g., "two agents focused on API design"). Advisory: 3-5 total members is the sweet spot, up to 8 is viable. Wait for their response.
 
-**If "Suggest a team for me"**: Invoke the `/swarm:suggest-members` skill with the outcomes from Step 2. Present the suggestions, then use **AskUserQuestion**:
+**If "Suggest a team for me"**: You MUST use the **Skill** tool to invoke `swarm:suggest-members`, passing the confirmed outcomes from Step 2 as the `args` parameter. Do NOT perform this step yourself. Present the suggestions, then use **AskUserQuestion**:
 
 - question: "Does this team look right?"
 - header: "Team"
@@ -258,7 +270,7 @@ Once all members are spawned and briefed, follow this workflow:
 
 1. Lead does no research (unless the user explicitly enabled it in Step 4)
 2. Teammates research independently, propose approaches from their domain
-3. The quality reviewer finds existing standards in the codebase. If none exist, invoke `/swarm:define-rubric` to construct validation criteria with the team before proceeding
+3. The quality reviewer finds existing standards in the codebase. If the quality reviewer reports no existing standards, the lead MUST use the **Skill** tool to invoke `swarm:define-rubric`, passing the outcomes as the `args` parameter. Do NOT perform this step yourself
 4. PE runs a roundtable: questions each proposal, surfaces trade-offs. If an expert raises a concern, investigate it before moving on. Drive toward consensus
 5. Present findings and agreed approach to the user for approval
 6. Once the user greenlights, the lead implements. Only the lead writes code
