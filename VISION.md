@@ -48,7 +48,7 @@ These phases happen in this order. How each one works varies by context: converg
 Five things change from one team to the next:
 
 1. **Rules**: split into two tiers. Rules that apply to everyone, and rules that apply only to the lead. When briefing members, use judgment about which general rules are relevant to their role.
-2. **Roles**: every team has a lead, a facilitator, and specialists. Who produces the work depends on the task. Sometimes it's the lead. Sometimes it's a dedicated specialist.
+2. **Roles**: every team has a lead, a facilitator, a quality enforcer, and specialists. Who produces the work depends on the task. Sometimes it's the lead. Sometimes it's a dedicated specialist. The quality enforcer owns the validation rubric: enforcing existing standards when they exist, constructing the rubric during convergence when they don't.
 3. **Convergence mechanism**: the requirement is that the team aligns before anyone starts producing. How that alignment happens depends on the work.
 4. **Workflow details**: what research looks like, what execution means, how review runs.
 5. **Validation rubric**: how the team knows it's done.

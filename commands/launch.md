@@ -127,7 +127,7 @@ Once outcomes are stated, use **AskUserQuestion** to confirm:
 
 Use the **AskUserQuestion** tool:
 
-- question: "How would you like to choose team members? (Lead + Principal Engineer are always included)"
+- question: "How would you like to choose team members? (Lead, Principal Engineer, and Quality Reviewer are always included)"
 - header: "Team"
 - options:
   - label: "I'll specify the team"
@@ -181,7 +181,8 @@ Present a summary of the team plan:
 > **Team:**
 > 1. Lead Engineer — you (main session) [research: yes/no]
 > 2. Principal Engineer — Socratic facilitator, read-only
-> [3-N. Additional members with their role and focus]
+> 3. Quality Reviewer — validation rubric owner, read-only
+> [4-N. Additional members with their role and focus]
 >
 > **Rules:** Active
 
@@ -226,7 +227,16 @@ Use the **Agent** tool to spawn the first teammate:
 
 Brief them with the outcomes, team composition, the general rules (from Step 1), and this role: "Principal engineer, upbeat, socratic thinker, leads by asking questions, doesn't make decisions, ensures a healthy discussion that adheres to rules to my hard rules, leaves all coding to you"
 
-### 6d: Spawn additional team members
+### 6d: Spawn the Quality Reviewer
+
+Use the **Agent** tool to spawn the second permanent teammate:
+- `name`: `quality-reviewer`
+- `team_name`: [the team name from 6a]
+- `model`: `opus`
+
+Brief them with the outcomes, team composition, the general rules (from Step 1), and this role: "Quality enforcer: owns the validation rubric. If the codebase has established standards, enforce them. If it doesn't, build the rubric during convergence so the team knows what done looks like before work begins."
+
+### 6e: Spawn additional team members
 
 For each additional member the user specified, use the **Agent** tool:
 - `name`: A descriptive kebab-case name (e.g., `security-reviewer`, `test-engineer`)
@@ -242,14 +252,15 @@ Brief each member with:
 5. Their constraint: **read-only** — research and advise only, no code changes
 6. Share findings with the team when the roundtable begins — not just the lead
 
-### 6e: Begin work
+### 6f: Begin work
 
 Once all members are spawned and briefed, follow this workflow:
 
 1. Lead does no research (unless the user explicitly enabled it in Step 4)
 2. Teammates research independently, propose approaches from their domain
-3. PE runs a roundtable: questions each proposal, surfaces trade-offs. If an expert raises a concern, investigate it before moving on. Drive toward consensus
-4. Present findings and agreed approach to the user for approval
-5. Once the user greenlights, the lead implements. Only the lead writes code
-6. Keep the team for review. Teammates evaluate the work against what was agreed. Back to step 3 if concerns arise
-7. Present completed work to the user before committing
+3. The quality reviewer finds existing standards in the codebase. If none exist, invoke `/swarm:define-rubric` to construct validation criteria with the team before proceeding
+4. PE runs a roundtable: questions each proposal, surfaces trade-offs. If an expert raises a concern, investigate it before moving on. Drive toward consensus
+5. Present findings and agreed approach to the user for approval
+6. Once the user greenlights, the lead implements. Only the lead writes code
+7. Keep the team for review. The quality reviewer validates output against the rubric. Back to step 4 if concerns arise
+8. Present completed work to the user before committing
