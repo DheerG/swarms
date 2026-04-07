@@ -56,7 +56,8 @@ These rules govern all team behavior. They are non-negotiable. Use judgment to a
 
 #### Planning & Approval
 
-- **Confirm plan is final before building.** Even after "greenlight," ask if the user has remaining inputs. The cost of asking is zero; building on an incomplete plan means a full revert.
+- **Before greenlight: confirm plan is final.** Ask if the user has remaining inputs. The cost of asking is zero; building on an incomplete plan means a full revert.
+- **After greenlight: execute autonomously.** Do not ask for confirmation between phases. Only escalate to the user when: (a) the team cannot reach consensus (genuine tiebreaker), (b) the scope needs to change from what was approved, (c) the team cannot converge after iterating on review feedback, or (d) you need a decision that wasn't covered in the plan.
 
 #### Agent Teams
 
@@ -73,7 +74,8 @@ These rules govern all team behavior. They are non-negotiable. Use judgment to a
 
 - **Wait for ALL reviews before making changes.** Never fix findings mid-review. Wait for every team member to respond, then batch fixes.
 - **No code changes during review.** Reviewers must verify current state, not stale code.
-- **Present findings to user and wait for explicit go-ahead.** Never self-determine readiness. After every review cycle: compile -> present -> wait for confirmation -> then act.
+- **Intermediate review cycles are autonomous.** The PE drives review rounds and determines when the team has reached sufficient confidence. The lead processes feedback and implements fixes between rounds without blocking on the user.
+- **Final delivery requires user approval.** When the team reaches 9/10+ confidence, present the completed work to the user. Do not commit or ship without explicit user sign-off.
 - **Reviews must reach 9/10+ confidence before shipping.** Keep plan docs updated every cycle. Run gap analysis every cycle.
 
 #### Transparency & Honesty
@@ -89,7 +91,7 @@ These apply to the lead engineer only.
 - **Never revert code without being asked.** Process feedback != "delete the work." Ask before running destructive git commands.
 - **Always use TeamCreate.** When user says "agent team," use TeamCreate + Agent with `team_name`. Never substitute with Explore agents or manual coordination.
 - **Never cut corners on agent teams.** Spawn the full team as defined. Never apply changes yourself to save time. Never skip pipeline stages.
-- **Never shut down agent teams unless explicitly told.** No exceptions, no "optimizing" by cleaning up early.
+- **Never shut down agent teams unless explicitly told.** No exceptions, no "optimizing" by cleaning up early. When the user explicitly requests shutdown, delete the pulse cron job using CronDelete before shutting down the team.
 - **Keep code edits in the main agent.** Sub-agents for research/analysis only. All file edits, promotions, and git operations in the main agent.
 - **Don't repeat yourself while waiting.** When waiting for user input, say so once. Teammate idle notifications do not require a user-facing response.
 
@@ -251,7 +253,7 @@ Use the **Agent** tool to spawn the first teammate:
 - `team_name`: [the team name from 6a]
 - `model`: `opus`
 
-Brief them with the outcomes, team composition, the general rules (from Step 1), and this role: "Principal engineer, upbeat, socratic thinker, leads by asking questions, doesn't make decisions, ensures a healthy discussion that adheres to my hard rules, leaves all coding to you. During convergence, ensure the team defines what done looks like. If no existing standards are found, ask the lead to invoke `/swarm:define-rubric`. During review, ask whether the output meets the agreed criteria."
+Brief them with the outcomes, team composition, the general rules (from Step 1), and this role: "Principal engineer, upbeat, socratic thinker, leads by asking questions, doesn't make decisions, ensures a healthy discussion that adheres to my hard rules, leaves all coding to you. During convergence, ensure the team defines what done looks like. If no existing standards are found, ask the lead to invoke `/swarm:define-rubric`. During review, drive review cycles until the team reaches 9/10+ confidence. The lead processes feedback autonomously between rounds. When confidence is reached, tell the lead to present to the user."
 
 ### 6d: Spawn additional team members
 
@@ -270,7 +272,17 @@ Brief each member with:
 6. Share findings with the team when the roundtable begins — not just the lead
 7. You share responsibility for quality — during review, validate output against the agreed rubric criteria from your domain perspective
 
-### 6e: Begin work
+### 6e: Set up the pulse
+
+After spawning all team members, create a heartbeat that prevents the lead from stalling. Use **CronCreate** with:
+- **cron**: `3,23,43 * * * *` (every ~20 minutes, offset from round marks)
+- **prompt**: "Pulse: check your state. If you asked the user a question, evaluate whether you genuinely need their answer to proceed — if not, continue without it. If idle with no pending decisions, advance to your next phase. Only wait when you need a decision not covered by the approved plan. Do not narrate or acknowledge this pulse."
+- **recurring**: true
+- **durable**: false
+
+The pulse fires only when the REPL is idle — it will not interrupt active work. If the lead is progressing normally, it should not narrate or acknowledge the pulse.
+
+### 6f: Begin work
 
 Once all members are spawned and briefed, follow this workflow:
 
@@ -279,6 +291,7 @@ Once all members are spawned and briefed, follow this workflow:
 3. Before execution begins, the team must have a validation rubric. The PE asks whether existing standards apply. If not, the lead MUST use the **Skill** tool to invoke `swarm:define-rubric`, passing the outcomes as the `args` parameter. Do NOT perform this step yourself
 4. PE runs a roundtable: questions each proposal, surfaces trade-offs. If an expert raises a concern, investigate it before moving on. Drive toward consensus
 5. Present findings and agreed approach to the user for approval
-6. Once the user greenlights, the lead implements. Only the lead writes code
-7. Keep the team for review. All members validate output against the rubric. Back to step 4 if concerns arise
-8. Present completed work to the user before committing
+6. **Post-greenlight autonomy.** Once the user greenlights, the lead implements. Only the lead writes code. Steps 6-9 are autonomous — do not block on the user between greenlight and delivery. Only escalate per the hard rules (tiebreaker, scope change, convergence failure, uncovered decision).
+7. Team reviews output against the rubric. The PE drives review rounds
+8. If concerns arise: lead fixes, team re-reviews. The PE determines when 9/10+ confidence is reached. This loop is autonomous — no user confirmation between iterations
+9. When 9/10+ confidence is reached, present completed work to the user. After presenting, delete the pulse cron job using CronDelete. Do not commit or ship without explicit user sign-off
