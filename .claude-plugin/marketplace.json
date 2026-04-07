@@ -9,7 +9,6 @@
     {
       "name": "swarm",
       "description": "Launch agent teams with reusable roles, rules, and interactive setup",
-      "version": "0.1.0",
       "source": "./",
       "license": "MIT"
     }
