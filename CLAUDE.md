@@ -29,7 +29,7 @@ Step 0 (pre-flight) → Step 1 (hard rules) → Step 2 (outcomes, with `$ARGUMEN
 
 ### Team Execution Phase Arc
 
-Research → Converge (PE runs roundtable) → Approve (user greenlights) → Execute (lead only) → Validate (QR checks rubric) → Review → Deliver.
+Research → Converge (PE runs roundtable, ensures rubric exists) → Approve (user greenlights) → Execute (lead only) → Validate (all members check rubric) → Review → Deliver.
 
 ## Key Conventions
 

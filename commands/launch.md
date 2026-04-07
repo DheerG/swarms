@@ -139,7 +139,7 @@ Once outcomes are stated, use **AskUserQuestion** to confirm:
 
 Use the **AskUserQuestion** tool:
 
-- question: "How would you like to choose team members? (Lead, Principal Engineer, and Quality Reviewer are always included)"
+- question: "How would you like to choose team members? (Lead and Principal Engineer are always included)"
 - header: "Team"
 - options:
   - label: "Suggest a team for me (Recommended)"
@@ -193,8 +193,7 @@ Present a summary of the team plan:
 > **Team:**
 > 1. Lead Engineer — you (main session) [research: yes/no]
 > 2. Principal Engineer — Socratic facilitator, read-only
-> 3. Quality Reviewer — validation rubric owner, read-only
-> [4-N. Additional members with their role and focus]
+> [3-N. Additional members with their role and focus]
 >
 > **Rules:** Active
 
@@ -237,18 +236,9 @@ Use the **Agent** tool to spawn the first teammate:
 - `team_name`: [the team name from 6a]
 - `model`: `opus`
 
-Brief them with the outcomes, team composition, the general rules (from Step 1), and this role: "Principal engineer, upbeat, socratic thinker, leads by asking questions, doesn't make decisions, ensures a healthy discussion that adheres to rules to my hard rules, leaves all coding to you"
+Brief them with the outcomes, team composition, the general rules (from Step 1), and this role: "Principal engineer, upbeat, socratic thinker, leads by asking questions, doesn't make decisions, ensures a healthy discussion that adheres to my hard rules, leaves all coding to you. During convergence, ensure the team defines what done looks like. If no existing standards are found, ask the lead to invoke `/swarm:define-rubric`. During review, ask whether the output meets the agreed criteria."
 
-### 6d: Spawn the Quality Reviewer
-
-Use the **Agent** tool to spawn the second permanent teammate:
-- `name`: `quality-reviewer`
-- `team_name`: [the team name from 6a]
-- `model`: `opus`
-
-Brief them with the outcomes, team composition, the general rules (from Step 1), and this role: "Quality enforcer: owns the validation rubric. If the codebase has established standards, enforce them. If it doesn't, build the rubric during convergence so the team knows what done looks like before work begins."
-
-### 6e: Spawn additional team members
+### 6d: Spawn additional team members
 
 For each additional member the user specified, use the **Agent** tool:
 - `name`: A descriptive kebab-case name (e.g., `security-reviewer`, `test-engineer`)
@@ -263,16 +253,17 @@ Brief each member with:
 4. The team composition (who else is on the team)
 5. Their constraint: **read-only** — research and advise only, no code changes
 6. Share findings with the team when the roundtable begins — not just the lead
+7. You share responsibility for quality — during review, validate output against the agreed rubric criteria from your domain perspective
 
-### 6f: Begin work
+### 6e: Begin work
 
 Once all members are spawned and briefed, follow this workflow:
 
 1. Lead does no research (unless the user explicitly enabled it in Step 4)
 2. Teammates research independently, propose approaches from their domain
-3. The quality reviewer finds existing standards in the codebase. If the quality reviewer reports no existing standards, the lead MUST use the **Skill** tool to invoke `swarm:define-rubric`, passing the outcomes as the `args` parameter. Do NOT perform this step yourself
+3. Before execution begins, the team must have a validation rubric. The PE asks whether existing standards apply. If not, the lead MUST use the **Skill** tool to invoke `swarm:define-rubric`, passing the outcomes as the `args` parameter. Do NOT perform this step yourself
 4. PE runs a roundtable: questions each proposal, surfaces trade-offs. If an expert raises a concern, investigate it before moving on. Drive toward consensus
 5. Present findings and agreed approach to the user for approval
 6. Once the user greenlights, the lead implements. Only the lead writes code
-7. Keep the team for review. The quality reviewer validates output against the rubric. Back to step 4 if concerns arise
+7. Keep the team for review. All members validate output against the rubric. Back to step 4 if concerns arise
 8. Present completed work to the user before committing
