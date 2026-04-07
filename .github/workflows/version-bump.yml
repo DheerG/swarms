@@ -50,7 +50,9 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .claude-plugin/plugin.json
           git commit -m "chore: bump version to ${NEW_VERSION} [skip ci]"
-          git tag "v${NEW_VERSION}"
-          git push origin main --tags
+          git tag -f "v${NEW_VERSION}"
+          git push origin main
+          git push origin "v${NEW_VERSION}" --force
 
-          gh release create "v${NEW_VERSION}" --generate-notes
+          gh release create "v${NEW_VERSION}" --generate-notes 2>/dev/null \
+            || gh release edit "v${NEW_VERSION}" --draft=false
