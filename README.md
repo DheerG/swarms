@@ -53,6 +53,23 @@ Helps reframe implementation steps into outcome statements. Available during tea
 
 Recommends team composition based on your stated outcomes. Available during team setup or standalone.
 
+## Updating
+
+Run `/swarm:update` to check for and install the latest version.
+
+You can also update manually from your terminal:
+
+```bash
+claude plugin marketplace update swarms
+claude plugin update swarm@swarms --scope project
+```
+
+The marketplace refresh step is currently required due to a known Claude Code limitation.
+
+## Contributing
+
+All changes go through branches and pull requests. Automated version bumps by `github-actions[bot]` are the only exception.
+
 ## Prerequisites
 
 Agent teams must be enabled in Claude Code. Add to `~/.claude/settings.json`:
