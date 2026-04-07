@@ -1,11 +1,16 @@
 {
   "name": "swarm",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Launch agent teams with reusable roles, rules, and interactive setup",
   "author": {
     "name": "Dheer Gupta",
     "email": "noreply@dheer.co"
   },
   "license": "MIT",
-  "keywords": ["agent-teams", "swarm", "multi-agent", "team-orchestration"]
+  "keywords": [
+    "agent-teams",
+    "swarm",
+    "multi-agent",
+    "team-orchestration"
+  ]
 }
