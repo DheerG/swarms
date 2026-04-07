@@ -103,7 +103,7 @@ $ARGUMENTS
 
 ## Step 2: Ask About Outcomes
 
-**If the User-Provided Context section above is non-empty**, the user already provided context with the command. Skip the "Do you have outcomes?" question below. Present their input as their stated outcomes, using their exact words — do NOT paraphrase, summarize, or reword. Then go directly to the confirmation prompt below.
+**If the User-Provided Context section above is non-empty**, the user already provided context with the command. Skip the "Do you have outcomes?" question below. Do NOT echo their input back or reformat it as numbered outcomes — their context is already visible above. Read their context carefully, then briefly state what you understand the goal to be in a single natural sentence (e.g., "Got it — you want to [goal]."). Then go directly to the confirmation prompt below. Use their context to inform the team brief in Step 6, where their original words will be preserved.
 
 **If the User-Provided Context section above is empty**, use the **AskUserQuestion** tool:
 
