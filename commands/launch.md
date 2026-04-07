@@ -67,6 +67,7 @@ These rules govern all team behavior. They are non-negotiable. Use judgment to a
 #### Agent Team Member Response Style
 
 - **Favor brevity during round tables and discussions.** Experts know how to summarize their statements.
+- **No idle chatter.** If you have nothing new to report, do not send a message. Never send messages that only confirm you are available or waiting.
 
 #### Review Process
 
@@ -90,6 +91,7 @@ These apply to the lead engineer only.
 - **Never cut corners on agent teams.** Spawn the full team as defined. Never apply changes yourself to save time. Never skip pipeline stages.
 - **Never shut down agent teams unless explicitly told.** No exceptions, no "optimizing" by cleaning up early.
 - **Keep code edits in the main agent.** Sub-agents for research/analysis only. All file edits, promotions, and git operations in the main agent.
+- **Don't repeat yourself while waiting.** When waiting for user input, say so once. Teammate idle notifications do not require a user-facing response.
 
 ---
 
@@ -101,7 +103,7 @@ $ARGUMENTS
 
 ## Step 2: Ask About Outcomes
 
-**If the User-Provided Context section above is non-empty**, the user already provided context with the command. Skip the "Do you have outcomes?" question below. Present their input verbatim as their stated outcomes, then go directly to the confirmation prompt below.
+**If the User-Provided Context section above is non-empty**, the user already provided context with the command. Skip the "Do you have outcomes?" question below. Present their input as their stated outcomes, using their exact words — do NOT paraphrase, summarize, or reword. Then go directly to the confirmation prompt below.
 
 **If the User-Provided Context section above is empty**, use the **AskUserQuestion** tool:
 
@@ -113,7 +115,7 @@ $ARGUMENTS
   - label: "Help me define outcomes"
     description: "Use /swarm:refine-outcomes to reframe my ideas into outcome statements"
 
-**If "I'll provide my outcomes"**: Ask the user (as a regular text message) to describe their outcomes — what success looks like, not implementation steps. Wait for their response.
+**If "I'll provide my outcomes"**: Ask the user (as a regular text message) to describe their outcomes — what success looks like, not implementation steps. Wait for their response. Then present their outcomes back using their exact words — do NOT paraphrase, summarize, or reword, even if conversational in tone.
 
 **If "Help me define outcomes"**: You MUST use the **Skill** tool to invoke `swarm:refine-outcomes`, passing the user's context as the `args` parameter. Do NOT perform this step yourself.
 
@@ -129,7 +131,7 @@ Once outcomes are stated, use **AskUserQuestion** to confirm:
   - label: "Help me refine these into outcomes"
     description: "Reframe what I described into outcome statements"
 
-**If "Help me refine these into outcomes"**: You MUST use the **Skill** tool to invoke `swarm:refine-outcomes`, passing the user's stated outcomes as the `args` parameter. Do NOT perform this step yourself. After refinement, return to this confirmation prompt.
+**If "Help me refine these into outcomes"**: You MUST use the **Skill** tool to invoke `swarm:refine-outcomes`, passing the user's stated outcomes as the `args` parameter. Do NOT perform this step yourself. After refinement, preserve the user's original words alongside the refined outcomes — the team needs both to fill in gaps. Return to this confirmation prompt.
 
 **STOP HERE. Wait for confirmation before proceeding to Step 3.**
 
@@ -147,9 +149,19 @@ Use the **AskUserQuestion** tool:
   - label: "I'll specify the team"
     description: "I know which roles or focus areas I want"
 
-**If "I'll specify the team"**: Ask the user (as a regular text message) to describe the additional members they want — by role (e.g., "security reviewer, test engineer") or by focus area (e.g., "two agents focused on API design"). Advisory: 3-5 total members is the sweet spot, up to 8 is viable. Wait for their response.
+**If "I'll specify the team"**: Ask the user (as a regular text message) to describe the additional members they want — by role (e.g., "security reviewer, test engineer") or by focus area (e.g., "two agents focused on API design"). Advisory: 3-5 total members is the sweet spot, up to 8 is viable. Wait for their response. Present the team composition based on their input, then immediately use **AskUserQuestion**:
 
-**If "Suggest a team for me"**: You MUST use the **Skill** tool to invoke `swarm:suggest-members`, passing the confirmed outcomes from Step 2 as the `args` parameter. Do NOT perform this step yourself. Present the suggestions, then use **AskUserQuestion**:
+- question: "Does this team look right?"
+- header: "Team"
+- options:
+  - label: "Yes, looks good"
+    description: "Proceed with this team composition"
+  - label: "I want to adjust"
+    description: "Let me add, remove, or change members"
+
+If adjusting, ask what they'd like to change (free text), apply changes, then confirm again with AskUserQuestion.
+
+**If "Suggest a team for me"**: You MUST use the **Skill** tool to invoke `swarm:suggest-members`, passing the confirmed outcomes from Step 2 as the `args` parameter. Do NOT perform this step yourself. Immediately after the skill returns, use **AskUserQuestion** in the same response — do NOT wait for user input first:
 
 - question: "Does this team look right?"
 - header: "Team"
@@ -188,7 +200,10 @@ Present a summary of the team plan:
 > **Team Plan**
 >
 > **Outcomes:**
-> [list each outcome numbered]
+> [list each confirmed outcome numbered — use the exact confirmed wording, do NOT paraphrase]
+>
+> **User's original context:**
+> [if outcomes were refined via the refine-outcomes skill, include the user's original words here — otherwise omit this section]
 >
 > **Team:**
 > 1. Lead Engineer — you (main session) [research: yes/no]
@@ -248,7 +263,7 @@ For each additional member the user specified, use the **Agent** tool:
 
 Brief each member with:
 1. Their specific role and focus area
-2. The outcomes the team is working toward
+2. The outcomes the team is working toward. If outcomes were refined, also include the user's original words so the team can fill in gaps
 3. The general rules (from Step 1)
 4. The team composition (who else is on the team)
 5. Their constraint: **read-only** — research and advise only, no code changes

@@ -11,4 +11,4 @@ Include a mix of technical and non-technical voices. Every team should have at l
 
 Keep teams to 3-5 members total. Up to 8 for complex multi-domain work. All members except the lead are read-only.
 
-Present your suggestion and let the user adjust.
+Present your suggestion.
