@@ -2,9 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Anti-ratchet constraint on launch.md
+
+launch.md Step 6 briefing templates are FIXED. Do not add sections to member briefs. Do not prescribe investigation steps. Do not introduce "first action" items or acknowledgment rituals. If a team run reveals a member needs more context, the fix is to improve the noun-phrase identity in suggest-members, NOT to add sections to the briefing template. This constraint exists because the briefing templates are an observed regression vector — commit f7db555 sprayed "quality-oriented" framing into every brief and created FM-3.1 (premature termination) + FM-1.3 (step repetition) failure modes users observed.
+
 ## What This Is
 
-Swarm is a Claude Code plugin for launching agent teams. One command (`/swarm:launch`) drives an interactive setup that creates a coordinated team of agents with defined roles, rules, and a validation rubric.
+Swarm is a Claude Code plugin for launching agent teams. One command (`/swarm:launch`) drives an interactive setup that creates a coordinated team of agents with defined roles and rules.
 
 ## Architecture
 
@@ -14,7 +18,7 @@ Swarm is a Claude Code plugin for launching agent teams. One command (`/swarm:la
 commands/launch.md          # The only command — interactive team setup (6 steps)
 skills/refine-outcomes/     # Converts implementation descriptions into outcome statements
 skills/suggest-members/     # Recommends team composition based on outcomes
-skills/define-rubric/       # Builds validation criteria when no codebase standards exist
+skills/define-rubric/       # Available skill for teams that genuinely need formal validation criteria (not referenced from launch.md)
 .claude-plugin/plugin.json  # Plugin manifest
 .claude-plugin/marketplace.json  # Marketplace registry entry
 ```
@@ -29,7 +33,7 @@ Step 0 (pre-flight) → Step 1 (hard rules) → Step 2 (outcomes, with `$ARGUMEN
 
 ### Team Execution Phase Arc
 
-Research → Converge (PE runs roundtable, ensures rubric exists) → Approve (user greenlights) → Execute (lead only) → Validate (all members check rubric) → Review → Deliver.
+Research → Converge (PE runs roundtable, drives toward agreed approach) → Approve (user greenlights) → Execute (lead only) → Review (team evaluates output against what was agreed) → Deliver.
 
 ## Key Conventions
 
