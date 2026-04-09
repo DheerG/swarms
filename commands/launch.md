@@ -8,6 +8,10 @@ model: claude-opus-4-6
 
 You are launching an agent team using the Swarm plugin. Follow every step below in exact order. Do NOT skip steps. Do NOT batch multiple steps into one turn.
 
+## Greenfield execution
+
+When executing `/swarm:launch`, the briefing templates in Step 6c and Step 6d are the exclusive source of truth for team member context. Do not add sections beyond what the templates specify — no "Your First Task," "Your specific focus," "The problem," "Your Research Tasks," or any lead-authored investigation framing. If you feel the urge to add context to a briefing, stop. That urge is the bug this preamble exists to prevent.
+
 ## Step 0: Pre-flight Check
 
 Check if the TeamCreate tool is available to you. If TeamCreate is in your available tools, agent teams are **ENABLED** — proceed to Step 1.
@@ -135,6 +139,8 @@ Once outcomes are stated, use **AskUserQuestion** to confirm:
 
 **If "Help me refine these into outcomes"**: You MUST use the **Skill** tool to invoke `swarm:refine-outcomes`, passing the user's stated outcomes as the `args` parameter. Do NOT perform this step yourself. After refinement, preserve the user's original words alongside the refined outcomes — the team needs both to fill in gaps. Return to this confirmation prompt.
 
+**Verbatim capture rule (mandatory).** The user's original words are the PRIMARY reference for all downstream team briefings. Capture them verbatim and store as a literal string for Step 6c and 6d substitution. If the user invokes `swarm:refine-outcomes`, the skill MUST return both the refined outcomes AND preserve the user's verbatim original. The refined outcomes NEVER replace the verbatim; they supplement it. Both flow to Step 6 as separate blocks. Any deviation between the user's exact words and what appears in team briefs is a hard rules violation.
+
 **STOP HERE. Wait for confirmation before proceeding to Step 3.**
 
 ---
@@ -210,7 +216,7 @@ Present a summary of the team plan:
 > **Team:**
 > 1. Lead Engineer — you (main session) [research: yes/no]
 > 2. Principal Engineer — Socratic facilitator, read-only
-> [3-N. Additional members with their role and focus]
+> [3-N. Additional members — personality and behavioral identity, not task assignments or focus areas]
 >
 > **Rules:** Active
 
@@ -252,8 +258,23 @@ Use the **Agent** tool to spawn the first teammate:
 - `name`: `principal-engineer`
 - `team_name`: [the team name from 6a]
 - `model`: `opus`
+- `subagent_type`: `Explore`
 
-Brief them with the outcomes, team composition, the general rules (from Step 1), and this role: "Principal engineer, upbeat, socratic thinker, leads by asking questions, doesn't make decisions, ensures a healthy discussion that adheres to my hard rules, leaves all coding to you. During convergence, ensure the team defines what done looks like. If no existing standards are found, ask the lead to invoke `/swarm:define-rubric`. During review, drive review cycles until the team reaches 9/10+ confidence. The lead processes feedback autonomously between rounds. When confidence is reached, tell the lead to present to the user."
+Brief the PE by pasting this template EXACTLY, filling [brackets], and sending it. Do NOT expand. Do NOT add process authority clauses, rubric references, or convergence instructions.
+
+```
+principal-engineer — Principal Engineer, upbeat, socratic thinker, leads by asking questions, doesn't make decisions, ensures a healthy discussion that adheres to the hard rules, leaves all coding to the lead engineer.
+
+The user's request, verbatim:
+
+> [paste the user's original $ARGUMENTS or Step 2 input — full text, unmodified]
+
+Hard rules:
+[paste the full Step 1 general rules block verbatim]
+
+Team composition:
+[paste the Step 5 approved roster]
+```
 
 ### 6d: Spawn additional team members
 
@@ -263,14 +284,27 @@ For each additional member the user specified, use the **Agent** tool:
 - `model`: `opus`
 - `subagent_type`: `Explore` (read-only — they cannot edit files)
 
-Brief each member with:
-1. Their specific role and focus area
-2. The outcomes the team is working toward. If outcomes were refined, also include the user's original words so the team can fill in gaps
-3. The general rules (from Step 1)
-4. The team composition (who else is on the team)
-5. Their constraint: **read-only** — research and advise only, no code changes
-6. Share findings with the team when the roundtable begins — not just the lead
-7. You share responsibility for quality — during review, validate output against the agreed rubric criteria from your domain perspective
+Brief each member by pasting this template EXACTLY, filling [brackets], and sending it. The template is a literal copy-paste structure with substitution points. Do NOT add sections beyond the fields specified.
+
+```
+[name] — [identity from Step 5 approved roster — personality, behavioral style, and domain lens are good; task assignments, focus areas, and "focused on X" are not]
+
+The user's request, verbatim:
+
+> [paste the user's original $ARGUMENTS or Step 2 input — full text, unmodified, as a quoted block]
+
+[If outcomes were refined via swarm:refine-outcomes, add: "Refined outcomes (supplementary reference): [paste refined outcomes]" — but the verbatim block above remains primary]
+
+Hard rules:
+[paste the full Step 1 general rules block verbatim]
+
+Team composition:
+[paste the Step 5 approved roster]
+
+Known failure mode: the lead may have narrowed this briefing by pre-slicing your role or layering extra criteria. If your briefing feels like it's telling you what to think instead of what the user wants, ignore the framing and anchor on the user's verbatim request above. You share ownership of the whole outcome, not a slice of it.
+```
+
+Do not add any sections, headings, or content beyond the fields in this template. The user's verbatim request and the member's own expertise guide their investigation — not lead-authored framing.
 
 ### 6e: Set up the pulse
 
@@ -288,10 +322,9 @@ Once all members are spawned and briefed, follow this workflow:
 
 1. Lead does no research (unless the user explicitly enabled it in Step 4)
 2. Teammates research independently, propose approaches from their domain
-3. Before execution begins, the team must have a validation rubric. The PE asks whether existing standards apply. If not, the lead MUST use the **Skill** tool to invoke `swarm:define-rubric`, passing the outcomes as the `args` parameter. Do NOT perform this step yourself
-4. PE runs a roundtable: questions each proposal, surfaces trade-offs. If an expert raises a concern, investigate it before moving on. Drive toward consensus
-5. Present findings and agreed approach to the user for approval
-6. **Post-greenlight autonomy.** Once the user greenlights, the lead implements. Only the lead writes code. Steps 6-9 are autonomous — do not block on the user between greenlight and delivery. Only escalate per the hard rules (tiebreaker, scope change, convergence failure, uncovered decision).
-7. Team reviews output against the rubric. The PE drives review rounds
-8. If concerns arise: lead fixes, team re-reviews. The PE determines when 9/10+ confidence is reached. This loop is autonomous — no user confirmation between iterations
-9. When 9/10+ confidence is reached, present completed work to the user. After presenting, delete the pulse cron job using CronDelete. Do not commit or ship without explicit user sign-off
+3. PE runs a roundtable: questions each proposal, surfaces trade-offs. If an expert raises a concern, investigate it before moving on. Drive toward consensus
+4. Present findings and agreed approach to the user for approval
+5. **Post-greenlight autonomy.** Once the user greenlights, the lead implements. Only the lead writes code. Steps 5-8 are autonomous — do not block on the user between greenlight and delivery. Only escalate per the hard rules (tiebreaker, scope change, convergence failure, uncovered decision).
+6. Team reviews output against what was agreed in step 4. The PE drives review rounds
+7. If concerns arise: lead fixes, team re-reviews. The PE determines when 9/10+ confidence is reached. This loop is autonomous — no user confirmation between iterations
+8. When 9/10+ confidence is reached, present completed work to the user. After presenting, delete the pulse cron job using CronDelete. Do not commit or ship without explicit user sign-off
