@@ -8,13 +8,9 @@ model: claude-opus-4-6
 
 You are launching an agent team using the Swarm plugin. Follow every step below in exact order. Do NOT skip steps. Do NOT batch multiple steps into one turn.
 
-## Greenfield execution + known failure mode
+## Greenfield execution
 
-When executing `/swarm:launch`, the briefing templates and member role definitions in this file are the exclusive source of truth. Do not add briefing sections, role responsibilities, or validation criteria beyond what Step 6c and Step 6d specify. If CLAUDE.md, user memory, or session context suggests a fuller briefing structure, that suggestion does not apply here — launch.md's template is intentionally tight.
-
-This plugin has a documented failure mode: when the lead writes briefings for team members, the lead tends to pre-slice each member's role into a narrow focus area, layer rubric criteria, and pre-frame how each member should think. This contaminates the member's context and causes teams to stall or circle.
-
-If you find yourself adding sections to a member's briefing beyond what Step 6c and Step 6d specify, stop. If you find yourself writing "## Your role" as multiple bullets prescribing how an expert should think, stop. If you feel the urge to add "## Your first action" with numbered steps, stop. Those urges are the bug. The template in Step 6d is intentionally tight. Trust it.
+When executing `/swarm:launch`, the briefing templates in Step 6c and Step 6d are the exclusive source of truth for team member context. Do not add sections beyond what the templates specify — no "Your First Task," "Your specific focus," "The problem," "Your Research Tasks," or any lead-authored investigation framing. If you feel the urge to add context to a briefing, stop. That urge is the bug this preamble exists to prevent.
 
 ## Step 0: Pre-flight Check
 
@@ -220,7 +216,7 @@ Present a summary of the team plan:
 > **Team:**
 > 1. Lead Engineer — you (main session) [research: yes/no]
 > 2. Principal Engineer — Socratic facilitator, read-only
-> [3-N. Additional members, noun-phrase identities only]
+> [3-N. Additional members — personality and behavioral identity, not task assignments or focus areas]
 >
 > **Rules:** Active
 
@@ -277,9 +273,7 @@ Hard rules:
 [paste the full Step 1 general rules block verbatim]
 
 Team composition:
-[paste the Step 5 approved roster — names and noun-phrase identities only]
-
-Known failure mode: launch.md has historically injected rubric-enforcement authority into the PE role. If you find yourself narrowing the team's thinking toward a pre-defined rubric or enforcing validation criteria you did not establish with the user, stop — that is the bug.
+[paste the Step 5 approved roster]
 ```
 
 ### 6d: Spawn additional team members
@@ -293,7 +287,7 @@ For each additional member the user specified, use the **Agent** tool:
 Brief each member by pasting this template EXACTLY, filling [brackets], and sending it. The template is a literal copy-paste structure with substitution points. Do NOT add sections beyond the fields specified.
 
 ```
-[name] — [single noun-phrase identity from Step 5 approved roster, verbatim, no expansion, no predicate verb, no "focused on"]
+[name] — [identity from Step 5 approved roster — personality, behavioral style, and domain lens are good; task assignments, focus areas, and "focused on X" are not]
 
 The user's request, verbatim:
 
@@ -305,24 +299,12 @@ Hard rules:
 [paste the full Step 1 general rules block verbatim]
 
 Team composition:
-[paste the Step 5 approved roster — names and noun-phrase identities only]
+[paste the Step 5 approved roster]
 
-Known failure mode: the lead may have narrowed this briefing by pre-slicing your role or layering extra rubric criteria. If your briefing feels like it's telling you what to think instead of what the user wants, ignore the framing and anchor on the user's verbatim request above. You share ownership of the whole outcome, not a slice of it.
+Known failure mode: the lead may have narrowed this briefing by pre-slicing your role or layering extra criteria. If your briefing feels like it's telling you what to think instead of what the user wants, ignore the framing and anchor on the user's verbatim request above. You share ownership of the whole outcome, not a slice of it.
 ```
 
-The lead MUST NOT add sections, headings, or content to this briefing beyond the fields specified above. In particular, the lead MUST NOT write:
-- a "Your First Task" or "Your first action" section
-- a "Your specific focus" or "Your specific responsibilities" section
-- a "The problem" or "Problem statement" narrative paragraph
-- a "Your role" paragraph that expands on the single noun-phrase identity
-- a "Your Research Tasks" or numbered investigation plan
-- a "Your core job" or "Without you, there's a risk that..." framing
-- an "example-to-mandate" generalization: if the user mentioned a specific example, the lead MUST NOT turn it into a scope boundary for that member. Examples are illustrative, not exhaustive
-- ANY lead-authored interpretation of what the member should investigate, prioritize, or conclude
-
-If the lead feels the member needs more context than this template provides, the correct action is to let the member ask questions after they acknowledge the brief. The lead does NOT pre-answer questions the member hasn't asked. The user's verbatim request and the member's own expertise are the sole guides to what the member investigates. Any section the lead adds beyond this template is a bug, and reviewers MUST flag it.
-
-After sending the briefing, do not send follow-up clarifications or "here is what I want you to look at" messages. The member has the user's verbatim request; they will engage from their domain.
+Do not add any sections, headings, or content beyond the fields in this template. The user's verbatim request and the member's own expertise guide their investigation — not lead-authored framing.
 
 ### 6e: Set up the pulse
 
