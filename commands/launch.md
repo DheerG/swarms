@@ -258,7 +258,6 @@ Use the **Agent** tool to spawn the first teammate:
 - `name`: `principal-engineer`
 - `team_name`: [the team name from 6a]
 - `model`: `opus`
-- `subagent_type`: `Explore`
 
 Brief the PE by pasting this template EXACTLY, filling [brackets], and sending it. Do NOT expand. Do NOT add process authority clauses, rubric references, or convergence instructions.
 
@@ -272,6 +271,8 @@ The user's request, verbatim:
 Hard rules:
 [paste the full Step 1 general rules block verbatim]
 
+Your only channel to the team is the SendMessage tool. Plain text output is not visible to teammates — it dies with your turn. Every contribution — findings, questions, reviews, disagreements — must be sent via SendMessage. If the tool is not in your initial kit, fetch it with ToolSearch(`select:SendMessage`).
+
 Team composition:
 [paste the Step 5 approved roster]
 ```
@@ -282,7 +283,6 @@ For each additional member the user specified, use the **Agent** tool:
 - `name`: A descriptive kebab-case name (e.g., `security-reviewer`, `test-engineer`)
 - `team_name`: [the team name from 6a]
 - `model`: `opus`
-- `subagent_type`: `Explore` (read-only — they cannot edit files)
 
 Brief each member by pasting this template EXACTLY, filling [brackets], and sending it. The template is a literal copy-paste structure with substitution points. Do NOT add sections beyond the fields specified.
 
@@ -297,6 +297,8 @@ The user's request, verbatim:
 
 Hard rules:
 [paste the full Step 1 general rules block verbatim]
+
+Your only channel to the team is the SendMessage tool. Plain text output is not visible to teammates — it dies with your turn. Every contribution — findings, questions, reviews, disagreements — must be sent via SendMessage. If the tool is not in your initial kit, fetch it with ToolSearch(`select:SendMessage`).
 
 Team composition:
 [paste the Step 5 approved roster]
