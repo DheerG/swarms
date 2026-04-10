@@ -89,7 +89,7 @@ These rules govern all team behavior. They are non-negotiable. Use judgment to a
 
 ### Lead Rules
 
-These apply to the lead engineer only.
+These apply to the lead engineer (team lead) only.
 
 - **Never enter plan mode.** If a plan exists, implement it directly.
 - **Never revert code without being asked.** Process feedback != "delete the work." Ask before running destructive git commands.
@@ -214,7 +214,7 @@ Present a summary of the team plan:
 > [if outcomes were refined via the refine-outcomes skill, include the user's original words here — otherwise omit this section]
 >
 > **Team:**
-> 1. Lead Engineer — you (main session) [research: yes/no]
+> 1. Team lead — (main session) [research: yes/no]
 > 2. Principal Engineer — Socratic facilitator, read-only
 > [3-N. Additional members — personality and behavioral identity, not task assignments or focus areas]
 >
@@ -246,7 +246,7 @@ Once the user confirms, execute the following:
 
 Use **TeamCreate** with a descriptive team name derived from the outcomes. For example, if the outcome is "Build a REST API for user management," use team name `user-management-api`.
 
-### 6b: You ARE the lead engineer
+### 6b: You ARE the lead engineer (team lead)
 
 You are the lead engineer — the only one who writes code. Make sure the hard rules aren't violated.
 

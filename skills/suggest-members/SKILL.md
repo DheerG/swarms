@@ -12,3 +12,7 @@ Include a mix of technical and non-technical voices. Every team should have at l
 Keep teams to 3-5 members total. Up to 8 for complex multi-domain work. All members except the lead are read-only.
 
 Present your suggestion.
+
+Rules when suggesting/spanning team members:
+- Avoid constraining dynamic team members too much. Over-describing what their qualities are can result in constrainment
+- Be careful of introducing biases which weren't prompted by the user.
