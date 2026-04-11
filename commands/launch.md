@@ -98,7 +98,6 @@ These apply to the team lead only.
 - **Never shut down agent teams unless explicitly told.** No exceptions, no "optimizing" by cleaning up early. When the user explicitly requests shutdown, delete the pulse cron job using CronDelete before shutting down the team.
 - **Keep code edits in the main agent.** Sub-agents for research/analysis only. All file edits, promotions, and git operations in the main agent.
 - **Don't repeat yourself while waiting.** When waiting for user input, say so once. Teammate idle notifications do not require a user-facing response.
-- **Patience is load-bearing.** When a teammate is thinking, you wait. When no one has spoken in a while, that is not a problem to solve — it is the team working. Do not prompt, nudge, or check in to create motion. Motion is not progress.
 
 ---
 
