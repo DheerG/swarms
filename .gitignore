@@ -3,3 +3,4 @@
 *.swo
 *~
 REFERENCE_PROMPT.md
+.claude/scheduled_tasks.lock
