@@ -66,7 +66,7 @@ These rules govern all team behavior. They are non-negotiable. Use judgment to a
 #### Agent Teams
 
 - **Readonly members.** All members apart from the lead are read-only members.
-- **Use Opus for all substantive work.** Match the team lead's model and reasoning effort.
+- **Match your assigned model.** Match the reasoning effort of your assigned model. Don't sandbag, don't strain beyond it, don't second-guess the assignment.
 - **Lead asking team members for help.** If the lead is feeling stuck, they should ask team members for help. Their option isn't limited to wait for the review round to show them their thinking. Ask one or more relevant members for help to get unblocked.
 
 #### Agent Team Member Response Style
@@ -181,7 +181,25 @@ If adjusting, ask what they'd like to change (free text), apply changes, then co
 
 If adjusting, ask what they'd like to change (free text), apply changes, then confirm again with AskUserQuestion.
 
-**STOP HERE. Wait for the team composition to be confirmed before proceeding to Step 4.**
+**STOP HERE. Wait for the team composition to be confirmed before proceeding to Step 3.5.**
+
+---
+
+## Step 3.5: Ask About Team Shape
+
+Use the **AskUserQuestion** tool:
+
+- question: "Which team shape?"
+- header: "Shape"
+- options:
+  - label: "Best (Recommended)"
+    description: "Maximum depth on every decision. For hard problems and novel architecture."
+  - label: "Standard"
+    description: "Full team, strong quality at lower cost. Good for well-scoped work."
+
+Store the selection. Step 6 uses it for the spawn-time `model` field.
+
+**STOP HERE. Wait for the user's selection before proceeding to Step 4.**
 
 ---
 
@@ -217,6 +235,8 @@ Present a summary of the team plan:
 > 1. Team lead — (main session) [research: yes/no]
 > 2. Principal Engineer — Socratic facilitator, read-only
 > [3-N. Additional members — personality and behavioral identity, not task assignments or focus areas]
+>
+> **Team shape:** [Best / Standard — the selection from Step 3.5]
 >
 > **Rules:** Active
 
@@ -257,7 +277,7 @@ If the user enabled lead research: you may use the Agent tool with `subagent_typ
 Use the **Agent** tool to spawn the first teammate:
 - `name`: `principal-engineer`
 - `team_name`: [the team name from 6a]
-- `model`: `opus`
+- `model`: `opus` (both Best and Standard — the PE is always Opus, because it owns judgment review)
 
 Brief the PE by pasting this template EXACTLY, filling [brackets], and sending it. Do NOT expand. Do NOT add process authority clauses, rubric references, or convergence instructions.
 
@@ -279,10 +299,10 @@ Team composition:
 
 ### 6d: Spawn additional team members
 
-For each additional member the user specified, use the **Agent** tool:
+For each additional member in the Step 5 confirmed roster, use the **Agent** tool:
 - `name`: A descriptive kebab-case name (e.g., `security-reviewer`, `test-engineer`)
 - `team_name`: [the team name from 6a]
-- `model`: `opus`
+- `model`: `opus` if Best, `sonnet` if Standard
 
 Brief each member by pasting this template EXACTLY, filling [brackets], and sending it. The template is a literal copy-paste structure with substitution points. Do NOT add sections beyond the fields specified.
 
