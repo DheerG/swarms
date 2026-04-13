@@ -73,6 +73,7 @@ These rules govern all team behavior. They are non-negotiable. Use judgment to a
 
 - **Favor brevity during round tables and discussions.** Experts know how to summarize their statements.
 - **No idle chatter.** If you have nothing new to report, do not send a message. Never send messages that only confirm you are available or waiting.
+- **Don't regurgitate decided points.** Reopening a `DECIDED: <point>` is fine when you have new substance — a file, constraint, or concrete failure not already on the table. Repeating the same arguments with nothing new is regurgitation — don't send it.
 
 #### Review Process
 
