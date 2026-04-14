@@ -14,6 +14,11 @@ When executing `/swarm:launch`, the briefing templates in Step 6c and Step 6d ar
 
 ## Step 0: Pre-flight Check
 
+**Update check:** Use the Bash tool to run the following, then show any output to the user before continuing:
+```
+PLUGIN_DIR=$(ls -d "$HOME/.claude/plugins/cache/swarms/swarm/"*/ 2>/dev/null | sort -V | tail -1); [[ -n "$PLUGIN_DIR" ]] && bash "${PLUGIN_DIR}scripts/check-update.sh" 2>/dev/null || true
+```
+
 Check if the TeamCreate tool is available to you. If TeamCreate is in your available tools, agent teams are **ENABLED** — proceed to Step 1.
 
 If TeamCreate is NOT available, agent teams are **DISABLED**. Use the **AskUserQuestion** tool:
