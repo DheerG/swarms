@@ -348,7 +348,10 @@ Once all members are spawned and briefed, follow this workflow:
 1. Lead does no research (unless the user explicitly enabled it in Step 4)
 2. Teammates research independently, propose approaches from their domain
 3. PE runs a roundtable: questions each proposal, surfaces trade-offs. If an expert raises a concern, investigate it before moving on. Drive toward consensus
-4. Present findings and agreed approach to the user for approval
+
+**Before step 4 — Questions for the user.** If the team has questions the roundtable cannot resolve internally, relay each using AskUserQuestion — most consequential first, one at a time. Use options when the answer is one of a small known set; include a "No preference" option when the user may not have a stake. Never present questions as prose.
+
+4. Present findings and agreed approach to the user for approval. Use AskUserQuestion to request greenlight — question: "Does this approach look right?", header: "Approve", options: "Yes, proceed" / "I have changes."
 5. **Post-greenlight autonomy.** Once the user greenlights, the lead implements. Only the lead writes code. Steps 5-8 are autonomous — do not block on the user between greenlight and delivery. Only escalate per the hard rules (tiebreaker, scope change, convergence failure, uncovered decision).
 6. Team reviews output against what was agreed in step 4. The PE drives review rounds
 7. If concerns arise: lead fixes, team re-reviews. The PE determines when 9/10+ confidence is reached. This loop is autonomous — no user confirmation between iterations
