@@ -9,6 +9,8 @@ model: claude-opus-4-6
 
 Read `${CLAUDE_PLUGIN_ROOT}/commands/launch.md` for Step 0 (pre-flight), Step 1 (hard rules), and Step 8 (launch). This command replaces Steps 2–7.
 
+**No lead research unless enabled.** Unless the user explicitly enables lead research, do not read codebase files, spawn subagents, or perform research. Delegate all research to teammates.
+
 ## Settings
 
 - **Mode:** Code
