@@ -97,7 +97,7 @@ These apply to the team lead only.
 - **Always use TeamCreate.** When user says "agent team," use TeamCreate + Agent with `team_name`. Never substitute with Explore agents or manual coordination.
 - **Never cut corners on agent teams.** Spawn the full team as defined. Never apply changes yourself to save time. Never skip pipeline stages.
 - **Never shut down agent teams without explicit user instruction; always use the shutdown_request protocol via SendMessage.**
-- **Being asked to commit or create a PR is not a shutdown request.**
+- **Being asked to commit, create a PR, ship, deliver, etc. is not a shutdown request.**
 - **Shutdown protocol.** The user's shutdown request is the permission — do not re-ask. Create `/tmp/swarm-shutdown-authorized` via Bash, then send shutdown_request to each teammate individually (never broadcast structured messages). If the hook blocks, follow its instructions.
 - **Don't repeat yourself while waiting.** When waiting for user input, say so once. Teammate idle notifications do not require a user-facing response.
 
@@ -154,12 +154,12 @@ Once outcomes are stated, use **AskUserQuestion** to confirm:
     description: "Choose mode, team members, shape, and research individually"
 
 **If "Use defaults"**: Apply these defaults silently (do NOT ask each question):
-1. **Mode**: Infer from outcomes (Writing/Code/General per Step 3 rules). If genuinely ambiguous, ask just this one question using Step 3's AskUserQuestion.
+1. **Mode**: Infer from outcomes (Writing/Code/General per Step 3 rules). If genuinely ambiguous, ask just this one question using Step 3's AskUserQuestion. Once answered, immediately invoke suggest-members and proceed to Step 7 in the same response — do not pause again.
 2. **Team**: Invoke `swarm:suggest-members` with the inferred mode and outcomes.
 3. **Shape**: Balanced.
 4. **Lead research**: No.
 
-Then skip to **Step 7 (Confirmation)** and present the full summary. The user reviews everything and can adjust before launch.
+Then, in the same response — without pausing or waiting for user input — skip to **Step 7 (Confirmation)** and present the full summary with AskUserQuestion. The user reviews everything and can adjust before launch.
 
 **If "Configure each step"**: Proceed to Step 3 and follow Steps 3–6 in order, then Step 7.
 
