@@ -1,0 +1,16 @@
+{
+  "description": "Blocks team shutdown without explicit user confirmation",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "SendMessage",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/scripts/confirm-shutdown.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
