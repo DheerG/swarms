@@ -5,14 +5,18 @@ description: |
   Use when the user wants help choosing who should be on the team.
 ---
 
-Suggest additional team members based on the user's outcomes. The lead and principal engineer are always included.
+Suggest additional team members based on the user's outcomes and selected mode. The lead and facilitator are always included.
 
-Include a mix of technical and non-technical voices. Every team should have at least one member who represents the customer or business perspective — someone like a Director of Customer Success, RevOps lead, or BizOps expert. These are the people who connect systems and people and understand the broader qualitative implications.
+**Mode guidance:**
+- **Code mode** — suggest a mix of technical and domain-specific voices. Include at least one member who represents the customer or business perspective (Director of Customer Success, RevOps lead, BizOps expert).
+- **Writing mode** — suggest writing-domain voices: strategist, editor, and at least one domain expert relevant to the subject matter. Researcher as needed. Avoid engineering roles unless the subject requires them.
+- **General mode** — suggest domain-relevant voices that match what the outcomes actually require. Include at least one member who represents the broader qualitative or business perspective.
+- **No mode provided** — default to Code mode guidance.
 
 Keep teams to 3-5 members total. Up to 8 for complex multi-domain work. All members except the lead are read-only.
 
 Present your suggestion.
 
-Rules when suggesting/spanning team members:
+Rules when suggesting team members:
 - Avoid constraining dynamic team members too much. Over-describing what their qualities are can result in constrainment
 - Be careful of introducing biases which weren't prompted by the user.
