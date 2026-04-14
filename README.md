@@ -98,7 +98,7 @@ The launch command checks this automatically and guides you through enablement.
 
 ## Customizing Rules
 
-Hard rules are in `commands/launch.md` under "Hard Rules." Mode-specific rules are in each mode's skill file under `skills/mode-*/SKILL.md`. Edit directly. Re-apply edits after upgrading.
+Hard rules are in `commands/launch.md` under "Hard Rules." Mode-specific rules are in each mode's skill file under `skills/*-mode/SKILL.md`. Edit directly. Re-apply edits after upgrading.
 
 ## Ubiquitous Language
 

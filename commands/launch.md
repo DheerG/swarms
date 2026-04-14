@@ -328,7 +328,7 @@ Use **TeamCreate** with a descriptive team name derived from the outcomes. For e
 
 ### 8b: You ARE the team lead
 
-You MUST use the **Skill** tool to invoke `swarm:mode-[selected_mode]` — use the lowercase mode name (e.g., `swarm:mode-code`, `swarm:mode-writing`, `swarm:mode-general`). The skill returns your operational spec for the rest of this team run. It defines:
+You MUST use the **Skill** tool to invoke `swarm:[selected_mode]-mode` — use the lowercase mode name (e.g., `swarm:code-mode`, `swarm:writing-mode`, `swarm:general-mode`). The skill returns your operational spec for the rest of this team run. It defines:
 - Your **lead identity** (paste into the Step 8c PE brief's identity line and apply to your own role)
 - The **PE identity line** (use in the Step 8c brief in place of the default code-mode identity)
 - **Mode-specific rules** (these extend the Step 1 hard rules — treat them as equally binding)

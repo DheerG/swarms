@@ -1,5 +1,6 @@
 ---
-name: mode-code
+name: code-mode
+user-invocable: false
 description: |
   Code mode operational spec for the team lead. Returns lead identity, PE identity, mode-specific rules, suggest-members guidance, and phase arc for code-mode teams.
 keywords: code mode, software engineering, team lead spec, phase arc

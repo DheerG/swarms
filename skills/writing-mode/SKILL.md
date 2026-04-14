@@ -1,8 +1,9 @@
 ---
-name: mode-writing
+name: writing-mode
+user-invocable: false
 description: |
   Writing mode operational spec for the team lead. Returns lead identity, PE identity, ownership boundaries, editorial baseline, suggest-members guidance, and phase arc for writing-mode teams.
-keywords: writing mode, editorial, content, prose, stage manager, phase arc
+keywords: writing mode, editorial, content, prose, phase arc
 ---
 
 Return the following mode definition verbatim to the team lead. Do not summarize or interpret — the lead needs the full specification.

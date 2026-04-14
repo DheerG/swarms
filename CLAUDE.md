@@ -21,9 +21,9 @@ commands/launch.md          # Catch-all command — interactive team setup (Step
 commands/code.md            # Mode shortcut — pre-selects Code, delegates to launch.md
 commands/write.md           # Mode shortcut — pre-selects Writing, delegates to launch.md
 commands/general.md         # Mode shortcut — pre-selects General, delegates to launch.md
-skills/mode-code/           # Code mode: lead identity, PE title, rules, phase arc
-skills/mode-writing/        # Writing mode: lead identity, PE title, ownership boundaries, editorial baseline, phase arc
-skills/mode-general/        # General mode: lead identity, PE title, lightweight default
+skills/code-mode/           # Code mode: lead identity, PE title, rules, phase arc
+skills/writing-mode/        # Writing mode: lead identity, PE title, ownership boundaries, editorial baseline, phase arc
+skills/general-mode/        # General mode: lead identity, PE title, lightweight default
 skills/refine-outcomes/     # Converts implementation descriptions into outcome statements
 skills/suggest-members/     # Recommends team composition based on outcomes and mode
 skills/writing-style/       # Structural pattern analysis (trope detection) for writing-mode review
@@ -33,7 +33,7 @@ skills/define-rubric/       # Available skill for teams that genuinely need form
 .claude-plugin/marketplace.json  # Marketplace registry entry
 ```
 
-**Commands** are entry points that can spawn teams (TeamCreate + Agent). Shortcut commands (`/swarm:code`, `/swarm:write`, `/swarm:general`) use `${CLAUDE_PLUGIN_ROOT}` to read launch.md and execute it with mode pre-set. **Skills** are helpers invoked via the Skill tool — they cannot launch teams. **Mode skills** (`swarm:mode-code`, `swarm:mode-writing`, `swarm:mode-general`) are invoked by the team lead at Step 8b; they return the phase arc and mode-specific rules for that run.
+**Commands** are entry points that can spawn teams (TeamCreate + Agent). Shortcut commands (`/swarm:code`, `/swarm:write`, `/swarm:general`) use `${CLAUDE_PLUGIN_ROOT}` to read launch.md and execute it with mode pre-set. **Skills** are helpers invoked via the Skill tool — they cannot launch teams. **Mode skills** (`swarm:code-mode`, `swarm:writing-mode`, `swarm:general-mode`) are invoked by the team lead at Step 8b; they return the phase arc and mode-specific rules for that run.
 
 ### How launch.md Works
 
@@ -49,7 +49,7 @@ The phase arc skeleton is universal: Research → Converge → Approve → Execu
 
 ### Mode Skills
 
-Mode skills are invoked by the team lead at runtime (Step 8b) using the Skill tool (`swarm:mode-code`, `swarm:mode-writing`, `swarm:mode-general`). Each returns: lead identity, PE identity line, mode-specific rules, suggest-members guidance, and a phase arc. The Skill tool handles path resolution — mode skills follow the same invocation pattern as all other skills.
+Mode skills are invoked by the team lead at runtime (Step 8b) using the Skill tool (`swarm:code-mode`, `swarm:writing-mode`, `swarm:general-mode`). Each returns: lead identity, PE identity line, mode-specific rules, suggest-members guidance, and a phase arc. The Skill tool handles path resolution — mode skills follow the same invocation pattern as all other skills.
 
 ## Key Conventions
 

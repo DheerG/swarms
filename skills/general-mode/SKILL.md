@@ -1,5 +1,6 @@
 ---
-name: mode-general
+name: general-mode
+user-invocable: false
 description: |
   General mode operational spec for the team lead. Returns lead identity, PE identity, suggest-members guidance, and phase arc for general-purpose teams.
 keywords: general mode, team lead spec, phase arc, deliverable
