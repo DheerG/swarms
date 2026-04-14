@@ -1,6 +1,17 @@
 {
-  "description": "Blocks team shutdown without explicit user confirmation",
+  "description": "Swarm plugin hooks — update check on session start, shutdown gate on SendMessage",
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/scripts/check-update.sh"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "SendMessage",
