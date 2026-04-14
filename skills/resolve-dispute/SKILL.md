@@ -15,14 +15,14 @@ Identify and state aloud:
 - Who holds it
 - The PE's prior arbitration ruling (one sentence)
 
-**Step 2 — Send the reviewer this message exactly:**
+**Step 2 — Send the reviewer this message, substituting `[finding]` with the actual finding:**
 
 > Your finding — [finding] — was arbitrated. To keep it open, you must provide ONE of:
 > (a) A concrete failure scenario: specific inputs or conditions that produce wrong behavior
 > (b) A source citation: file, line number, and what it shows
 > (c) A direct counterexample to the arbitration reasoning
 >
-> One response. After that, the PE rules and the finding is DECIDED.
+> One response. No response counts as concession. After that, the PE rules and the finding is DECIDED.
 
 **Step 3 — Rule and tag.**
 
