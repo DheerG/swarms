@@ -1,7 +1,7 @@
 {
   "name": "swarm",
   "version": "0.1.16",
-  "description": "Launch agent teams with reusable roles, rules, and interactive setup",
+  "description": "Launch agent teams for any kind of work — code, writing, or general tasks",
   "author": {
     "name": "Dheer Gupta",
     "email": "noreply@dheer.co"
@@ -11,6 +11,8 @@
     "agent-teams",
     "swarm",
     "multi-agent",
-    "team-orchestration"
+    "team-orchestration",
+    "modes",
+    "writing"
   ]
 }

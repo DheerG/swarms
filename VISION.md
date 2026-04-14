@@ -73,9 +73,9 @@ Most work fits the general-purpose path.
 
 **v0.1.0**: one command, ad-hoc team assembly, rules embedded inline. The shared structure is implicit in the command itself.
 
-**Next**: validation becomes task-type-aware so different kinds of output get checked by the right criteria within the same team. Member suggestions get smarter about recommending across disciplines when the outcomes call for it.
+**v0.2.0**: modes. The phase arc skeleton is universal; mode files define what each phase means. Three modes ship: Code (extracted from the original implicit behavior), Writing (strategy-before-production, editor-sandwich review, writer isolation), and General (lightweight default). The `swarm:writing-style` skill provides structural pattern analysis for writing-mode review teams. Member suggestions are mode-aware. The plugin now works for any kind of work, not just engineering.
 
-**Later**: purpose-built pipelines for workflows that have been practiced enough to earn their own command. A reference template for the phase arc so new commands stay consistent. A generator skill for scaffolding new team types.
+**Next**: additional modes when patterns are observed across multiple runs. Purpose-built pipelines for workflows proven through practice. A generator skill for scaffolding new mode files.
 
 **Extraction principle**: formalize patterns only after observing them across multiple implementations. Build the second type, study both, write the shared template fresh. Observe and rewrite, don't refactor in place.
 

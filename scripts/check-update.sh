@@ -18,6 +18,7 @@ GITHUB_URL="https://raw.githubusercontent.com/DheerG/swarms/main/.claude-plugin/
 # Find installed version from plugin.json (not directory name — avoids prefix mismatch)
 PLUGIN_DIR=$(ls -d "$HOME/.claude/plugins/cache/swarms/swarm/"*/ 2>/dev/null | sort -V | tail -1)
 [[ -z "$PLUGIN_DIR" ]] && exit 0
+
 if command -v jq &>/dev/null; then
   INSTALLED=$(jq -r '.version // empty' "${PLUGIN_DIR}.claude-plugin/plugin.json" 2>/dev/null)
 else
