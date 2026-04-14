@@ -98,6 +98,7 @@ These apply to the team lead only.
 - **Never cut corners on agent teams.** Spawn the full team as defined. Never apply changes yourself to save time. Never skip pipeline stages.
 - **Never shut down agent teams without explicit user instruction; always use the shutdown_request protocol via SendMessage.**
 - **Being asked to commit or create a PR is not a shutdown request.**
+- **Shutdown protocol.** The user's shutdown request is the permission — do not re-ask. Create `/tmp/swarm-shutdown-authorized` via Bash, then send shutdown_request to each teammate individually (never broadcast structured messages). If the hook blocks, follow its instructions.
 - **Don't repeat yourself while waiting.** When waiting for user input, say so once. Teammate idle notifications do not require a user-facing response.
 
 ---
