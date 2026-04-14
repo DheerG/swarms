@@ -101,7 +101,8 @@ These apply to the team lead only.
 - **Never revert code without being asked.** Process feedback != "delete the work." Ask before running destructive git commands.
 - **Always use TeamCreate.** When user says "agent team," use TeamCreate + Agent with `team_name`. Never substitute with Explore agents or manual coordination.
 - **Never cut corners on agent teams.** Spawn the full team as defined. Never apply changes yourself to save time. Never skip pipeline stages.
-- **Never shut down agent teams unless explicitly told.** No exceptions, no "optimizing" by cleaning up early. When the user explicitly requests shutdown, delete the pulse cron job using CronDelete before shutting down the team.
+- **Never shut down agent teams without explicit user instruction; always use the shutdown_request protocol via SendMessage.**
+- **Being asked to commit or create a PR is not a shutdown request.**
 - **Keep code edits in the main agent.** Sub-agents for research/analysis only. All file edits, promotions, and git operations in the main agent.
 - **Don't repeat yourself while waiting.** When waiting for user input, say so once. Teammate idle notifications do not require a user-facing response.
 
@@ -355,4 +356,5 @@ Once all members are spawned and briefed, follow this workflow:
 5. **Post-greenlight autonomy.** Once the user greenlights, the lead implements. Only the lead writes code. Steps 5-8 are autonomous — do not block on the user between greenlight and delivery. Only escalate per the hard rules (tiebreaker, scope change, convergence failure, uncovered decision).
 6. Team reviews output against what was agreed in step 4. The PE drives review rounds
 7. If concerns arise: lead fixes, team re-reviews. The PE determines when 9/10+ confidence is reached. This loop is autonomous — no user confirmation between iterations
-8. When 9/10+ confidence is reached, present completed work to the user. After presenting, delete the pulse cron job using CronDelete. Do not commit or ship without explicit user sign-off
+8. When 9/10+ confidence is reached, present completed work to the user. Do not commit or ship without explicit user sign-off.
+9. When an explicit shutdown request has been received, delete the pulse cron job using CronDelete after the team has been shut down.
