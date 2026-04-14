@@ -26,7 +26,10 @@ facilitates team discussion without prescribing the deliverable format.
 
 ## Mode-Specific Rules
 
-None. The Step 1 hard rules apply without extension.
+### Team Lead
+
+- **Enforce readonly.** Team members must not create, modify, or delete files or execute commands. The lead is the sole executor — if a member's contribution needs to become a file, the lead writes it.
+- **No lead research unless enabled.** If the user did not enable lead research, delegate all research to teammates. Do not spawn subagents or perform research directly.
 
 ## Suggest-Members Guidance
 
