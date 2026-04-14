@@ -1,8 +1,10 @@
 #!/bin/bash
-# Swarm update notifier — called from /swarm:launch Step 0
+# Swarm update notifier — fires on SessionStart hook
 #
 # Phase 1 (background): fetches latest version from GitHub, writes to cache.
-#   Rate-limited to once per 24h. Silent on any network failure.
+#   Rate-limited to once per 24h, except when cached version == installed version
+#   (treats "you're current" as potentially stale and re-fetches immediately).
+#   Silent on any network failure.
 # Phase 2 (instant): reads cached result, compares against installed version,
 #   prints one line if a newer version exists.
 #
@@ -29,7 +31,17 @@ fi
     LAST=$(grep -o '"fetched_at":[0-9]*' "$CACHE_FILE" 2>/dev/null | grep -o '[0-9]*$')
     LAST=${LAST:-0}
     DIFF=$(( $(date +%s) - LAST ))
-    [[ $DIFF -lt 86400 ]] && exit 0
+    if [[ $DIFF -lt 86400 ]]; then
+      # Within the 24h window: skip re-fetch unless the cache says "you're current".
+      # If cached_latest == installed, the cache may have been written before a newer
+      # version was published — treat it as potentially stale and fall through to re-fetch.
+      if command -v jq &>/dev/null; then
+        CACHED=$(jq -r '.version // empty' "$CACHE_FILE" 2>/dev/null)
+      else
+        CACHED=$(grep -o '"version"[[:space:]]*:[[:space:]]*"[^"]*"' "$CACHE_FILE" 2>/dev/null | grep -o '"[^"]*"$' | tr -d '"')
+      fi
+      [[ "$CACHED" != "$INSTALLED" ]] && exit 0
+    fi
   fi
   command -v curl &>/dev/null || exit 0
   RAW=$(curl -sf --max-time 2 "$GITHUB_URL" 2>/dev/null)
