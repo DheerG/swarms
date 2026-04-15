@@ -17,9 +17,9 @@ The interaction model is **generate first, edit after**. Ask the minimum needed 
 
 $ARGUMENTS
 
-**If $ARGUMENTS contains a name and description** (e.g., `write-article takes raw dictated thoughts and produces a polished blog post`): extract both and proceed directly to Step 1.
+**If $ARGUMENTS contains a name and description** (has sentence structure, verbs, or a separator like `write-article — takes raw thoughts and produces a polished blog post`): extract both and proceed directly to Step 1.
 
-**If $ARGUMENTS contains only a name** (one word): use it as the workflow name. Ask one question (plain text): "What does this workflow do? What does the user get at the end?" Wait for their response. Then proceed to Step 1.
+**If $ARGUMENTS appears to be a name only** (kebab-case identifier, no verb or sentence structure — e.g., `write-article`, `code-review`): use it as the workflow name. Ask one question (plain text): "What does this workflow do? What does the user get at the end?" Wait for their response. Then proceed to Step 1.
 
 **If $ARGUMENTS is empty**: ask one question (plain text): "What's this workflow called, and what does it do? (e.g., `write-article — takes raw dictated thoughts and produces a polished blog post`)" Wait for their response. Parse the name and purpose. Then proceed to Step 1.
 
@@ -29,7 +29,7 @@ Validate: the name should be kebab-case. If not, convert it silently.
 
 ## Step 1: Generate Spec
 
-From the **name** and **purpose statement**, infer the complete workflow spec. Do not ask the user any questions in this step — generate everything using smart defaults and present it for review.
+From the **name** and **purpose statement**, infer the complete workflow spec. Do not ask the user any questions in this step — generate everything using smart defaults and present it for review. If the purpose statement is too thin to infer a domain confidently, make your best guess and note it in the spec presentation (e.g., "I inferred this as a writing workflow — adjust if that's wrong"). Do not stop to ask.
 
 ### Inference rules
 
@@ -113,7 +113,7 @@ If "I have changes": ask what to change with a prompt that names the editable fi
 
 Create the file at `.claude/skills/[name]-mode/SKILL.md` in the user's project directory (the current working directory). Use the **Write** tool.
 
-Use this template, filling from the confirmed spec:
+Use this template, filling from the confirmed spec. Include `## Pre-flight Reads` only if domain knowledge files were specified. Include `## Information Flow` only if custom routing was defined. Omit those sections entirely (heading and body) if they don't apply.
 
 ```markdown
 ---
@@ -150,24 +150,18 @@ Return the following mode definition verbatim to the team lead. Do not summarize
 **Forbidden:**
 [- each forbidden action]
 
-[Include Pre-flight Reads section ONLY if domain knowledge files were specified:]
-
 ## Pre-flight Reads
 
 Before spawning the team, read these files and carry their content into spawn prompts:
 [- each file path with brief description]
 
-
 ## Mode-Specific Rules
 
 [Each rule as a bullet, grouped by section if multiple concerns]
 
-[Include Information Flow section ONLY if custom routing was defined:]
-
 ## Information Flow
 
 [Routing rules]
-
 
 ## Outcomes Question
 
@@ -242,6 +236,8 @@ $ARGUMENTS
 5. **Confirmation.** Present team plan summary. AskUserQuestion: "Is this plan final, or do you have remaining inputs?" Options: "Launch the team" / "I have changes."
 6. **Launch.** Follow the launch mechanics from `swarm:workflow-rules`. Invoke `[name]-mode` via the Skill tool (unqualified name) — this is your mode skill. Apply its spec, read any Pre-flight Reads files, then spawn the team.
 ```
+
+Apply the same cleanup rules from Step 2a: omit bracket comments, conditional markers, and sections that don't apply (e.g., Pre-flight if no intake actions). No orphaned blank lines.
 
 ### 2c: Report
 
