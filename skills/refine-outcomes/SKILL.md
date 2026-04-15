@@ -1,8 +1,8 @@
 ---
 name: refine-outcomes
+user-invocable: false
 description: |
-  Helps reframe implementation steps into customer/business outcomes.
-  Use when the user describes what to build rather than what success looks like.
+  Reframes implementation descriptions into outcome statements. Invoked by launch commands during outcome refinement.
 ---
 
 The user has described what they want. Check if they've stated outcomes or implementations.

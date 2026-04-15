@@ -1,8 +1,8 @@
 ---
 name: writing-style
+user-invocable: false
 description: |
-  Structural pattern analysis for writing-mode teams. Performs two-pass paragraph-level decomposition and pattern aggregation. Returns a diagnostic report for editorial use.
-  Use when an editor needs to surface aggregate structural patterns invisible to linear reading — during review or optionally during drafting.
+  Structural pattern analysis for writing-mode review. Performs paragraph-level decomposition and pattern aggregation. Invoked by the team lead during editorial review.
 keywords: trope detection, structural analysis, pattern density, writing quality diagnostic, paragraph fingerprinting
 ---
 
