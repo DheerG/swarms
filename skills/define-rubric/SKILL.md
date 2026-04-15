@@ -1,8 +1,8 @@
 ---
 name: define-rubric
+user-invocable: false
 description: |
-  Helps the team build measurable validation criteria when no existing standards apply.
-  Use when the codebase or domain has no test suite, no linting config, and no prior patterns to enforce.
+  Builds measurable validation criteria when no existing standards apply. Invoked by team agents during review.
 ---
 
 The team can't find existing standards. Help them build a rubric.

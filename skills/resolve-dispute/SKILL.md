@@ -1,10 +1,8 @@
 ---
 name: resolve-dispute
+user-invocable: false
 description: |
-  Resolves a review finding that has survived arbitration without new evidence.
-  Invoke when the same finding re-surfaces after PE arbitration, or when the
-  review loop is circular. Forces a single put-up-or-concede exchange, then
-  marks the outcome DECIDED.
+  Resolves stuck review findings via a put-up-or-concede exchange. Invoked by the PE when a finding survives arbitration without new evidence.
 ---
 
 A review finding is stuck. Structure its resolution in three steps.

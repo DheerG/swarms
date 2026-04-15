@@ -1,8 +1,8 @@
 ---
 name: suggest-members
+user-invocable: false
 description: |
-  Suggests team members for an agent team based on stated outcomes.
-  Use when the user wants help choosing who should be on the team.
+  Recommends team composition based on outcomes and mode. Invoked by launch commands during team setup.
 ---
 
 Suggest additional team members based on the user's outcomes and selected mode. The lead and facilitator are always included.
