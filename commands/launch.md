@@ -78,12 +78,12 @@ These rules govern all team behavior. They are non-negotiable. Use judgment to a
 
 - **Wait for ALL reviews before making changes.** Never fix findings mid-review. Wait for every team member to respond, then batch fixes.
 - **Intermediate review cycles are autonomous.** The PE drives review rounds and determines when the team has reached sufficient confidence. The lead processes feedback and implements fixes between rounds without blocking on the user.
-- **Recursive refinement is optional.** After 9/10+ confidence, see the Refine phase in the mode file.
+- **Ask about refinement before delivering.** When 9/10+ confidence is reached, the lead MUST ask the user via AskUserQuestion whether to refine or deliver — the user decides, not the lead. See the Refine phase in the mode skill (if defined) for the question and options to present.
 - **Final delivery requires user approval.** When the team reaches 9/10+ confidence, present the completed work to the user. Do not commit or ship without explicit user sign-off.
 - **Reviews must reach 9/10+ confidence before shipping.** Keep plan docs updated every cycle. Run gap analysis every cycle.
 - **Break review loops with evidence.** If a finding survives arbitration without new evidence, the PE invokes `swarm:resolve-dispute` to force a put-up-or-concede exchange.
 
-Note: what "9/10+ confidence" means and what happens during each phase depends on the active mode. The mode file defines this.
+Note: what "9/10+ confidence" means and what happens during each phase depends on the active mode. The mode skill defines this.
 
 #### Transparency & Honesty
 
@@ -295,7 +295,7 @@ Present a summary of the team plan:
 >
 > **Team:**
 > 1. Team lead — (main session) [research: yes/no]
-> 2. [PE title from mode file] — Socratic facilitator, read-only
+> 2. [PE title from mode skill] — Socratic facilitator, read-only
 > [3-N. Additional members — personality and behavioral identity, not task assignments or focus areas]
 >
 > **Team shape:** [Balanced / Ultra — the selection from Step 5]
@@ -330,7 +330,7 @@ Use **TeamCreate** with a descriptive team name derived from the outcomes. For e
 
 ### 8b: You ARE the team lead
 
-You MUST use the **Skill** tool to invoke `swarm:[selected_mode]-mode` — use the lowercase mode name (e.g., `swarm:code-mode`, `swarm:writing-mode`, `swarm:general-mode`). The skill returns your operational spec for the rest of this team run. It defines:
+You MUST use the **Skill** tool to invoke the mode skill. For built-in modes, use the `swarm:` prefix: `swarm:code-mode`, `swarm:writing-mode`, `swarm:general-mode`. For custom modes (user-defined in the project's `.claude/skills/`), use the unqualified name (e.g., `blog-mode`). The skill returns your operational spec for the rest of this team run. It defines:
 - Your **lead identity** (paste into the Step 8c PE brief's identity line and apply to your own role)
 - The **PE identity line** (use in the Step 8c brief in place of the default code-mode identity)
 - **Mode-specific rules** (these extend the Step 1 hard rules — treat them as equally binding)
@@ -343,21 +343,21 @@ If the user enabled lead research: you may use the Agent tool with `subagent_typ
 ### 8c: Spawn the [PE title]
 
 Use the **Agent** tool to spawn the first teammate:
-- `name`: [kebab-case of PE title from mode file, e.g. `principal-engineer`, `editorial-director`, `chief-of-staff`]
+- `name`: [kebab-case of PE title from mode skill, e.g. `principal-engineer`, `editorial-director`, `chief-of-staff`]
 - `team_name`: [the team name from 8a]
 - `model`: `opus` (both Ultra and Balanced — this role is always Opus, because it owns judgment review)
 
 Brief by pasting this template EXACTLY, filling [brackets], and sending it. Do NOT expand. Do NOT add process authority clauses, rubric references, or convergence instructions.
 
 ```
-[PE title from mode file] — upbeat, socratic thinker, leads by asking questions, doesn't make decisions, ensures a healthy discussion that adheres to the hard rules, [paste the PE identity line from the mode file].
+[PE title from mode skill] — upbeat, socratic thinker, leads by asking questions, doesn't make decisions, ensures a healthy discussion that adheres to the hard rules, [paste the PE identity line from the mode skill].
 
 The user's request, verbatim:
 
 > [paste the user's original $ARGUMENTS or Step 2 input — full text, unmodified]
 
 Hard rules:
-[paste the full Step 1 general rules block verbatim]
+[paste the Step 1 General Rules section verbatim]
 
 Your only channel to the team is the SendMessage tool. Plain text output is not visible to teammates — it dies with your turn. Every contribution — findings, questions, reviews, disagreements — must be sent via SendMessage. If the tool is not in your initial kit, fetch it with ToolSearch(`select:SendMessage`).
 
@@ -384,7 +384,7 @@ The user's request, verbatim:
 [If outcomes were refined via swarm:refine-outcomes, add: "Refined outcomes (supplementary reference): [paste refined outcomes]" — but the verbatim block above remains primary]
 
 Hard rules:
-[paste the full Step 1 general rules block verbatim]
+[paste the Step 1 General Rules section verbatim]
 
 Your only channel to the team is the SendMessage tool. Plain text output is not visible to teammates — it dies with your turn. Every contribution — findings, questions, reviews, disagreements — must be sent via SendMessage. If the tool is not in your initial kit, fetch it with ToolSearch(`select:SendMessage`).
 
@@ -408,7 +408,7 @@ The pulse fires only when the REPL is idle — it will not interrupt active work
 
 ### 8f: Begin work
 
-Follow the **phase arc defined in the mode file** you read in Step 8b. The mode file specifies what each phase means — who acts, what the deliverable is, how transitions work.
+Follow the **phase arc defined in the mode skill** you read in Step 8b. The mode skill specifies what each phase means — who acts, what the deliverable is, how transitions work.
 
 **Universal rules that apply across all modes:**
 - Lead does no research unless the user explicitly enabled it in Step 6
