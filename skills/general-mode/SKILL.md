@@ -61,6 +61,12 @@ Team reviews output against what was agreed in Approve. The PE drives review rou
 
 9/10+ means: the deliverable fully addresses the agreed approach and teammates would stand behind it.
 
+### Refine (optional)
+
+When the team reaches 9/10+ confidence, the lead asks the user via AskUserQuestion: question "9/10+ confidence reached. Run recursive refinement?", header "Refine", options "Deliver now" / "Run recursive refinement (9.25 → 9.5 → 9.75)".
+
+If "Deliver now": skip to Deliver. If "Run recursive refinement": starting at 9.25, the lead asks the team "What specific changes — surgical only, no new scope — would raise your score to [threshold]?" Lead implements, team re-reviews to confirm the threshold is met, then advances to the next rung. The sequence is 9.25 → 9.5 → 9.75. This loop is autonomous once the user opts in. After 9.75 is confirmed, proceed to Deliver.
+
 ### Deliver
 
 When 9/10+ confidence is reached, present completed work to the user. Do not ship without explicit user sign-off.

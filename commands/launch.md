@@ -78,6 +78,7 @@ These rules govern all team behavior. They are non-negotiable. Use judgment to a
 
 - **Wait for ALL reviews before making changes.** Never fix findings mid-review. Wait for every team member to respond, then batch fixes.
 - **Intermediate review cycles are autonomous.** The PE drives review rounds and determines when the team has reached sufficient confidence. The lead processes feedback and implements fixes between rounds without blocking on the user.
+- **Recursive refinement is optional.** After 9/10+ confidence, see the Refine phase in the mode file.
 - **Final delivery requires user approval.** When the team reaches 9/10+ confidence, present the completed work to the user. Do not commit or ship without explicit user sign-off.
 - **Reviews must reach 9/10+ confidence before shipping.** Keep plan docs updated every cycle. Run gap analysis every cycle.
 - **Break review loops with evidence.** If a finding survives arbitration without new evidence, the PE invokes `swarm:resolve-dispute` to force a put-up-or-concede exchange.

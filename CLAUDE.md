@@ -45,7 +45,7 @@ After outcomes are confirmed, Step 2 asks "Use defaults or Configure each step?"
 
 ### Team Execution Phase Arc
 
-The phase arc skeleton is universal: Research → Converge → Approve → Execute → Review → Deliver. The mode skill (invoked at Step 8b) defines what each phase means — who acts, what the deliverable is, how review works. Code mode and Writing mode have meaningfully different phase semantics.
+The phase arc skeleton is universal: Research → Converge → Approve → Execute → Review → Refine (optional) → Deliver. The mode skill (invoked at Step 8b) defines what each phase means — who acts, what the deliverable is, how review works. Code mode and Writing mode have meaningfully different phase semantics.
 
 ### Mode Skills
 
