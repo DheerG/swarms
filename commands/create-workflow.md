@@ -1,6 +1,6 @@
 ---
 description: Scaffold a custom workflow — generates a mode skill and shortcut command
-argument-hint: <workflow name>
+argument-hint: <workflow name> [description]
 disable-model-invocation: true
 model: claude-opus-4-6
 ---
@@ -11,152 +11,91 @@ You are scaffolding a custom swarm workflow. This generates two files in the use
 1. A **mode skill** (`.claude/skills/<name>-mode/SKILL.md`) — the domain-specific operational spec
 2. A **shortcut command** (`.claude/commands/<name>.md`) — the entry point users invoke
 
-Follow every step below in order. Do NOT skip steps.
+The interaction model is **generate first, edit after**. Ask the minimum needed to infer the full spec, generate everything, then let the user adjust.
 
-## Step 0: Parse Arguments
+## Step 0: Gather
 
 $ARGUMENTS
 
-If $ARGUMENTS is non-empty, use the first word as the **workflow name**. Everything after is **domain context** — use it to inform your questions below (pre-fill where obvious, but still confirm with the user).
+**If $ARGUMENTS contains a name and description** (e.g., `write-article takes raw dictated thoughts and produces a polished blog post`): extract both and proceed directly to Step 1. Do not ask any questions.
 
-If $ARGUMENTS is empty, ask the user (plain text): "What's this workflow called? (e.g., blog-write, code-review, design-critique)" Wait for their response.
+**If $ARGUMENTS contains only a name** (one word): use it as the workflow name. Ask one question (plain text): "What does this workflow do? What does the user get at the end?" Wait for their response. Then proceed to Step 1.
 
-Validate: the name should be kebab-case, no spaces. If not, convert it.
+**If $ARGUMENTS is empty**: ask one question (plain text): "What's this workflow called, and what does it do? (e.g., `write-article — takes raw dictated thoughts and produces a polished blog post`)" Wait for their response. Parse the name and purpose. Then proceed to Step 1.
 
----
-
-## Step 1: Domain Interview
-
-Ask the following questions to understand the workflow domain. Use **AskUserQuestion** for structured choices. Use plain text for open-ended questions. Ask one question at a time — do not batch.
-
-### 1a: Purpose
-
-Ask (plain text): "Describe what this workflow does in one sentence. What does the user get at the end?"
-
-### 1b: Lead Identity
-
-Ask (plain text): "What does the team lead do in this workflow? What are they responsible for, and what should they NOT touch?"
-
-From their response, draft:
-- **Lead Identity** statement (one sentence — what the lead does)
-- **Lead Allowlist** — Permitted and Forbidden actions
-
-Present back to the user for confirmation (plain text, not AskUserQuestion).
-
-### 1c: PE Role
-
-Use **AskUserQuestion**:
-- question: "What should the PE (facilitator) role be called in this workflow?"
-- header: "PE Role"
-- options:
-  - label: "Principal Engineer"
-    description: "Technical leadership — good for engineering workflows"
-  - label: "Editorial Director"
-    description: "Editorial leadership — good for writing and content workflows"
-  - label: "Chief of Staff"
-    description: "Operational leadership — good for general workflows"
-  - label: "Custom title"
-    description: "I'll provide a domain-specific title"
-
-If "Custom title": ask (plain text) what the PE should be called and a one-line description of their identity.
-
-For all options, ask (plain text): "In one sentence, what lens does the PE bring? (e.g., 'leaves all coding to the team lead', 'facilitates strategic direction, never makes editorial decisions')"
-
-### 1d: Team Composition Guidance
-
-Ask (plain text): "What kinds of team members work best for this workflow? Describe the mix — e.g., 'technical and domain experts, plus someone representing the customer' or 'strategist, editor, and subject-matter experts'."
-
-### 1e: Phase Arc
-
-Present the standard swarm phase arc as a starting point:
-
-> **Standard skeleton:** Research → Converge → Approve → Execute → Review → Refine → Deliver
-
-Use **AskUserQuestion**:
-- question: "How should the phase arc work for this workflow?"
-- header: "Phases"
-- options:
-  - label: "Use standard phases (Recommended)"
-    description: "Research → Converge → Approve → Execute → Review → Refine → Deliver"
-  - label: "Customize phases"
-    description: "Rename, reorder, add, or remove phases"
-
-If "Use standard phases": confirm with the user (plain text): "Standard phases work. I'll pre-fill the phase arc based on your domain — you can adjust in the generated file." Do NOT ask per-phase descriptions for standard phases. The mode skill will use the standard skeleton and the lead will interpret phase semantics from the Lead Identity and Mode-Specific Rules.
-
-If "Customize phases": ask (plain text) the user to describe their phases — name, what happens in each, and who acts. Map their phases onto the skeleton where possible. Only ask for per-phase descriptions for the phases the user is customizing.
-
-### 1f: Information Flow (optional)
-
-Use **AskUserQuestion**:
-- question: "Does this workflow need custom routing rules?"
-- header: "Routing"
-- options:
-  - label: "No, use standard routing"
-    description: "PE runs roundtables, lead coordinates — works for most workflows"
-  - label: "Yes, define routing"
-    description: "Specific rules for who talks to whom (e.g., writer never sees raw feedback)"
-
-If "Yes": ask (plain text) the user to describe their routing rules — who sends to whom, what goes through whom.
-
-### 1g: Domain Knowledge Files (optional)
-
-Use **AskUserQuestion**:
-- question: "Does this workflow use domain knowledge files?"
-- header: "Knowledge"
-- options:
-  - label: "No"
-    description: "No companion skill files needed"
-  - label: "Yes"
-    description: "The lead should read local files before spawning the team (e.g., voice profiles, style guides, reference docs)"
-
-If "Yes": ask (plain text) what files and where they live (or should live). Note these for the mode skill's pre-flight reads.
-
-### 1h: Outcomes Question
-
-Ask (plain text): "When a user runs this workflow, what question should they answer to describe what they want? (e.g., 'What are you writing about?', 'What are you building?', 'What needs review?')"
+Validate: the name should be kebab-case. If not, convert it silently.
 
 ---
 
-## Step 2: Mode-Specific Rules
+## Step 1: Generate Spec
 
-Based on the interview, draft mode-specific rules. These extend the universal hard rules. Include rules from:
-- Lead allowlist constraints restated as rules
-- Domain-specific behavioral rules (e.g., "Writer isolation" for writing, "No code changes during review" for code)
-- Any routing or ownership rules from the information flow
+From the **name** and **purpose statement**, infer the complete workflow spec. Do not ask the user any questions in this step — generate everything using smart defaults and present it for review.
 
-Present the drafted rules to the user. Ask (plain text): "Here are the mode-specific rules I've drafted. Anything to add, remove, or change?"
+### Inference rules
 
----
+**Closest built-in mode.** Identify which built-in mode (Code, Writing, General) is closest to this workflow's domain. Use its mode skill as a structural template for the generated spec.
 
-## Step 3: Confirmation
+**Lead Identity.** Infer from the domain. The lead is the person who coordinates the team and produces the final output. Give them a clear title and one-sentence identity. Example: writing domain → "Editor-in-Chief — shapes the article's structure, maintains narrative coherence, and ensures the final piece is publish-ready."
 
-Present the full spec as a summary:
+**Lead Allowlist.** Infer permitted and forbidden actions from the lead identity and domain. Every workflow needs at least: what the lead CAN do (their core responsibilities) and what the lead MUST NOT do (domain-specific constraints — e.g., "do not alter the user's core message").
+
+**PE Title and Identity.** The PE is a senior facilitator who leads by asking questions and ensures healthy team discussion. The PE title MUST NOT overlap with the lead's domain — if the lead is editorial, the PE is strategic; if the lead is technical, the PE brings architectural perspective; if the lead is operational, the PE brings quality assurance. Pick a senior, recognized title (Chief Content Strategist, Principal Engineer, Chief of Staff, etc.) and write a one-line identity. Do not ask the user to choose.
+
+**Suggest-Members Guidance.** Team composition is determined at runtime by `swarm:suggest-members` based on the user's outcomes. Write lean guidance for what kinds of voices to suggest for this domain (e.g., "writing-domain voices: voice/tone specialist, domain experts relevant to the topic, and a reader-perspective reviewer"). Do not ask the user to define static team composition.
+
+**Outcomes Question.** Infer from the purpose. Writing workflow → "What do you want to write about? Dictate your thoughts — raw is fine." Code workflow → "What are you building?" Review workflow → "What needs review?" Pick the most natural prompt for this domain.
+
+**Phase Arc.** Default to the standard skeleton (Research → Converge → Approve → Execute → Review → Refine → Deliver) with phase semantics adapted for the domain. Only deviate from standard if the purpose statement clearly implies a non-standard pipeline.
+
+**Information Flow.** Default to standard (PE runs roundtables, lead coordinates). Only define custom routing if the purpose statement implies it (e.g., "writers should never see raw feedback").
+
+**Pre-flight Reads.** Default to none. Only include if the purpose mentions external knowledge files (e.g., voice profiles, style guides).
+
+**Mode-Specific Rules.** Draft ONLY rules that are genuinely domain-specific. Do NOT include rules already covered by swarm's universal hard rules. The following are already governed by swarm and must NOT be duplicated:
+- Final delivery requires user approval
+- 9/10+ confidence before shipping
+- No mid-review changes
+- Readonly members
+- Wait for all reviews before making changes
+- No idle chatter
+- Verbatim relay of user input
+- Greenfield execution (no task framing in briefs)
+- Autonomous post-greenlight execution
+- Ask about refinement before delivering
+
+Only include rules that would NOT apply to a generic swarm run — behavioral constraints specific to this workflow's domain.
+
+### Present the spec
+
+Present the complete spec in this format:
 
 > **Workflow: /[name]**
 >
 > **Purpose:** [one sentence]
 >
-> **Lead Identity:** [statement]
+> **Lead:** [title] — [identity]
 >
 > **Lead Allowlist:**
 > - Permitted: [list]
 > - Forbidden: [list]
 >
 > **PE:** [title] — [identity]
+> *(The PE is a senior facilitator who leads discussions by asking questions and ensures the team adheres to the rules. They don't make decisions — they surface trade-offs and drive consensus.)*
 >
-> **Team Guidance:** [composition description]
+> **Team Guidance:** Runtime-dependent via `swarm:suggest-members`. [domain-specific guidance]
 >
-> **Phases:** [list of phases with one-line descriptions]
+> **Phases:** Standard (Research → Converge → Approve → Execute → Review → Refine → Deliver) [or custom if inferred]
 >
-> **Information Flow:** [standard or custom description]
+> **Information Flow:** Standard [or custom if inferred]
 >
-> **Pre-flight Reads:** [files or "none"]
+> **Pre-flight Reads:** [files or "None"]
 >
-> **Outcomes Question:** "[question]"
+> **Outcomes Question:** "[inferred question]"
 >
-> **Mode-Specific Rules:** [summary]
+> **Mode-Specific Rules:**
+> [only domain-specific rules, bulleted]
 
-Use **AskUserQuestion**:
+Then use **AskUserQuestion**:
 - question: "Does this spec look right?"
 - header: "Confirm"
 - options:
@@ -165,13 +104,13 @@ Use **AskUserQuestion**:
   - label: "I have changes"
     description: "Let me adjust before generating"
 
-If "I have changes": ask what to change, apply it, re-present. Repeat until confirmed.
+If "I have changes": ask what to change (plain text), apply it, re-present the full spec. Repeat until confirmed.
 
 ---
 
-## Step 4: Generate Files
+## Step 2: Generate Files
 
-### 4a: Generate the mode skill
+### 2a: Generate the mode skill
 
 Create the file at `.claude/skills/[name]-mode/SKILL.md` in the user's project directory (the current working directory). Use the **Write** tool.
 
@@ -194,7 +133,7 @@ Return the following mode definition verbatim to the team lead. Do not summarize
 
 ## Lead Identity
 
-[Lead identity statement from interview]
+[Lead identity statement]
 
 ## PE Title
 
@@ -212,7 +151,7 @@ Return the following mode definition verbatim to the team lead. Do not summarize
 **Forbidden:**
 [- each forbidden action]
 
-[Include Pre-flight Reads section ONLY if domain knowledge files were specified in Step 1g:]
+[Include Pre-flight Reads section ONLY if domain knowledge files were specified:]
 
 ## Pre-flight Reads
 
@@ -225,25 +164,27 @@ Before spawning the team, read these files and carry their content into spawn pr
 
 [Each rule as a bullet, grouped by section if multiple concerns]
 
-[Include Information Flow section here ONLY if custom routing was defined:]
+[Include Information Flow section ONLY if custom routing was defined:]
 
 ## Information Flow
 
-[Routing rules from interview]
+[Routing rules]
+
+[End conditional section]
 
 ## Outcomes Question
 
-[outcomes question from Step 1h]
+[outcomes question]
 
 ## Suggest-Members Guidance
 
-[Team composition guidance from interview]
+[Team composition guidance]
 
 ## Phase Arc
 
 [Each phase as a ### heading. For phases that require user input or approval, state the AskUserQuestion call explicitly — do not leave transitions implicit. Follow the same structure as code-mode and writing-mode phase arcs.
 
-If standard phases were selected, pre-fill Refine and Deliver with these stubs:]
+Pre-fill Refine and Deliver with these stubs:]
 
 ### Refine (optional)
 
@@ -256,7 +197,7 @@ If "Deliver now": skip to Deliver. If "Run recursive refinement": starting at 9.
 When 9/10+ confidence is reached, present completed work to the user. Do not commit or ship without explicit user sign-off.
 ```
 
-### 4b: Generate the shortcut command
+### 2b: Generate the shortcut command
 
 Create the file at `.claude/commands/[name].md` in the user's project directory. Use the **Write** tool.
 
@@ -279,7 +220,7 @@ You MUST use the **Skill** tool to invoke `swarm:workflow-rules`. It returns the
 ## Settings
 
 - **Mode:** [name]-mode (invoke via Skill tool at launch — use unqualified name, no `swarm:` prefix)
-- **Outcomes question:** "[outcomes question from interview]"
+- **Outcomes question:** "[outcomes question]"
 - **Defaults:** suggest-members (pass the Suggest-Members Guidance from [name]-mode and confirmed outcomes as context), Balanced shape, no lead research
 
 ## User-Provided Context
@@ -304,7 +245,7 @@ $ARGUMENTS
 6. **Launch.** Follow the launch mechanics from `swarm:workflow-rules`. Invoke `[name]-mode` via the Skill tool (unqualified name) — this is your mode skill. Apply its spec, read any Pre-flight Reads files, then spawn the team.
 ```
 
-### 4c: Report
+### 2c: Report
 
 Tell the user what was generated:
 
