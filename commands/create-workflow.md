@@ -179,11 +179,11 @@ Before spawning the team, read these files and carry their content into spawn pr
 
 ## Phase Arc
 
-[Each phase as a ### heading. For Research through Review, infer phase semantics from the domain and lead identity — write them out as full paragraphs matching code-mode and writing-mode depth. Use the closest built-in mode as a structural template. For phases that require user input or approval, state the AskUserQuestion call explicitly — do not leave transitions implicit.
+[Each phase as a ### heading. For Research through Review, infer phase semantics from the domain and lead identity — write them out as full paragraphs matching code-mode and writing-mode depth. Use the closest built-in mode as a structural template. For phases that require user input or approval, state the AskUserQuestion call explicitly — do not leave transitions implicit. The Review phase must explicitly state: "When 9/10+ confidence is reached, proceed to Refine — do not skip to Deliver."
 
 Pre-fill Refine and Deliver with these stubs:]
 
-### Refine
+### Refine (optional)
 
 When the team reaches 9/10+ confidence, the lead asks the user via AskUserQuestion: question "9/10+ confidence reached. Run recursive refinement?", header "Refine", options "Deliver now" / "Run recursive refinement (9.25 → 9.5 → 9.75)".
 
@@ -194,7 +194,7 @@ If "Deliver now": skip to Deliver. If "Run recursive refinement": starting at 9.
 When 9/10+ confidence is reached, present completed work to the user. Do not commit or ship without explicit user sign-off.
 ```
 
-When generating the file, omit all bracket comments, placeholder instructions, and conditional markers. The generated file should contain only filled content — no `[Include X ONLY if...]` or `[Each phase as...]` instructions.
+When generating both files (mode skill and shortcut command), omit all bracket comments, placeholder instructions, and conditional markers. Generated files should contain only filled content. If a conditional section doesn't apply (e.g., no Pre-flight Reads, no Information Flow, no intake-specific Pre-flight), omit the entire section including its heading. Remove extra blank lines left by omitted sections.
 
 ### 2b: Generate the shortcut command
 
@@ -252,7 +252,7 @@ Tell the user what was generated:
 > 1. `.claude/skills/[name]-mode/SKILL.md` — your custom mode skill
 > 2. `.claude/commands/[name].md` — your shortcut command
 >
-> **To use it:** Run `/[name]` followed by your context (e.g., `/[name] build a dashboard`).
+> **To use it:** Run `/[name]` followed by your context.
 >
 > **To customize:** Edit the mode skill to adjust phases, rules, or team guidance. The shortcut command rarely needs changes — it's thin wiring.
 >
