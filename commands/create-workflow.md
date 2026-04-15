@@ -41,7 +41,7 @@ From the **name** and **purpose statement**, infer the complete workflow spec. D
 
 **PE Title and Identity.** The PE is a senior facilitator who leads by asking questions and ensures healthy team discussion. The PE title MUST NOT overlap with the lead's domain — if the lead is editorial, the PE is strategic; if the lead is technical, the PE brings architectural perspective; if the lead is operational, the PE brings quality assurance. Pick a senior, recognized title (Chief Content Strategist, Principal Engineer, Chief of Staff, etc.) and write a one-line identity. Do not ask the user to choose.
 
-**Suggest-Members Guidance.** Team composition is determined at runtime by `swarm:suggest-members` based on the user's outcomes. Write lean guidance for what kinds of voices to suggest for this domain (e.g., "writing-domain voices: voice/tone specialist, domain experts relevant to the topic, and a reader-perspective reviewer"). Do not ask the user to define static team composition.
+**Suggest-Members Guidance.** Team composition is determined at runtime by `swarm:suggest-members` based on the user's outcomes. Write lean but substantive guidance for what kinds of voices to suggest for this domain — e.g., "Favor writing-domain voices: a voice/tone specialist to preserve the user's style, domain experts relevant to the topic, and a reader-perspective reviewer." This guidance is passed to suggest-members at runtime, so make it actionable, not a placeholder. Do not ask the user to define static team composition.
 
 **Outcomes Question.** Infer from the purpose. Writing workflow → "What do you want to write about? Dictate your thoughts — raw is fine." Code workflow → "What are you building?" Review workflow → "What needs review?" Pick the most natural prompt for this domain.
 
@@ -73,16 +73,15 @@ Present the complete spec in this format:
 >
 > **Purpose:** [one sentence]
 >
-> **Lead:** [title] — [identity]
+> **Lead (the person who does the work):** [title] — [identity]
 >
 > **Lead Allowlist:**
 > - Permitted: [list]
 > - Forbidden: [list]
 >
-> **PE:** [title] — [identity]
-> *(The PE is a senior facilitator who leads discussions by asking questions and ensures the team adheres to the rules. They don't make decisions — they surface trade-offs and drive consensus.)*
+> **PE (senior facilitator who shapes discussion without making decisions):** Every swarm team has a senior facilitator who drives discussions, asks the hard questions, and ensures plans are shaped correctly — without making the decisions themselves. For this workflow, we're calling them **[title]** — [identity]. Want a different name?
 >
-> **Team Guidance:** Runtime-dependent via `swarm:suggest-members`. [domain-specific guidance]
+> **Team Guidance (who gets suggested at runtime):** Team composition is determined when you run the workflow, based on what you're working on. We'll tell `swarm:suggest-members` to favor: [domain-specific guidance].
 >
 > **Phases:** Standard (Research → Converge → Approve → Execute → Review → Refine → Deliver) [or custom if inferred]
 >
@@ -90,9 +89,9 @@ Present the complete spec in this format:
 >
 > **Pre-flight Reads:** [files or "None"]
 >
-> **Outcomes Question:** "[inferred question]"
+> **Outcomes Question (what the user is asked when they run the workflow):** "[inferred question]"
 >
-> **Mode-Specific Rules:**
+> **Mode-Specific Rules (domain constraints on top of swarm's standard governance):**
 > [only domain-specific rules, bulleted]
 
 Then use **AskUserQuestion**:
