@@ -55,6 +55,8 @@ Relay the PE's CONVERGED synthesis verbatim to the user. Do not re-derive or par
 
 ### Execute
 
+At the start of Execute, if the ship definition specifies a feature branch, create it before any work begins.
+
 Lead produces the deliverable. Work autonomously — escalate only per the hard rules (tiebreaker, scope change, convergence failure, uncovered decision).
 
 ### Review
@@ -71,4 +73,4 @@ If "Deliver now": skip to Deliver. If "Run recursive refinement": starting at 9.
 
 ### Deliver
 
-When CONFIDENCE REACHED is received, present completed work to the user. Do not ship without explicit user sign-off.
+When CONFIDENCE REACHED is received, present completed work to the user. Follow the ship definition from `.claude/swarm-ship.md` — execute the defined shipping steps with the user's approval. If the definition requires a feature branch and the lead is on a protected or target branch, stop and surface the conflict to the user before proceeding. Do not ship without explicit user sign-off.

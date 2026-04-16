@@ -185,7 +185,7 @@ If "Deliver now": skip to Deliver. If "Run recursive refinement": starting at 9.
 
 ### Deliver
 
-When 9/10+ confidence is reached, present completed work to the user. Do not commit or ship without explicit user sign-off.
+When 9/10+ confidence is reached, present completed work to the user. Follow the ship definition from `.claude/swarm-ship.md` — execute the defined shipping steps with the user's approval. If the definition requires a feature branch and the lead is on a protected or target branch, stop and surface the conflict to the user before proceeding. Do not commit or ship without explicit user sign-off.
 ```
 
 When generating both files (mode skill and shortcut command), omit all bracket comments, placeholder instructions, and conditional markers. Generated files should contain only filled content. If a conditional section doesn't apply (e.g., no Pre-flight Reads, no Information Flow, no intake-specific Pre-flight), omit the entire section including its heading. Remove extra blank lines left by omitted sections.

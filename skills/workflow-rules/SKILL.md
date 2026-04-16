@@ -184,11 +184,27 @@ Use **CronCreate** with:
 
 ### Begin work
 
+**Ship definition check (before Research begins):**
+
+Read `.claude/swarm-ship.md`. If it exists, apply it at Execute (branch creation) and Deliver (shipping). Skip to the phase arc.
+
+If it does not exist, first check `git rev-parse --is-inside-work-tree`. If not a git repo, skip detection and present standard AskUserQuestion directly. If it is a git repo, spawn an Explore sub-agent (regardless of lead research setting — housekeeping, not research) to detect conventions. The sub-agent must NOT write files. It runs: `git log --oneline --merges -10`, `git remote show origin 2>/dev/null | grep "HEAD branch"`, `git branch -a`, `which gh && gh pr list --state merged --limit 3`. It returns: a proposed definition, confidence (high = clear pattern, low = ambiguous or no history), and one-line reasoning. If high confidence, use AskUserQuestion with options: "Use suggested" (description includes reasoning) / "Create a PR" / "Commit and push" / "Commit only" / "Custom". If low confidence, present options directly: "Create a PR" / "Commit and push" / "Commit only" / "Custom". For "Custom", ask: "How did you handle branching?" / "How did you ship?" For PR workflow, ask target branch and naming convention. Write the confirmed definition to `.claude/swarm-ship.md`:
+
+```
+# Ship Definition
+## Branch Strategy
+[e.g., "Create a feature branch from main. Naming: feat/<description>."]
+## Delivery
+[e.g., "Commit, push, open PR against main."]
+```
+
+---
+
 Follow the **phase arc from your mode skill**. Universal rules:
-- Lead does no research unless the user explicitly enabled it
+- Lead does no research unless the user explicitly enabled it (exception: the ship definition detection sub-agent runs unconditionally)
 - Questions the team cannot resolve go to the user via AskUserQuestion — most consequential first, one at a time
 - Post-greenlight execution is autonomous — escalate only per the hard rules
 - Phase transitions that require user input (Approve, Refine, Deliver) are mandatory stops — do not advance past them autonomously
 - After 9/10+ review confidence, ask the user about recursive refinement before delivering — do not skip to Deliver
-- Final delivery requires explicit user sign-off — do not commit, ship, or present as "done" without it
+- Final delivery requires explicit user sign-off — follow the ship definition from `.claude/swarm-ship.md` and execute the defined shipping steps with the user's approval
 - When an explicit shutdown request has been received, delete the pulse cron job using CronDelete
