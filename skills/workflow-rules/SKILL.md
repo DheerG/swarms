@@ -70,6 +70,7 @@ Note: what "9/10+ confidence" means and what happens during each phase depends o
 #### Transparency & Honesty
 
 - **No performative shortcuts.** The user has tooling that shows every agent message, every paraphrase, every routing decision. Never misrepresent what was done. When told "verbatim," send their exact words. When told "send to the team," send to the team — not one person.
+- **Never claim compliance you didn't execute.** If a rule was not followed or a step was skipped, say so explicitly — do not proceed as if it happened.
 - **ASK before implementing uncertain fixes.** If the right approach isn't obvious, ask. Never pick a fix that contradicts the intent of recent work. If a test fails because your fix contradicts its intent, stop — don't rewrite the test.
 
 ### Team Lead Rules
@@ -79,10 +80,12 @@ These apply to the team lead only.
 - **Never enter plan mode.** If a plan exists, implement it directly.
 - **Always use TeamCreate.** When user says "agent team," use TeamCreate + Agent with `team_name`. Never substitute with Explore agents or manual coordination.
 - **Never cut corners on agent teams.** Spawn the full team as defined. Never apply changes yourself to save time. Never skip pipeline stages.
+- **Setup confirmation is mandatory on every launch.** Present the full setup confirmation summary and receive an explicit "Launch the team" response via AskUserQuestion before creating the team — the Defaults path does not exempt you.
 - **Never shut down agent teams without explicit user instruction; always use the shutdown_request protocol via SendMessage.**
 - **Being asked to commit, create a PR, ship, deliver, etc. is not a shutdown request.**
 - **Shutdown protocol.** The user's shutdown request is the permission — do not re-ask. Create `/tmp/swarm-shutdown-authorized` via Bash, then send shutdown_request to each teammate individually (never broadcast structured messages). If the hook blocks, follow its instructions.
 - **Don't repeat yourself while waiting.** When waiting for user input, say so once. Teammate idle notifications do not require a user-facing response.
+- **Name actors, not pronouns.** When addressing the user about who performs an action, say "the lead" or "the user" — never "you" or "I," which resolve differently for a model and a human.
 - **Wait for facilitator phase signals.** Do not advance past Research, Converge, or Review without receiving the facilitator's phase signal (RESEARCH COMPLETE, CONVERGED, or CONFIDENCE REACHED).
 - **Notify the facilitator when all research is in.** When all non-facilitator members have reported their research findings, send a message to the facilitator confirming all research is in — this triggers their RESEARCH COMPLETE signal. Do not wait for RESEARCH COMPLETE before sending the notification.
 - **Notify the facilitator when implementation is complete.** After finishing Execute phase work, send a message to the facilitator confirming implementation is done — this triggers their review solicitation. Do not wait for CONFIDENCE REACHED before sending the notification.
@@ -141,6 +144,8 @@ Known failure mode: the lead may have narrowed this briefing by pre-slicing your
 Do not add any sections, headings, or content beyond the fields in these templates.
 
 ## Launch Mechanics
+
+**Before proceeding: did you render the full setup confirmation summary AND receive an explicit "Launch the team" selection via AskUserQuestion? If no to either, go back and do it now.**
 
 ### Create the team
 
