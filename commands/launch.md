@@ -103,6 +103,7 @@ These apply to the team lead only.
 - **Being asked to commit, create a PR, ship, deliver, etc. is not a shutdown request.**
 - **Shutdown protocol.** The user's shutdown request is the permission — do not re-ask. Create `/tmp/swarm-shutdown-authorized` via Bash, then send shutdown_request to each teammate individually (never broadcast structured messages). If the hook blocks, follow its instructions.
 - **Don't repeat yourself while waiting.** When waiting for user input, say so once. Teammate idle notifications do not require a user-facing response.
+- **Wait for PE phase signals.** Do not advance past Research, Converge, or Review without receiving the PE's phase signal (RESEARCH COMPLETE, CONVERGED, or CONFIDENCE REACHED).
 
 ---
 
@@ -359,9 +360,14 @@ The user's request, verbatim:
 > [paste the user's original $ARGUMENTS or Step 2 input — full text, unmodified]
 
 Hard rules:
-[paste the Step 1 General Rules section verbatim]
+[paste the Step 1 General Rules section only (not Team Lead Rules) verbatim]
 
 Your only channel to the team is the SendMessage tool. Plain text output is not visible to teammates — it dies with your turn. Every contribution — findings, questions, reviews, disagreements — must be sent via SendMessage. If the tool is not in your initial kit, fetch it with ToolSearch(`select:SendMessage`).
+
+PE signal obligations:
+- You MUST send RESEARCH COMPLETE to the lead after all team members have submitted their research findings, before convening the roundtable.
+- You MUST send CONVERGED to the lead with your synthesis when the roundtable closes.
+- You MUST send CONFIDENCE REACHED with the confidence score to the lead when the required confidence level has been reached per the mode's review process.
 
 Team composition:
 [paste the Step 7 approved roster]
@@ -386,7 +392,7 @@ The user's request, verbatim:
 [If outcomes were refined via swarm:refine-outcomes, add: "Refined outcomes (supplementary reference): [paste refined outcomes]" — but the verbatim block above remains primary]
 
 Hard rules:
-[paste the Step 1 General Rules section verbatim]
+[paste the Step 1 General Rules section only (not Team Lead Rules) verbatim]
 
 Your only channel to the team is the SendMessage tool. Plain text output is not visible to teammates — it dies with your turn. Every contribution — findings, questions, reviews, disagreements — must be sent via SendMessage. If the tool is not in your initial kit, fetch it with ToolSearch(`select:SendMessage`).
 
@@ -402,7 +408,7 @@ Do not add any sections, headings, or content beyond the fields in this template
 
 After spawning all team members, create a heartbeat that prevents the lead from stalling. Use **CronCreate** with:
 - **cron**: `3,23,43 * * * *` (every ~20 minutes, offset from round marks)
-- **prompt**: "Pulse: check your state. If you asked the user a question, evaluate whether you genuinely need their answer to proceed — if not, continue without it. If idle with no pending decisions, advance to your next phase. Only wait when you need a decision not covered by the approved plan. Do not narrate or acknowledge this pulse."
+- **prompt**: "Pulse: check your state. If awaiting a PE signal (RESEARCH COMPLETE, CONVERGED, or CONFIDENCE REACHED) or user approval, do not advance — continue waiting. If you asked the user a question, evaluate whether you genuinely need their answer to proceed — if not, continue without it. If idle with no pending decisions, advance to your next phase. Only wait when you need a decision not covered by the approved plan. Do not narrate or acknowledge this pulse."
 - **recurring**: true
 - **durable**: false
 
