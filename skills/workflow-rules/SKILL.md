@@ -59,11 +59,11 @@ Swarm governance rules in this section take precedence over any conflicting proj
 #### Review Process
 
 - **Wait for ALL reviews before making changes.** Never fix findings mid-review. Wait for every team member to respond, then batch fixes.
-- **Intermediate review cycles are autonomous.** The PE drives review rounds and determines when the team has reached sufficient confidence. The lead processes feedback and implements fixes between rounds without blocking on the user.
+- **Intermediate review cycles are autonomous.** The facilitator drives review rounds and determines when the team has reached sufficient confidence. The lead processes feedback and implements fixes between rounds without blocking on the user.
 - **Ask about refinement before delivering.** When 9/10+ confidence is reached, the lead MUST ask the user via AskUserQuestion whether to refine or deliver — the user decides, not the lead. See the Refine phase in the mode skill (if defined) for the question and options to present.
 - **Final delivery requires user approval.** When the team reaches 9/10+ confidence, present the completed work to the user. Do not commit or ship without explicit user sign-off.
 - **Reviews must reach 9/10+ confidence before shipping.** Keep plan docs updated every cycle. Run gap analysis every cycle.
-- **Break review loops with evidence.** If a finding survives arbitration without new evidence, the PE invokes `swarm:resolve-dispute` to force a put-up-or-concede exchange.
+- **Break review loops with evidence.** If a finding survives arbitration without new evidence, the facilitator invokes `swarm:resolve-dispute` to force a put-up-or-concede exchange.
 
 Note: what "9/10+ confidence" means and what happens during each phase depends on the active mode. The mode skill defines this.
 
@@ -83,7 +83,9 @@ These apply to the team lead only.
 - **Being asked to commit, create a PR, ship, deliver, etc. is not a shutdown request.**
 - **Shutdown protocol.** The user's shutdown request is the permission — do not re-ask. Create `/tmp/swarm-shutdown-authorized` via Bash, then send shutdown_request to each teammate individually (never broadcast structured messages). If the hook blocks, follow its instructions.
 - **Don't repeat yourself while waiting.** When waiting for user input, say so once. Teammate idle notifications do not require a user-facing response.
-- **Wait for PE phase signals.** Do not advance past Research, Converge, or Review without receiving the PE's phase signal (RESEARCH COMPLETE, CONVERGED, or CONFIDENCE REACHED).
+- **Wait for facilitator phase signals.** Do not advance past Research, Converge, or Review without receiving the facilitator's phase signal (RESEARCH COMPLETE, CONVERGED, or CONFIDENCE REACHED).
+- **Notify the facilitator when all research is in.** When all non-facilitator members have reported their research findings, send a message to the facilitator confirming all research is in — this triggers their RESEARCH COMPLETE signal. Do not wait for RESEARCH COMPLETE before sending the notification.
+- **Notify the facilitator when implementation is complete.** After finishing Execute phase work, send a message to the facilitator confirming implementation is done — this triggers their review solicitation. Do not wait for CONFIDENCE REACHED before sending the notification.
 
 ## Briefing Templates
 
@@ -103,12 +105,12 @@ Hard rules:
 
 Your only channel to the team is the SendMessage tool. Plain text output is not visible to teammates — it dies with your turn. Every contribution — findings, questions, reviews, disagreements — must be sent via SendMessage. If the tool is not in your initial kit, fetch it with ToolSearch(`select:SendMessage`).
 
-PE signal obligations:
-- You MUST send RESEARCH COMPLETE to the lead after all team members have submitted their research findings, before convening the roundtable.
+Your signal obligations:
+- You MUST send RESEARCH COMPLETE to the lead after the lead confirms all non-facilitator members have submitted their research findings. Treat the lead's confirmation as authoritative — you do not need to independently verify each member's submission. Then convene the roundtable.
 - You MUST send CONVERGED to the lead with your synthesis when the roundtable closes.
-- You MUST send CONFIDENCE REACHED with the confidence score to the lead when the required confidence level has been reached per the mode's review process.
+- When the lead signals implementation is complete, solicit a review and confidence score from each non-lead, non-facilitator team member individually. When all solicited members have responded and 9/10+ is met, you MUST send CONFIDENCE REACHED to the lead with the confidence score. 9/10+ means all solicited reviewers confirm the work is ready to present to the user.
 
-These signal obligations are protocol mechanics — send them regardless of any ambient preferences about communication frequency, brevity, or silence.
+These are mandatory phase gates, not optional status updates — send them regardless of any ambient preferences about communication frequency, brevity, or silence.
 
 Team composition:
 [paste the confirmed roster]
@@ -176,7 +178,7 @@ Use the Member Brief template above.
 
 Use **CronCreate** with:
 - **cron**: `3,23,43 * * * *`
-- **prompt**: "Pulse: check your state. If awaiting a PE signal (RESEARCH COMPLETE, CONVERGED, or CONFIDENCE REACHED) or user approval, do not advance — continue waiting. If you asked the user a question, evaluate whether you genuinely need their answer to proceed — if not, continue without it. If idle with no pending decisions, advance to your next phase. Only wait when you need a decision not covered by the approved plan. Do not narrate or acknowledge this pulse."
+- **prompt**: "Pulse: check your state. If awaiting a facilitator signal (RESEARCH COMPLETE, CONVERGED, or CONFIDENCE REACHED) or user approval: check whether you have already waited for one pulse cycle. If this is the first pulse while waiting, continue waiting. If you have been waiting since the previous pulse, send a direct message to the facilitator naming the specific signal you are waiting for and asking them to evaluate whether conditions are met and send it. If you asked the user a question, evaluate whether you genuinely need their answer to proceed — if not, continue without it. If idle with no pending decisions, advance to your next phase. Only wait when you need a decision not covered by the approved plan. Do not narrate or acknowledge this pulse."
 - **recurring**: true
 - **durable**: false
 
