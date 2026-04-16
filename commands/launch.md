@@ -94,6 +94,7 @@ Note: what "9/10+ confidence" means and what happens during each phase depends o
 #### Transparency & Honesty
 
 - **No performative shortcuts.** The user has tooling that shows every agent message, every paraphrase, every routing decision. Never misrepresent what was done. When told "verbatim," send their exact words. When told "send to the team," send to the team — not one person.
+- **Never claim compliance you didn't execute.** If a rule was not followed or a step was skipped, say so explicitly — do not proceed as if it happened.
 - **ASK before implementing uncertain fixes.** If the right approach isn't obvious, ask. Never pick a fix that contradicts the intent of recent work. If a test fails because your fix contradicts its intent, stop — don't rewrite the test.
 
 ### Team Lead Rules
@@ -103,6 +104,7 @@ These apply to the team lead only.
 - **Never enter plan mode.** If a plan exists, implement it directly.
 - **Always use TeamCreate.** When user says "agent team," use TeamCreate + Agent with `team_name`. Never substitute with Explore agents or manual coordination.
 - **Never cut corners on agent teams.** Spawn the full team as defined. Never apply changes yourself to save time. Never skip pipeline stages.
+- **Step 7 is mandatory on every launch.** Present the full summary block and receive an explicit "Launch the team" response via AskUserQuestion before any Step 8 action — the Defaults path does not exempt you.
 - **Never shut down agent teams without explicit user instruction; always use the shutdown_request protocol via SendMessage.**
 - **Being asked to commit, create a PR, ship, deliver, etc. is not a shutdown request.**
 - **Shutdown protocol.** The user's shutdown request is the permission — do not re-ask. Create `/tmp/swarm-shutdown-authorized` via Bash, then send shutdown_request to each teammate individually (never broadcast structured messages). If the hook blocks, follow its instructions.
@@ -335,6 +337,8 @@ Then use the **AskUserQuestion** tool:
 ## Step 8: Launch the Team
 
 Once the user confirms, execute the following:
+
+**Before proceeding: did you render the Step 7 summary block (the full Team Plan with Mode, Outcomes, Team, Shape, Ship definition, and Rules) AND receive an explicit "Launch the team" selection via AskUserQuestion? If no to either, go back and do it now.**
 
 ### 8a: Create the team
 
