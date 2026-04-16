@@ -67,6 +67,7 @@ Pass outcomes inline to go even faster:
 ### Other skills
 
 ```
+/swarm:audit-context      # Check your project for artifacts that may interfere with swarm
 /swarm:refine-outcomes    # Reframe ideas into outcome statements
 /swarm:suggest-members    # Recommend team composition
 ```
