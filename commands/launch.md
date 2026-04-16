@@ -309,6 +309,8 @@ Present a summary of the team plan:
 >
 > **Team shape:** [Balanced / Ultra — the selection from Step 5]
 >
+> **Ship definition:** [if `.claude/swarm-ship.md` exists, show its contents in plain language — e.g., "Create a PR against main from branch feat/<description>". If it doesn't exist yet, show "Will be auto-detected before work begins."]
+>
 > **Rules:** Active
 
 Then use the **AskUserQuestion** tool:
@@ -424,10 +426,38 @@ The pulse fires only when the REPL is idle — it will not interrupt active work
 
 ### 8f: Begin work
 
+**Ship definition check (before Research begins):**
+
+Read `.claude/swarm-ship.md`. If it exists, apply it at Execute (branch creation) and Deliver (shipping). Skip to the phase arc.
+
+If it does not exist, detect and propose:
+
+First, check `git rev-parse --is-inside-work-tree`. If not a git repo, skip detection — present AskUserQuestion directly (header: "Ship", question: "How should completed work be shipped? No git repository detected.", options: "Create a PR" / "Commit and push" / "Commit only" / "Custom").
+
+If it is a git repo:
+
+1. **Detect.** Spawn an Explore sub-agent (regardless of lead research setting — this is housekeeping, not research). The sub-agent must NOT write files. It runs: `git log --oneline --merges -10`, `git remote show origin 2>/dev/null | grep "HEAD branch"`, `git branch -a`, and `which gh && gh pr list --state merged --limit 3`. It returns: a proposed ship definition, confidence (high = clear pattern found, low = ambiguous or no history), and one-line reasoning.
+
+2. **Confirm.** If high confidence, use **AskUserQuestion** (header: "Ship", question: "Review the detected ship definition and confirm or choose an option.") with options: "Use suggested" (description includes the detected reasoning, e.g., "GitHub remote, feat/* branches, merged PRs against main → PR workflow") / "Create a PR" / "Commit and push" / "Commit only" / "Custom". If low confidence, present the standard options directly: "Create a PR" / "Commit and push" / "Commit only" / "Custom". For "Custom", ask: (1) "How did you handle branching?" (2) "How did you ship?"
+
+3. **Write.** Write `.claude/swarm-ship.md` with two sections:
+
+```
+# Ship Definition
+## Branch Strategy
+[e.g., "Create a feature branch from main. Naming: feat/<description>."]
+## Delivery
+[e.g., "Commit, push, open PR against main."]
+```
+
+If the confirmed definition is a PR workflow and target branch or naming convention were not detected, ask for them now (defaults: main, `feat/<description>`).
+
+---
+
 Follow the **phase arc defined in the mode skill** you read in Step 8b. The mode skill specifies what each phase means — who acts, what the deliverable is, how transitions work.
 
 **Universal rules that apply across all modes:**
-- Lead does no research unless the user explicitly enabled it in Step 6
+- Lead does no research unless the user explicitly enabled it in Step 6 (exception: the ship definition detection sub-agent above runs unconditionally)
 - Questions the team cannot resolve internally go to the user via AskUserQuestion — most consequential first, one at a time, using options when the answer is one of a small known set
 - Post-greenlight execution is autonomous — escalate only per the hard rules (tiebreaker, scope change, convergence failure, uncovered decision)
 - When an explicit shutdown request has been received, delete the pulse cron job using CronDelete after the team has been shut down

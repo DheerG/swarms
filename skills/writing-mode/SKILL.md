@@ -103,6 +103,8 @@ Relay the PE's CONVERGED direction document verbatim to the user. Do not re-deri
 
 ### Execute
 
+At the start of Execute, if the ship definition specifies a feature branch, create it before any work begins.
+
 Writer produces the prose artifact against the approved direction document. Writer works uninterrupted — no mid-draft check-ins. Lead coordinates logistics, does not touch the draft.
 
 ### Review
@@ -129,4 +131,4 @@ If "Deliver now": skip to Deliver. If "Run recursive refinement": starting at 9.
 
 ### Deliver
 
-When CONFIDENCE REACHED is received, present completed work to the user. Do not publish or commit without explicit user sign-off.
+When CONFIDENCE REACHED is received, present completed work to the user. Follow the ship definition from `.claude/swarm-ship.md` — execute the defined shipping steps with the user's approval. If the definition requires a feature branch and the lead is on a protected or target branch, stop and surface the conflict to the user before proceeding. Do not publish or commit without explicit user sign-off.

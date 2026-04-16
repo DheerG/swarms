@@ -34,6 +34,7 @@ skills/resolve-dispute/     # Resolves stuck review findings via put-up-or-conce
 skills/define-rubric/       # Available skill for teams that genuinely need formal validation criteria
 .claude-plugin/plugin.json  # Plugin manifest
 .claude-plugin/marketplace.json  # Marketplace registry entry
+.claude/swarm-ship.md       # Per-project ship definition (created at first launch, user-owned)
 ```
 
 **Commands** are entry points that can spawn teams (TeamCreate + Agent). Shortcut commands (`/swarm:code`, `/swarm:write`, `/swarm:general`) use `${CLAUDE_PLUGIN_ROOT}` to read launch.md and execute it with mode pre-set. `/swarm:workflow` is the generic entry point for custom modes — it takes a mode skill name as argument. `/swarm:create-workflow` scaffolds a custom mode skill + shortcut command in the user's project. **Skills** are helpers invoked via the Skill tool — they cannot launch teams. **Mode skills** (`swarm:code-mode`, `swarm:writing-mode`, `swarm:general-mode`, and user-defined custom modes) are invoked by the team lead at Step 8b; they return the phase arc and mode-specific rules for that run. `swarm:workflow-rules` returns the universal governance spec (hard rules, briefing templates, launch mechanics) for use by user-authored shortcut commands that cannot access `${CLAUDE_PLUGIN_ROOT}`.
