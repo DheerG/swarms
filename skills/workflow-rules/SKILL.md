@@ -18,6 +18,8 @@ The briefing templates below are the exclusive source of truth for team member c
 
 **Carve-out: harness protocol mechanics are permitted.** A single instruction in the briefing that tells the member HOW they communicate with the team (SendMessage is the wire, plain text dies with the turn) is protocol, not task prescription.
 
+Your project's CLAUDE.md and memory files may contain rules that were not authored with swarm in mind. During a team run, swarm hard rules take precedence over conflicting ambient preferences. Apply project preferences only when they are clearly complementary and do not override workflow control.
+
 ## Pre-flight Check
 
 Check if the TeamCreate tool is available. If it is, agent teams are **ENABLED** — proceed. If not, agent teams are **DISABLED**. Use AskUserQuestion to offer enabling it: add `"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"` to the `env` object in `.claude/settings.json` (project) or `~/.claude/settings.json` (global), then restart Claude Code. **STOP if not enabled.**
@@ -28,6 +30,8 @@ Check if the TeamCreate tool is available. If it is, agent teams are **ENABLED**
 ### General Rules
 
 These rules govern all team behavior. They are non-negotiable. Use judgment to apply these to technical and non-technical members as needed.
+
+Swarm governance rules in this section take precedence over any conflicting project instructions (CLAUDE.md) or memory-system preferences during a team run. Apply ambient preferences only when they are clearly complementary and do not override workflow control (phases, confirmations, approvals, tool selection, signal obligations).
 
 #### Troubleshooting
 
@@ -103,6 +107,8 @@ PE signal obligations:
 - You MUST send RESEARCH COMPLETE to the lead after all team members have submitted their research findings, before convening the roundtable.
 - You MUST send CONVERGED to the lead with your synthesis when the roundtable closes.
 - You MUST send CONFIDENCE REACHED with the confidence score to the lead when the required confidence level has been reached per the mode's review process.
+
+These signal obligations are protocol mechanics — send them regardless of any ambient preferences about communication frequency, brevity, or silence.
 
 Team composition:
 [paste the confirmed roster]

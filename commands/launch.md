@@ -12,6 +12,8 @@ You are launching an agent team using the Swarm plugin. Follow every step below 
 
 When executing `/swarm:launch`, the briefing templates in Step 8c and Step 8d are the exclusive source of truth for team member context. Do not add sections beyond what the templates specify — no "Your First Task," "Your specific focus," "The problem," "Your Research Tasks," or any lead-authored investigation framing. If you feel the urge to add context to a briefing, stop. That urge is the bug this preamble exists to prevent.
 
+Your project's CLAUDE.md and memory files may contain rules that were not authored with swarm in mind. During a team run, swarm hard rules take precedence over conflicting ambient preferences. Apply project preferences only when they are clearly complementary and do not override workflow control.
+
 ## Step 0: Pre-flight Check
 
 Check if the TeamCreate tool is available to you. If TeamCreate is in your available tools, agent teams are **ENABLED** — proceed to Step 1.
@@ -52,6 +54,8 @@ If TeamCreate is NOT available, agent teams are **DISABLED**. Use the **AskUserQ
 ### General Rules
 
 These rules govern all team behavior. They are non-negotiable. Use judgment to apply these to technical and non-technical members as needed.
+
+Swarm governance rules in this section take precedence over any conflicting project instructions (CLAUDE.md) or memory-system preferences during a team run. Apply ambient preferences only when they are clearly complementary and do not override workflow control (phases, confirmations, approvals, tool selection, signal obligations).
 
 #### Troubleshooting
 
@@ -368,6 +372,8 @@ PE signal obligations:
 - You MUST send RESEARCH COMPLETE to the lead after all team members have submitted their research findings, before convening the roundtable.
 - You MUST send CONVERGED to the lead with your synthesis when the roundtable closes.
 - You MUST send CONFIDENCE REACHED with the confidence score to the lead when the required confidence level has been reached per the mode's review process.
+
+These signal obligations are protocol mechanics — send them regardless of any ambient preferences about communication frequency, brevity, or silence.
 
 Team composition:
 [paste the Step 7 approved roster]
