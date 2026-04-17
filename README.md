@@ -1,27 +1,37 @@
 # Swarm
 
-A Claude Code plugin for launching agent teams for code, writing, and general-purpose work.
+Good Claude Code sessions are repeatable. Swarm is the structure that makes them that way.
 
-## What It Does
+I built this across hundreds of sessions, pruning rules, memories, and skills until the quality stopped varying. When model quality shifted, small targeted changes kept it working, even on smaller models. Once the results were consistent enough to rely on, I started sharing with teammates and friends.
 
-Swarm turns team-setup into a single command. Describe your outcomes, choose defaults or configure each step, and the plugin handles mode selection, team creation, role assignment, rule enforcement, and coordination.
+## Prerequisites
+
+Agent teams must be enabled in Claude Code. Add to `~/.claude/settings.json`:
+
+```json
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  }
+}
+```
+
+The launch command checks this automatically and guides you through enablement if it's missing.
 
 ## Installation
-
-### From GitHub (recommended)
 
 ```bash
 claude plugin marketplace add DheerG/swarms
 claude plugin install swarm@swarms --scope project
 ```
 
-### For development/testing
+For development or local testing:
 
 ```bash
 claude --plugin-dir /path/to/swarms
 ```
 
-Loads the plugin directly from local source, bypassing the marketplace cache. Changes take effect in the next session.
+Changes take effect in the next session.
 
 ## Usage
 
@@ -31,22 +41,18 @@ Loads the plugin directly from local source, bypassing the marketplace cache. Ch
 /swarm:launch
 ```
 
-Interactive setup: provide outcomes, choose defaults or configure (mode, team, shape, research), review the plan, then launch.
+Describe your outcomes, choose defaults or configure each step, review the plan, then launch. Pass outcomes inline to skip the opening question:
+
+```
+/swarm:write Help me write a blog article on healing traumas
+```
 
 ### Mode shortcuts
-
-Skip mode selection and streamline setup:
 
 ```
 /swarm:code           # Code team
 /swarm:write          # Writing team
 /swarm:general        # General team
-```
-
-Pass outcomes inline to go even faster:
-
-```
-/swarm:write Help me write a blog article on healing traumas
 ```
 
 ### Modes
@@ -72,34 +78,28 @@ Pass outcomes inline to go even faster:
 /swarm:suggest-members    # Recommend team composition
 ```
 
+## How it works
+
+Every team follows the same phase arc: Research, Converge, Approve, Execute, Review, Refine, Deliver. Phases run in order.
+
+Review is recursive: if the team doesn't reach a 9/10 confidence score, it cycles back through Refine before presenting to you. The facilitator drives this, not the lead. Work reaches you only after the team has agreed it clears the threshold. Most of the quality work happens in the cycles you never see.
+
+## Watching your team
+
+The most useful signal isn't the final output. It's the discussion. Watching agents reason, push back, and converge tells you whether the team is actually working. [AgentChat](https://github.com/DheerG/agent-chat) is a companion tool that surfaces agent conversations in real time. You'll likely find yourself watching the discussion more than Claude Code itself.
+
+## Custom workflows
+
+Run `/swarm:create-workflow` to scaffold a custom mode for your project: domain-specific phases plus a shortcut command. Use `/swarm:workflow <mode-name>` to launch against any existing custom mode.
+
 ## Updating
 
 Run `/swarm:update` to check for and install the latest version.
-
-Manual update:
 
 ```bash
 claude plugin marketplace update swarms
 claude plugin update swarm@swarms --scope project
 ```
-
-## Prerequisites
-
-Agent teams must be enabled in Claude Code. Add to `~/.claude/settings.json`:
-
-```json
-{
-  "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
-  }
-}
-```
-
-The launch command checks this automatically and guides you through enablement.
-
-## Customizing Rules
-
-Hard rules are in `commands/launch.md` under "Hard Rules." Mode-specific rules are in each mode's skill file under `skills/*-mode/SKILL.md`. Edit directly. Re-apply edits after upgrading.
 
 ## Ubiquitous Language
 
