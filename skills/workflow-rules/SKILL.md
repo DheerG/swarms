@@ -92,12 +92,12 @@ These apply to the team lead only.
 
 ## Briefing Templates
 
-### PE Brief
+### Facilitator Brief
 
-Paste this template EXACTLY when spawning the PE, filling [brackets]. Do NOT expand. Do NOT add process authority clauses, rubric references, or convergence instructions.
+Paste this template EXACTLY when spawning the facilitator, filling [brackets]. Do NOT expand. Do NOT add process authority clauses, rubric references, or convergence instructions.
 
 ```
-[PE title from mode skill] — upbeat, socratic thinker, leads by asking questions, doesn't make decisions, ensures a healthy discussion that adheres to the hard rules, [paste the PE identity line from the mode skill].
+[facilitator title from mode skill] — upbeat, socratic thinker, leads by asking questions, doesn't make decisions, ensures a healthy discussion that adheres to the hard rules, [paste the facilitator identity line from the mode skill].
 
 The user's request, verbatim:
 
@@ -153,22 +153,22 @@ Use **TeamCreate** with a descriptive team name derived from the outcomes.
 
 ### Invoke your mode skill
 
-Use the **Skill** tool to invoke your mode skill. It returns: Lead Identity, PE Title, PE Identity, Lead Allowlist (optional), Pre-flight Reads (optional), Mode-Specific Rules, Information Flow (optional), Outcomes Question (optional), Suggest-Members Guidance, and Phase Arc.
+Use the **Skill** tool to invoke your mode skill. It returns: Lead Identity, Facilitator Title, Facilitator Identity, Lead Allowlist (optional), Pre-flight Reads (optional), Mode-Specific Rules, Information Flow (optional), Outcomes Question (optional), Suggest-Members Guidance, and Phase Arc.
 
-Apply the lead identity to yourself. Use the PE title and PE identity in the PE brief. Treat mode-specific rules as equally binding to the hard rules above. If the mode skill includes **Pre-flight Reads**, read those files now — before spawning any agents. Carry their content into spawn prompts where relevant.
+Apply the lead identity to yourself. Use the facilitator title and facilitator identity in the facilitator brief. Treat mode-specific rules as equally binding to the hard rules above. If the mode skill includes **Pre-flight Reads**, read those files now — before spawning any agents. Carry their content into spawn prompts where relevant.
 
 If the mode skill was already invoked earlier in the workflow (e.g., during setup), skip re-invocation — apply the spec from that earlier invocation.
 
 When invoking `swarm:suggest-members`, pass the mode skill's **Suggest-Members Guidance** and the confirmed outcomes as context.
 
-### Spawn the PE
+### Spawn the facilitator
 
 Use the **Agent** tool:
-- `name`: kebab-case of PE title from mode skill
+- `name`: kebab-case of facilitator title from mode skill
 - `team_name`: the team name
 - `model`: `opus` (always Opus — this role owns judgment review)
 
-Use the PE Brief template above.
+Use the Facilitator Brief template above.
 
 ### Spawn additional team members
 
@@ -182,7 +182,7 @@ Use the Member Brief template above.
 ### Set up the pulse
 
 Use **CronCreate** with:
-- **cron**: `3,23,43 * * * *`
+- **cron**: `2,6,10,14,18,22,26,30,34,38,42,46,50,54,58 * * * *`
 - **prompt**: "Pulse: check your state. If awaiting a facilitator signal (RESEARCH COMPLETE, CONVERGED, or CONFIDENCE REACHED) or user approval: check whether you have already waited for one pulse cycle. If this is the first pulse while waiting, continue waiting. If you have been waiting since the previous pulse, send a direct message to the facilitator naming the specific signal you are waiting for and asking them to evaluate whether conditions are met and send it. If you asked the user a question, evaluate whether you genuinely need their answer to proceed — if not, continue without it. If idle with no pending decisions, advance to your next phase. Only wait when you need a decision not covered by the approved plan. Do not narrate or acknowledge this pulse."
 - **recurring**: true
 - **durable**: false

@@ -32,11 +32,11 @@ These are the rules that matter for interference detection:
 ### Workflow control
 - After greenlight, execution is autonomous — no mid-phase confirmations unless escalating per hard rules.
 - The user's request wording is not a greenlight — members wait for the lead to assign work.
-- Phase transitions require PE signals (RESEARCH COMPLETE, CONVERGED, CONFIDENCE REACHED).
+- Phase transitions require facilitator signals (RESEARCH COMPLETE, CONVERGED, CONFIDENCE REACHED).
 - Final delivery requires explicit user sign-off.
 
 ### Communication
-- PE signal obligations are protocol mechanics — they must be sent regardless of communication preferences.
+- facilitator signal obligations are protocol mechanics — they must be sent regardless of communication preferences.
 - Favor brevity during roundtables. No idle chatter.
 - SendMessage is the only channel between teammates — plain text output dies with the turn.
 
@@ -58,7 +58,7 @@ Flag these specific patterns when you encounter them:
 |---|---|---|---|
 | Confirmation injection | "Always confirm before editing" | Conflicting | Autonomous post-greenlight execution |
 | Auto-commit/push | "Commit after completing work" | Conflicting | Final delivery requires user approval |
-| Silence preferences | "Don't repeat yourself", "Stay silent while waiting" | Potentially Interfering | PE signal obligations |
+| Silence preferences | "Don't repeat yourself", "Stay silent while waiting" | Potentially Interfering | facilitator signal obligations |
 | Verbosity injection | "Explain your reasoning step by step" | Potentially Interfering | Favor brevity during roundtables |
 | Methodology injection | "Always use TDD", "Write tests first" | Potentially Interfering | Phase arc is defined by mode skill |
 | Tool restrictions | "Never use TeamCreate", "Don't spawn agents" | Conflicting | Always use TeamCreate |
