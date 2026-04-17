@@ -2,7 +2,7 @@
 description: Launch a general-mode agent team
 argument-hint: <outcomes>
 disable-model-invocation: true
-model: claude-opus-4-6
+model: claude-opus-4-7
 ---
 
 # /swarm:general
