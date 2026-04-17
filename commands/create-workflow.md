@@ -2,7 +2,7 @@
 description: Scaffold a custom workflow — generates a mode skill and shortcut command
 argument-hint: <workflow name> [description]
 disable-model-invocation: true
-model: claude-opus-4-6
+model: claude-opus-4-7
 ---
 
 # /swarm:create-workflow
@@ -201,7 +201,7 @@ Use this template:
 description: [purpose sentence]
 argument-hint: [appropriate hint based on outcomes question]
 disable-model-invocation: true
-model: claude-opus-4-6
+model: claude-opus-4-7
 ---
 
 # /[name]

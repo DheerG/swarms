@@ -1,7 +1,7 @@
 ---
 description: Interactively launch an agent team with guided setup
 disable-model-invocation: true
-model: claude-opus-4-6
+model: claude-opus-4-7
 ---
 
 # /swarm:launch
@@ -241,7 +241,7 @@ Use the **AskUserQuestion** tool:
 
 If adjusting, ask what they'd like to change (free text), apply changes, then confirm again with AskUserQuestion.
 
-**If "Suggest a team for me"**: You MUST use the **Skill** tool to invoke `swarm:suggest-members`, passing the confirmed outcomes from Step 2 AND the selected mode from Step 3 as the `args` parameter (e.g., "Mode: Writing\n\n[outcomes]"). Do NOT perform this step yourself. Immediately after the skill returns, use **AskUserQuestion** in the same response — do NOT wait for user input first:
+**If "Suggest a team for me"**: You MUST use the **Skill** tool to invoke `swarm:suggest-members`, passing the confirmed outcomes from Step 2 AND the selected mode from Step 3 as the `args` parameter (e.g., "Mode: Writing\n\n[outcomes]"). Do NOT perform this step yourself. The required sequence: (1) invoke the skill, (2) present the skill's suggestion output to the user, (3) call AskUserQuestion — all in the same response, with no intervening plain-text summary, acknowledgment, or transitional prose between step 2 and step 3. Do NOT wait for user input before calling AskUserQuestion:
 
 - question: "Does this team look right?"
 - header: "Team"
@@ -458,6 +458,8 @@ If it is a git repo:
 If the confirmed definition is a PR workflow and target branch or naming convention were not detected, ask for them now (defaults: main, `feat/<description>`).
 
 ---
+
+**Expectation-setter (before Research begins):** Send one plain-text sentence to the user that sets expectations for the silent execution phase. Example: "Team is launched — I'll check in at Approve and before delivery. You can watch the team's discussion live in AgentChat if you have it." Keep it to one sentence. Do not use AskUserQuestion — there's nothing to decide.
 
 Follow the **phase arc defined in the mode skill** you read in Step 8b. The mode skill specifies what each phase means — who acts, what the deliverable is, how transitions work.
 
