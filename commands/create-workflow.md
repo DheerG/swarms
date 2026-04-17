@@ -39,7 +39,7 @@ From the **name** and **purpose statement**, infer the complete workflow spec. D
 
 **Lead Allowlist.** Infer permitted and forbidden actions from the lead identity and domain. Every workflow needs at least: what the lead CAN do (their core responsibilities) and what the lead MUST NOT do (domain-specific constraints — e.g., "do not alter the user's core message").
 
-**PE Title and Identity.** The PE is a senior facilitator who leads by asking questions and ensures healthy team discussion. The PE title MUST NOT overlap with the lead's domain — if the lead is editorial, the PE is strategic; if the lead is technical, the PE brings architectural perspective; if the lead is operational, the PE brings quality assurance. Pick a senior, recognized title (Chief Content Strategist, Principal Engineer, Chief of Staff, etc.) and write a one-line identity. Do not ask the user to choose.
+**Facilitator Title and Identity.** The facilitator leads by asking questions and ensures healthy team discussion. The facilitator title MUST NOT overlap with the lead's domain — if the lead is editorial, the facilitator is strategic; if the lead is technical, the facilitator brings architectural perspective; if the lead is operational, the facilitator brings quality assurance. Pick a senior, recognized title (Chief Content Strategist, Principal Engineer, Chief of Staff, etc.) and write a one-line identity. Do not ask the user to choose.
 
 **Suggest-Members Guidance.** Team composition is determined at runtime by `swarm:suggest-members` based on the user's outcomes. Write lean but substantive guidance for what kinds of voices to suggest for this domain. Examples: writing workflow → "Favor writing-domain voices: a voice/tone specialist to preserve the user's style, domain experts relevant to the topic, and a reader-perspective reviewer." Code workflow → "Favor technical voices: at least one architect-level thinker, domain-specific experts relevant to the stack, and someone representing the end-user or business perspective." This guidance is passed to suggest-members at runtime, so make it actionable, not a placeholder. Do not ask the user to define static team composition.
 
@@ -47,7 +47,7 @@ From the **name** and **purpose statement**, infer the complete workflow spec. D
 
 **Phase Arc.** Default to the standard skeleton (Research → Converge → Approve → Execute → Review → Refine → Deliver) with phase semantics adapted for the domain. Only deviate from standard if the purpose statement clearly implies a non-standard pipeline.
 
-**Information Flow.** Default to standard (PE runs roundtables, lead coordinates). Only define custom routing if the purpose statement implies it (e.g., "writers should never see raw feedback").
+**Information Flow.** Default to standard (facilitator runs roundtables, lead coordinates). Only define custom routing if the purpose statement implies it (e.g., "writers should never see raw feedback").
 
 **Pre-flight Reads.** Default to none. Only include if the purpose mentions external knowledge files (e.g., voice profiles, style guides).
 
@@ -79,7 +79,7 @@ Present the complete spec in this format:
 > - Permitted: [list]
 > - Forbidden: [list]
 >
-> **PE (senior facilitator — shapes discussion, asks the hard questions, never makes the decisions):** [title] — [identity]
+> **Facilitator (shapes discussion, asks the hard questions, never makes the decisions):** [title] — [identity]
 >
 > **Team Guidance (who gets suggested at runtime):** Team composition is determined when you run the workflow, based on what you're working on. We'll tell `swarm:suggest-members` to favor: [domain-specific guidance].
 >
@@ -103,7 +103,7 @@ Then use **AskUserQuestion**:
   - label: "I have changes"
     description: "Let me adjust before generating"
 
-If "I have changes": ask what to change with a prompt that names the editable fields — e.g., "What would you like to adjust? You can change the lead title, PE role, phases, rules, outcomes question, or any other field above." Apply the change, re-present the **full** spec (not just the changed field — the user needs the complete picture). Repeat until confirmed.
+If "I have changes": ask what to change with a prompt that names the editable fields — e.g., "What would you like to adjust? You can change the lead title, facilitator role, phases, rules, outcomes question, or any other field above." Apply the change, re-present the **full** spec (not just the changed field — the user needs the complete picture). Repeat until confirmed.
 
 ---
 
@@ -120,7 +120,7 @@ Use this template, filling from the confirmed spec. Include `## Pre-flight Reads
 name: [name]-mode
 user-invocable: false
 description: |
-  [Purpose sentence] mode operational spec. Returns lead identity, PE identity, lead allowlist, pre-flight reads (optional), mode-specific rules, outcomes question (optional), suggest-members guidance, and phase arc.
+  [Purpose sentence] mode operational spec. Returns lead identity, facilitator identity, lead allowlist, pre-flight reads (optional), mode-specific rules, outcomes question (optional), suggest-members guidance, and phase arc.
 keywords: [domain-relevant keywords]
 ---
 
@@ -134,13 +134,13 @@ Return the following mode definition verbatim to the team lead. Do not summarize
 
 [Lead identity statement]
 
-## PE Title
+## Facilitator Title
 
-[PE title]
+[facilitator title]
 
-## PE Identity
+## Facilitator Identity
 
-[PE identity line]
+[facilitator identity line]
 
 ## Lead Allowlist
 

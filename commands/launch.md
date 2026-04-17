@@ -307,7 +307,7 @@ Present a summary of the team plan:
 >
 > **Team:**
 > 1. Team lead — (main session) [research: yes/no]
-> 2. [PE title from mode skill] — Socratic facilitator, read-only
+> 2. [facilitator title from mode skill] — Socratic facilitator, read-only
 > [3-N. Additional members — personality and behavioral identity, not task assignments or focus areas]
 >
 > **Team shape:** [Balanced / Ultra — the selection from Step 5]
@@ -347,8 +347,8 @@ Use **TeamCreate** with a descriptive team name derived from the outcomes. For e
 ### 8b: You ARE the team lead
 
 You MUST use the **Skill** tool to invoke the mode skill. For built-in modes, use the `swarm:` prefix: `swarm:code-mode`, `swarm:writing-mode`, `swarm:general-mode`. For custom modes (user-defined in the project's `.claude/skills/`), use the unqualified name (e.g., `blog-mode`). The skill returns your operational spec for the rest of this team run. It defines:
-- Your **lead identity** (paste into the Step 8c PE brief's identity line and apply to your own role)
-- The **PE identity line** (use in the Step 8c brief in place of the default code-mode identity)
+- Your **lead identity** (paste into the Step 8c facilitator brief's identity line and apply to your own role)
+- The **facilitator identity line** (use in the Step 8c brief in place of the default code-mode identity)
 - **Mode-specific rules** (these extend the Step 1 hard rules — treat them as equally binding)
 - The **phase arc** for Step 8f
 
@@ -356,17 +356,17 @@ You manage the team with patience — you do not hurry teammates along, and you 
 
 If the user enabled lead research: you may use the Agent tool with `subagent_type: "Explore"` for research tasks. If not: delegate all research to team members.
 
-### 8c: Spawn the [PE title]
+### 8c: Spawn the [facilitator title]
 
 Use the **Agent** tool to spawn the first teammate:
-- `name`: [kebab-case of PE title from mode skill, e.g. `principal-engineer`, `editorial-director`, `chief-of-staff`]
+- `name`: [kebab-case of facilitator title from mode skill, e.g. `principal-engineer`, `editorial-director`, `chief-of-staff`]
 - `team_name`: [the team name from 8a]
 - `model`: `opus` (both Ultra and Balanced — this role is always Opus, because it owns judgment review)
 
 Brief by pasting this template EXACTLY, filling [brackets], and sending it. Do NOT expand. Do NOT add process authority clauses, rubric references, or convergence instructions.
 
 ```
-[PE title from mode skill] — upbeat, socratic thinker, leads by asking questions, doesn't make decisions, ensures a healthy discussion that adheres to the hard rules, [paste the PE identity line from the mode skill].
+[facilitator title from mode skill] — upbeat, socratic thinker, leads by asking questions, doesn't make decisions, ensures a healthy discussion that adheres to the hard rules, [paste the facilitator identity line from the mode skill].
 
 The user's request, verbatim:
 
@@ -422,7 +422,7 @@ Do not add any sections, headings, or content beyond the fields in this template
 ### 8e: Set up the pulse
 
 After spawning all team members, create a heartbeat that prevents the lead from stalling. Use **CronCreate** with:
-- **cron**: `3,23,43 * * * *` (every ~20 minutes, offset from round marks)
+- **cron**: `2,6,10,14,18,22,26,30,34,38,42,46,50,54,58 * * * *` (every 4 minutes, offset from round marks to avoid cache-miss alignment)
 - **prompt**: "Pulse: check your state. If awaiting a facilitator signal (RESEARCH COMPLETE, CONVERGED, or CONFIDENCE REACHED) or user approval: check whether you have already waited for one pulse cycle. If this is the first pulse while waiting, continue waiting. If you have been waiting since the previous pulse, send a direct message to the facilitator naming the specific signal you are waiting for and asking them to evaluate whether conditions are met and send it. If you asked the user a question, evaluate whether you genuinely need their answer to proceed — if not, continue without it. If idle with no pending decisions, advance to your next phase. Only wait when you need a decision not covered by the approved plan. Do not narrate or acknowledge this pulse."
 - **recurring**: true
 - **durable**: false

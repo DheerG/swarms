@@ -23,9 +23,9 @@ commands/write.md           # Mode shortcut — pre-selects Writing, delegates t
 commands/general.md         # Mode shortcut — pre-selects General, delegates to launch.md
 commands/workflow.md         # Custom mode entry point — takes a mode skill name, delegates to launch.md
 commands/create-workflow.md  # Scaffolding — interviews user, generates mode skill + shortcut command
-skills/code-mode/           # Code mode: lead identity, PE title, rules, phase arc
-skills/writing-mode/        # Writing mode: lead identity, PE title, ownership boundaries, editorial baseline, phase arc
-skills/general-mode/        # General mode: lead identity, PE title, lightweight default
+skills/code-mode/           # Code mode: lead identity, facilitator title, rules, phase arc
+skills/writing-mode/        # Writing mode: lead identity, facilitator title, ownership boundaries, editorial baseline, phase arc
+skills/general-mode/        # General mode: lead identity, facilitator title, lightweight default
 skills/workflow-rules/      # Governance spec for custom workflows — hard rules, briefing templates, launch mechanics
 skills/refine-outcomes/     # Converts implementation descriptions into outcome statements
 skills/suggest-members/     # Recommends team composition based on outcomes and mode
@@ -53,7 +53,7 @@ The phase arc skeleton is universal: Research → Converge → Approve → Execu
 
 ### Mode Skills
 
-Mode skills are invoked by the team lead at runtime (Step 8b) using the Skill tool. Built-in modes use the `swarm:` prefix (`swarm:code-mode`, `swarm:writing-mode`, `swarm:general-mode`). Custom modes use their unqualified name (`blog-mode`, `code-review-mode`). Each returns: lead identity, PE title, PE identity line, mode-specific rules, suggest-members guidance, and a phase arc. Custom modes may additionally include a Lead Allowlist, Pre-flight Reads, and Information Flow section.
+Mode skills are invoked by the team lead at runtime (Step 8b) using the Skill tool. Built-in modes use the `swarm:` prefix (`swarm:code-mode`, `swarm:writing-mode`, `swarm:general-mode`). Custom modes use their unqualified name (`blog-mode`, `code-review-mode`). Each returns: lead identity, facilitator title, facilitator identity line, mode-specific rules, suggest-members guidance, and a phase arc. Custom modes may additionally include a Lead Allowlist, Pre-flight Reads, and Information Flow section.
 
 ### Custom Workflows
 
@@ -66,8 +66,8 @@ Users extend swarm by creating **custom mode skills** in their project's `.claud
 
 **Custom mode skill interface:**
 1. Lead Identity
-2. PE Title
-3. PE Identity
+2. Facilitator Title
+3. Facilitator Identity
 4. Lead Allowlist (optional — permitted/forbidden actions)
 5. Pre-flight Reads (optional — domain knowledge files to read before spawning)
 6. Mode-Specific Rules
