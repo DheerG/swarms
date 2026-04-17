@@ -103,10 +103,12 @@ Then use **AskUserQuestion**:
 - options:
   - label: "Yes, continue"
     description: "Move on to the next concept"
-  - label: "Explain Converge in more detail"
-    description: "What actually happens in the roundtable?"
+  - label: "Explain a phase in more detail"
+    description: "Tell me which phase and I'll expand just that one"
 
-If "Explain Converge in more detail": output a short paragraph describing what the roundtable looks like (each member takes a position, the facilitator probes disagreements, the team lands a synthesis), then re-ask the same AskUserQuestion.
+If "Explain a phase in more detail": ask the user (free text) which phase they want expanded. Output one focused paragraph on ONLY that phase. Do NOT pre-explain any other phase unless the user explicitly names it. If the user names multiple phases, address each one separately, in the order they named them. Then re-ask the same AskUserQuestion.
+
+If the user selects "Other" with custom text, treat their free text as the request and respond to exactly what they asked — do not inject explanations of any other phase.
 
 ---
 
