@@ -1,7 +1,6 @@
 ---
 description: Interactively launch an agent team with guided setup
 disable-model-invocation: true
-model: claude-opus-4-7
 ---
 
 # /swarm:launch

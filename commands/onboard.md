@@ -2,7 +2,6 @@
 description: Walk through swarm's core concepts and launch your first team
 argument-hint: (no arguments — this command is a walkthrough)
 disable-model-invocation: true
-model: claude-opus-4-7
 ---
 
 # /swarm:onboard
