@@ -1,6 +1,10 @@
 # Swarm
 
-**Your last session was great. The next one is a coin flip. Swarm fixes that.**
+**Get consistent predictable, well tested results from claude code sessions.**
+
+This plugin gives users a few commands that greatly improve results using agent teams/swarms with outcome based directives. It works well with both coding and non-coding tasks.
+
+Unlike out-of-the-box agent teams, swarm gives the team members much needed instruction on being better at communicating with each other, better at following instructions, staying active during long lasting sessions, applying great quality improvement processes, all while requiring fewer course corrections.
 
 Swarm launches a small team of agents for each task: a lead, a Socratic facilitator, and specialists you pick for the work. They research independently and argue through disagreements before the team scores its own output. Work only reaches you after the team agrees it's at 9 out of 10. Most of the quality work happens in the cycles you never see.
 
