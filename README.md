@@ -230,9 +230,8 @@ The consumer of every command is a language model, not a compiler. A self-contai
 
 ```markdown
 ---
-descripclaude-opus-4-7vely launch an agent team with guided setup
+description: Interactively launch an agent team with guided setup
 disable-model-invocation: true
-model: claude-opus-4-7
 ---
 
 # /swarm:launch
@@ -240,7 +239,7 @@ model: claude-opus-4-7
 You are launching an agent team using the Swarm plugin. Follow every step below in exact order...
 ```
 
-That's `commands/launch.md:1-9`. The entire coordination system, from pre-flight through delivery, lives in one self-contained markdown file. **470 lines. No imports.** You can read the whole thing: [commands/launch.md](commands/launch.md).
+That's the top of `commands/launch.md`. The entire coordination system, from pre-flight through delivery, lives in one self-contained markdown file. **No imports.** You can read the whole thing: [commands/launch.md](commands/launch.md).
 
 There's no DSL to learn and no runtime composition. When you extend swarm, you write another markdown file.
 
@@ -299,7 +298,31 @@ Mode shortcuts bypass the mode question: `/swarm:code`, `/swarm:write`, `/swarm:
 | **Balanced** (default) | Sonnet | Opus | Well-scoped work where quality-per-dollar matters |
 | **Ultra** | Opus | Opus | Hard problems, novel architecture, or anything where you'd rather overspend than re-do |
 
-Shape applies to the spawn-time model assignment. The facilitator is always Opus regardless of shape; they own judgment review.
+Shape applies to the spawn-time model assignment. The facilitator always uses the `opus` alias (resolved via `ANTHROPIC_DEFAULT_OPUS_MODEL`) regardless of shape; they own judgment review.
+
+> Model names are resolved through `ANTHROPIC_DEFAULT_OPUS_MODEL` and `ANTHROPIC_DEFAULT_SONNET_MODEL`. Sonnet and Opus are the defaults on Anthropic direct — not requirements. See [Custom model providers](#custom-model-providers) for how this works on Fireworks, OpenRouter, Bedrock, and others.
+
+### Custom model providers
+
+Swarm works with any Anthropic-compatible provider (Fireworks AI, OpenRouter, Bedrock, Vertex, Foundry). If you installed swarm before this section existed and are hitting a model-not-found error, run `/swarm:update` to pick up the fix. The lead session inherits whatever model your Claude Code session is running. Spawned teammates use the `opus` and `sonnet` aliases, which the harness resolves through `ANTHROPIC_DEFAULT_OPUS_MODEL` and `ANTHROPIC_DEFAULT_SONNET_MODEL`. Point both at a capable model from your provider in `.claude/settings.json` and Balanced and Ultra both work. Swarm only relies on these two aliases; other `ANTHROPIC_*` env vars are for Claude Code's internal tooling and don't need to be set for swarm.
+
+Example for Fireworks AI:
+
+```json
+{
+  "model": "accounts/fireworks/models/kimi-k2p5",
+  "apiKeyHelper": "bash -c 'echo <your-provider-token>'",
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.fireworks.ai/inference",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "accounts/fireworks/models/kimi-k2p5",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "accounts/fireworks/models/kimi-k2p5"
+  }
+}
+```
+
+The top-level `model` sets the lead session's model; the `ANTHROPIC_DEFAULT_*` vars resolve the `opus` and `sonnet` aliases used by spawned teammates. Third-party providers typically wire credentials through `apiKeyHelper` rather than `ANTHROPIC_API_KEY`.
+
+If your provider's best available model is meaningfully weaker than Opus, expect the 9/10 review gate to take more iterations.
 
 ---
 

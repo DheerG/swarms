@@ -2,7 +2,6 @@
 description: Launch a custom workflow using a user-defined mode skill
 argument-hint: <mode-skill-name> [context]
 disable-model-invocation: true
-model: claude-opus-4-7
 ---
 
 # /swarm:workflow
