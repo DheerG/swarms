@@ -181,7 +181,7 @@ Then you get a choice:
 > - Deliver now — *Ship the work as-is*
 > - Run recursive refinement — *Iterate through 9.25 → 9.5 → 9.75 → 10*
 
-The refinement ladder is optional. Each rung is autonomous once you opt in.
+The refinement ladder is optional. Each rung is autonomous once you opt in. Each rung is also a floor: if a fix drops any reviewer's score below the current rung, the ladder holds at that rung and iterates — it does not advance on a score that a post-fix regression has broken. If a rung fails to hold after two fix cycles, the facilitator invokes `swarm:resolve-dispute` to break the loop.
 
 ### 8. Deliver
 
@@ -298,7 +298,7 @@ Mode shortcuts bypass the mode question: `/swarm:code`, `/swarm:write`, `/swarm:
 | **Balanced** (default) | Sonnet | Opus | Well-scoped work where quality-per-dollar matters |
 | **Ultra** | Opus | Opus | Hard problems, novel architecture, or anything where you'd rather overspend than re-do |
 
-Shape applies to the spawn-time model assignment. The facilitator always uses the `opus` alias (resolved via `ANTHROPIC_DEFAULT_OPUS_MODEL`) regardless of shape; they own judgment review.
+Shape applies to the spawn-time model assignment. The facilitator always uses the `opus` alias (resolved via `ANTHROPIC_DEFAULT_OPUS_MODEL`) regardless of shape; they own judgment review. See [Preferring the 1M context variant for the facilitator](#preferring-the-1m-context-variant-for-the-facilitator-anthropic-api) if you want to pin the 1M context variant for the facilitator.
 
 > Model names are resolved through `ANTHROPIC_DEFAULT_OPUS_MODEL` and `ANTHROPIC_DEFAULT_SONNET_MODEL`. Sonnet and Opus are the defaults on Anthropic direct — not requirements. See [Custom model providers](#custom-model-providers) for how this works on Fireworks, OpenRouter, Bedrock, and others.
 

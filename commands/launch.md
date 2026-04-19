@@ -347,7 +347,7 @@ Use **TeamCreate** with a descriptive team name derived from the outcomes. For e
 ### 8b: You ARE the team lead
 
 You MUST use the **Skill** tool to invoke the mode skill. For built-in modes, use the `swarm:` prefix: `swarm:code-mode`, `swarm:writing-mode`, `swarm:general-mode`. For custom modes (user-defined in the project's `.claude/skills/`), use the unqualified name (e.g., `blog-mode`). The skill returns your operational spec for the rest of this team run. It defines:
-- Your **lead identity** (paste into the Step 8c facilitator brief's identity line and apply to your own role)
+- Your **lead identity** (apply to your own role)
 - The **facilitator identity line** (use in the Step 8c brief in place of the default code-mode identity)
 - **Mode-specific rules** (these extend the Step 1 hard rules — treat them as equally binding)
 - The **phase arc** for Step 8f
