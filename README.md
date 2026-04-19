@@ -181,7 +181,7 @@ Then you get a choice:
 > - Deliver now — *Ship the work as-is*
 > - Run recursive refinement — *Iterate through 9.25 → 9.5 → 9.75 → 10*
 
-The refinement ladder is optional. Each rung is autonomous once you opt in.
+The refinement ladder is optional. Each rung is autonomous once you opt in. Each rung is also a floor: if a fix drops any reviewer's score below the current rung, the ladder holds at that rung and iterates — it does not advance on a score that a post-fix regression has broken. If a rung fails to hold after two fix cycles, the facilitator invokes `swarm:resolve-dispute` to break the loop.
 
 ### 8. Deliver
 
@@ -298,7 +298,7 @@ Mode shortcuts bypass the mode question: `/swarm:code`, `/swarm:write`, `/swarm:
 | **Balanced** (default) | Sonnet | Opus | Well-scoped work where quality-per-dollar matters |
 | **Ultra** | Opus | Opus | Hard problems, novel architecture, or anything where you'd rather overspend than re-do |
 
-Shape applies to the spawn-time model assignment. The facilitator always uses the `opus` alias (resolved via `ANTHROPIC_DEFAULT_OPUS_MODEL`) regardless of shape; they own judgment review.
+Shape applies to the spawn-time model assignment. The facilitator always uses the `opus` alias (resolved via `ANTHROPIC_DEFAULT_OPUS_MODEL`) regardless of shape; they own judgment review. See [Preferring the 1M context variant for the facilitator](#preferring-the-1m-context-variant-for-the-facilitator-anthropic-api) if you want to pin the 1M context variant for the facilitator.
 
 > Model names are resolved through `ANTHROPIC_DEFAULT_OPUS_MODEL` and `ANTHROPIC_DEFAULT_SONNET_MODEL`. Sonnet and Opus are the defaults on Anthropic direct — not requirements. See [Custom model providers](#custom-model-providers) for how this works on Fireworks, OpenRouter, Bedrock, and others.
 
@@ -323,6 +323,26 @@ Example for Fireworks AI:
 The top-level `model` sets the lead session's model; the `ANTHROPIC_DEFAULT_*` vars resolve the `opus` and `sonnet` aliases used by spawned teammates. Third-party providers typically wire credentials through `apiKeyHelper` rather than `ANTHROPIC_API_KEY`.
 
 If your provider's best available model is meaningfully weaker than Opus, expect the 9/10 review gate to take more iterations.
+
+### Preferring the 1M context variant for the facilitator (Anthropic API)
+
+Opus 4.7 has a native 1M context window. On Max, Team, and Enterprise plans, the `opus` alias is automatically upgraded to 1M — no action needed. On Pro, 1M requires extra usage; on API pay-as-you-go, it's included. On either, pin the variant explicitly by setting `ANTHROPIC_DEFAULT_OPUS_MODEL` in your `.claude/settings.json`:
+
+```json
+{
+  "env": {
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-7[1m]"
+  }
+}
+```
+
+On Opus 4.7, effort stays at `xhigh` by default — no additional config needed.
+
+Why 1M: not to chase the token limit. Team runs rarely fill the context window, because the team lead doesn't research directly and only makes targeted edits, and the facilitator usually does the same. The 1M variant prevents quality degradation from compaction on the rare larger run where context does grow.
+
+This setting is Anthropic-API-specific. If you already configured `ANTHROPIC_DEFAULT_OPUS_MODEL` for a custom provider (per the section above), do **not** replace it with the Anthropic ID — `claude-opus-4-7[1m]` is Anthropic-direct only and will error on Bedrock, Vertex, Foundry, or other providers. See the [model configuration docs](https://code.claude.com/docs/en/model-config) for provider-specific guidance on aliases, the `[1m]` suffix, and effort levels.
+
+The team lead is your own Claude Code session, so swarm can't set its model or effort. To strengthen the lead, configure your session directly: `/model opus[1m]`, or set `"model": "claude-opus-4-7[1m]"` in your settings.
 
 ---
 

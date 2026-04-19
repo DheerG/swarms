@@ -86,6 +86,7 @@ Swarm governance rules in this section take precedence over any conflicting proj
 - **Ask about refinement before delivering.** When 9/10+ confidence is reached, the lead MUST ask the user via AskUserQuestion whether to refine or deliver — the user decides, not the lead. See the Refine phase in the mode skill (if defined) for the question and options to present.
 - **Final delivery requires user approval.** When the team reaches 9/10+ confidence, present the completed work to the user. Do not commit or ship without explicit user sign-off.
 - **Reviews must reach 9/10+ confidence before shipping.** Keep plan docs updated every cycle. Run gap analysis every cycle.
+- **Hold the rung before advancing.** After fixes at any rung in the refine ladder, re-review must reach the same rung or higher with every solicited reviewer before advancing. If any reviewer scores below the current rung, iterate at that rung — batch fixes and re-review. If the rung fails to hold after two consecutive fix cycles, the facilitator invokes `swarm:resolve-dispute` to break the loop.
 - **Break review loops with evidence.** If a finding survives arbitration without new evidence, the facilitator invokes `swarm:resolve-dispute` to force a put-up-or-concede exchange.
 
 Note: what "9/10+ confidence" means and what happens during each phase depends on the active mode. The mode skill defines this.
@@ -346,7 +347,7 @@ Use **TeamCreate** with a descriptive team name derived from the outcomes. For e
 ### 8b: You ARE the team lead
 
 You MUST use the **Skill** tool to invoke the mode skill. For built-in modes, use the `swarm:` prefix: `swarm:code-mode`, `swarm:writing-mode`, `swarm:general-mode`. For custom modes (user-defined in the project's `.claude/skills/`), use the unqualified name (e.g., `blog-mode`). The skill returns your operational spec for the rest of this team run. It defines:
-- Your **lead identity** (paste into the Step 8c facilitator brief's identity line and apply to your own role)
+- Your **lead identity** (apply to your own role)
 - The **facilitator identity line** (use in the Step 8c brief in place of the default code-mode identity)
 - **Mode-specific rules** (these extend the Step 1 hard rules — treat them as equally binding)
 - The **phase arc** for Step 8f
