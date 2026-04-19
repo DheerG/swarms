@@ -112,7 +112,7 @@ Editor-sandwich review:
 - Pass 1: Editor reads the draft against the direction document and editorial baseline, and probes for logical gaps, factual errors, and unsupported claims. Sets the bar.
 - Pass 2: Strategist and domain experts advise the editor (send to editor, not to lead).
 - Pass 3: Editor synthesizes a Revision Brief — a single, self-contained document; sub-agents cannot ask follow-up questions.
-- Lead applies the Revision Brief by spawning a sub-agent (Agent tool, no team_name) with the Brief and the current draft.
+- Lead applies the Revision Brief by spawning a sub-agent (Agent tool, no team_name) with the Brief, the current draft, and the editorial baseline.
 - Editor verifies the revision addressed the brief.
 - Editor confirms readiness to lead.
 
