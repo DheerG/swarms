@@ -104,7 +104,7 @@ Relay the facilitator's CONVERGED direction document verbatim to the user. Do no
 
 At the start of Execute, if the ship definition specifies a feature branch, create it before any work begins.
 
-Lead produces the prose artifact against the approved direction document by spawning a sub-agent (Agent tool, no team_name) with the direction document AND the editorial baseline as input. The direction document must be self-contained — sub-agents cannot ask follow-up questions. Lead coordinates logistics in parallel.
+Lead produces the prose artifact against the approved direction document by spawning a sub-agent (Agent tool, no team_name) with the direction document AND the editorial baseline as input. The direction document must be self-contained — sub-agents cannot ask follow-up questions. Lead coordinates logistics in parallel. The lead writes the sub-agent's prose output to the working file before soliciting review.
 
 ### Review
 
