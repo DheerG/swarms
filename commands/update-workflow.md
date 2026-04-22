@@ -69,7 +69,7 @@ And for the Workflow section:
 
 Compose the new file by merging consumer-owned sections (Step 2) with regenerated plugin-owned sections (Step 3):
 
-1. Frontmatter (consumer-owned, preserved as-is — but if `generated-by` is missing from the frontmatter, add `generated-by: swarm@<current version>` by reading the version from `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`; if present, update its value to the current version).
+1. Frontmatter (consumer-owned, preserved as-is — but if `generated-by` is missing from the frontmatter, add `generated-by: swarm@<current version>` by reading the version from `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`; if present, update its value to the current version). If `${CLAUDE_PLUGIN_ROOT}` is unset or the plugin.json read fails, skip the stamp rather than aborting the update — provenance is informational, not load-bearing, and the update must still succeed.
 2. Plugin-owned preamble (from Step 3).
 3. `## Settings` section (consumer-owned, preserved as-is).
 4. `## User-Provided Context` section (consumer-owned, preserved as-is).
@@ -92,7 +92,7 @@ If no consumer edits are detected in the Workflow section, omit this warning.
 **5b. Show the diff and ask.** Compute the textual diff between the current file contents (from Step 1) and the proposed file contents (from Step 4).
 
 - **If the diff is empty**: tell the user "`<name>` is already in sync with the current swarm template. No changes needed." Stop.
-- **If the diff is non-empty**: present the diff clearly (use unified diff format or a labeled "Before / After" split), with the Step 5a warning above it if any consumer edits were detected. Then use **AskUserQuestion**:
+- **If the diff is non-empty**: present the diff as a labeled "Before / After" split (not unified diff format — Before/After is readable without diff tooling and the audience for this command is workflow authors, not code reviewers), with the Step 5a warning above it if any consumer edits were detected. Then use **AskUserQuestion**:
   - question: "Apply this update to `.claude/commands/<name>.md`?"
   - header: "Apply"
   - options:
@@ -114,3 +114,5 @@ The Step 5a warning is load-bearing. A user who accepts the diff without noticin
 ## Scope
 
 This command updates the **shortcut command only**. It never reads or writes the mode skill. Mode skill drift — including the Refine and Deliver phase stubs in full custom modes that are plugin-owned boilerplate at generation time — is out of scope for this command. The mode skill is consumer-owned in its entirety from the moment it is generated; the consumer decides whether to update it manually.
+
+**To convert an existing full custom mode to a thin wrapper**, run `/swarm:create-workflow` and select "Thin wrapper" at Step 0.5 — it will generate a wrapper mode skill and shortcut in the same location, overwriting the old files. Move any domain content (Rules, Allowlist additions, Suggest-Members guidance) from the old mode skill into the new wrapper's additive sections manually before running, or merge afterward.

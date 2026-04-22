@@ -317,13 +317,15 @@ Pre-fill Refine and Deliver with these stubs:]
 
 ### Refine (optional)
 
-When the team reaches 9/10+ confidence, the lead asks the user via AskUserQuestion: question "9/10+ confidence reached. Run recursive refinement?", header "Refine", options "Deliver now" / "Run recursive refinement (9.25 → 9.5 → 9.75 → 10)".
+Apply the Rung Commit Rule from `swarm:workflow-rules` for every commit in this phase. Pick a mode-appropriate commit message format (e.g., `checkpoint: rung 9 — <one-line summary>` for the baseline, `refine: rung <score> — <one-line summary>` for 9.25/9.5/9.75/10).
 
-If "Deliver now": skip to Deliver. If "Run recursive refinement": starting at 9.25, the lead asks the team "What specific changes — surgical only, no new scope — would raise your score to [threshold]?" Lead implements, team re-reviews to confirm the threshold is met, then advances to the next rung. The sequence is 9.25 → 9.5 → 9.75 → 10. For the 10 rung, the lead asks: "What, if anything, would you still change? If nothing, say so." This loop is autonomous once the user opts in. After 10 is confirmed, proceed to Deliver.
+When the team reaches 9/10+ confidence, the lead commits the current state (baseline checkpoint), then asks the user via AskUserQuestion: question "9/10+ confidence reached. Run recursive refinement?", header "Refine", options "Deliver now" / "Run recursive refinement (9.25 → 9.5 → 9.75 → 10)".
+
+If "Deliver now": skip to Deliver. If "Run recursive refinement": starting at 9.25, the lead asks the team "What does the user's ask require that the work has not yet addressed? No new features — but bugs, gaps, regressions, and items once treated as optional that are now required for completeness count." Lead implements, team re-reviews to confirm the threshold is met. The facilitator sends CONFIDENCE REACHED with the rung score before the lead advances to the next rung. After each CONFIDENCE REACHED, the lead commits (rung commit) before advancing. The sequence is 9.25 → 9.5 → 9.75 → 10. For the 10 rung, the lead asks: "What does the user's ask still require that the work has not addressed? If nothing, say so explicitly." The rung-hold hard rule applies — see Step 1 hard rules. This loop is autonomous once the user opts in. After 10 is confirmed and committed, proceed to Deliver.
 
 ### Deliver
 
-When 9/10+ confidence is reached, present completed work to the user. Follow the ship definition from `.claude/swarm-ship.md` — execute the defined shipping steps with the user's approval. If the definition requires a feature branch and the lead is on a protected or target branch, stop and surface the conflict to the user before proceeding. Do not commit or ship without explicit user sign-off.
+When the lead reaches Deliver (via "Deliver now" at the Refine prompt, or after rung 10 is committed), present completed work to the user. Follow the ship definition from `.claude/swarm-ship.md` — execute the defined shipping steps with the user's approval. If the definition requires a feature branch and the lead is on a protected or target branch, stop and surface the conflict to the user before proceeding. The commit has already landed in Refine (at the baseline or the last rung commit) — do not commit again; begin from push/PR. Do not ship without explicit user sign-off.
 ```
 
 When generating both files (mode skill and shortcut command), omit all bracket comments, placeholder instructions, and conditional markers. Generated files should contain only filled content. If a conditional section doesn't apply (e.g., no Pre-flight Reads, no Information Flow, no intake-specific Pre-flight, no additions), omit the entire section including its heading. Remove extra blank lines left by omitted sections.
