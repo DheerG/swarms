@@ -213,7 +213,7 @@ If it does not exist, first check `git rev-parse --is-inside-work-tree`. If not 
 Modes using Recursive Refinement (9 → 9.25 → 9.5 → 9.75 → 10) apply this rule for every rung commit:
 
 - Each rung commit is a new commit — never amend.
-- Before committing, run `git branch --show-current`. If the ship definition specifies a branch strategy that the current branch does not satisfy, stop and present the user with Keep / Rename (or Switch) / Abort — never silently switch. "Keep" is the right answer when the current branch satisfies structural intent (dedicated branch off the target base) but not the naming template.
+- Before committing, run `git branch --show-current`. If the ship definition specifies a branch strategy that the current branch does not satisfy, stop and present the user with: **Keep** (current branch satisfies structural intent but not the naming template), **Rename** (`git branch -m <new-name>` — stays on this branch), **Switch** (`git checkout <correct-branch>` — only if the correct branch already exists and the working tree is clean), or **Abort** (stop work, resolve manually). Never silently change branch state.
 - If no branch strategy is specified, commit to the current branch. If that is the repo's default (main/master), inform the user and confirm before the first commit.
 - If nothing to commit at this rung, skip and continue.
 - If a pre-commit hook rejects the commit, stop and surface the hook output; do not retry with `--no-verify`.
