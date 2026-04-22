@@ -61,7 +61,7 @@ Swarm governance rules in this section take precedence over any conflicting proj
 - **Wait for ALL reviews before making changes.** Never fix findings mid-review. Wait for every team member to respond, then batch fixes.
 - **Intermediate review cycles are autonomous.** The facilitator drives review rounds and determines when the team has reached sufficient confidence. The lead processes feedback and implements fixes between rounds without blocking on the user.
 - **Ask about refinement before delivering.** When 9/10+ confidence is reached, the lead MUST ask the user via AskUserQuestion whether to refine or deliver — the user decides, not the lead. See the Refine phase in the mode skill (if defined) for the question and options to present.
-- **Final delivery requires user approval.** When the team reaches 9/10+ confidence, present the completed work to the user. Do not commit or ship without explicit user sign-off.
+- **Final delivery requires user approval.** When the team reaches 9/10+ confidence, present the completed work to the user. Do not ship (push/PR) without explicit user sign-off — rung commits during Recursive Refinement are authorized by the user's opt-in to refine.
 - **Reviews must reach 9/10+ confidence before shipping.** Keep plan docs updated every cycle. Run gap analysis every cycle.
 - **Name what's missing before scoring.** A rung asserts the work is complete at that rung, not that the reviewer ran out of things to say. Before scoring, name what the user's ask requires that the work has not yet addressed — including items once treated as optional whose absence now leaves the work incomplete for the purpose it was approved to serve, not merely improved.
 - **The facilitator and lead keep probing past self-caps.** Score convergence is not a rung transition. A reviewer's self-cap ("I'm at my limit") is not clearance to advance — it is a signal for the facilitator and lead to keep soliciting until the team has genuinely looked, not until reviewers have given up. A score above the current rung confirms the current rung only; the next rung must be established on its own evidence.
@@ -194,7 +194,7 @@ Use **CronCreate** with:
 
 **Ship definition check (before Research begins):**
 
-Read `.claude/swarm-ship.md`. If it exists, apply it at Execute (branch creation) and Deliver (shipping). Skip to the phase arc.
+Read `.claude/swarm-ship.md`. If it exists, apply it at Execute (branch creation), Refine (rung commits), and Deliver (shipping). Skip to the phase arc.
 
 If it does not exist, first check `git rev-parse --is-inside-work-tree`. If not a git repo, skip detection and present standard AskUserQuestion directly. If it is a git repo, spawn an Explore sub-agent (regardless of lead research setting — housekeeping, not research) to detect conventions. The sub-agent must NOT write files. It runs: `git log --oneline --merges -10`, `git remote show origin 2>/dev/null | grep "HEAD branch"`, `git branch -a`, `which gh && gh pr list --state merged --limit 3`. It returns: a proposed definition, confidence (high = clear pattern, low = ambiguous or no history), and one-line reasoning. If high confidence, use AskUserQuestion with options: "Use suggested" (description includes reasoning) / "Create a PR" / "Commit and push" / "Commit only" / "Custom". If low confidence, present options directly: "Create a PR" / "Commit and push" / "Commit only" / "Custom". For "Custom", ask: "How did you handle branching?" / "How did you ship?" For PR workflow, ask target branch and naming convention. Write the confirmed definition to `.claude/swarm-ship.md`:
 
@@ -208,11 +208,24 @@ If it does not exist, first check `git rev-parse --is-inside-work-tree`. If not 
 
 ---
 
+## Rung Commit Rule (Recursive Refinement)
+
+Modes using Recursive Refinement (9 → 9.25 → 9.5 → 9.75 → 10) apply this rule for every rung commit:
+
+- Each rung commit is a new commit — never amend.
+- Before committing, run `git branch --show-current`. If the ship definition specifies a branch strategy that the current branch does not satisfy, stop. Check whether the correct branch already exists (`git branch --list <correct-branch>`) and whether the working tree is clean. Present only the options that apply: **Keep** (current branch satisfies structural intent but not the naming template), **Rename** (`git branch -m <new-name>` — stays on this branch), **Switch** (`git checkout <correct-branch>` — omit unless the branch exists and the working tree is clean), or **Abort** (stop work, resolve manually). Never silently change branch state.
+- If no branch strategy is specified, commit to the current branch. If that is the repo's default (main/master), inform the user and confirm before the first commit.
+- If nothing to commit at this rung, skip and continue.
+- If a pre-commit hook rejects the commit, stop and surface the hook output; do not retry with `--no-verify`.
+- Commit messages: `checkpoint: rung 9 — <one-line summary>` for the baseline, `refine: rung <score> — <one-line summary>` for 9.25/9.5/9.75/10.
+
+---
+
 Follow the **phase arc from your mode skill**. Universal rules:
 - Lead does no research unless the user explicitly enabled it (exception: the ship definition detection sub-agent runs unconditionally)
 - Questions the team cannot resolve go to the user via AskUserQuestion — most consequential first, one at a time
 - Post-greenlight execution is autonomous — escalate only per the hard rules
 - Phase transitions that require user input (Approve, Refine, Deliver) are mandatory stops — do not advance past them autonomously
 - After 9/10+ review confidence, ask the user about recursive refinement before delivering — do not skip to Deliver
-- Final delivery requires explicit user sign-off — follow the ship definition from `.claude/swarm-ship.md` and execute the defined shipping steps with the user's approval
+- Final delivery requires explicit user sign-off — follow the ship definition from `.claude/swarm-ship.md` and execute the defined shipping steps with the user's approval. If a rung commit already landed in Refine (per the Rung Commit Rule above), the commit is done; Deliver begins from push/PR.
 - When an explicit shutdown request has been received, delete the pulse cron job using CronDelete
