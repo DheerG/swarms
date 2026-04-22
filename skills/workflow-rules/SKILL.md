@@ -156,13 +156,18 @@ Use **TeamCreate** with a descriptive team name derived from the outcomes.
 
 ### Invoke your mode skill
 
-Use the **Skill** tool to invoke your mode skill. It returns: Lead Identity, Facilitator Title, Facilitator Identity, Lead Allowlist (optional), Pre-flight Reads (optional), Mode-Specific Rules, Information Flow (optional), Outcomes Question (optional), Suggest-Members Guidance, and Phase Arc.
+Use the **Skill** tool to invoke your mode skill. A mode skill is either a **full mode** or an **extension mode**:
 
-Apply the lead identity to yourself. Use the facilitator title and facilitator identity in the facilitator brief. Treat mode-specific rules as equally binding to the hard rules above. If the mode skill includes **Pre-flight Reads**, read those files now — before spawning any agents. Carry their content into spawn prompts where relevant.
+- **Full mode.** Returns the complete spec: Lead Identity, Facilitator Title, Facilitator Identity, Lead Allowlist (optional), Pre-flight Reads (optional), Mode-Specific Rules, Information Flow (optional), Outcomes Question (optional), Suggest-Members Guidance, and Phase Arc.
+- **Extension mode.** The frontmatter declares `extends:` naming a base (e.g., `extends: swarm:code-mode`, `extends: swarm:writing-mode`, or `extends: swarm:general-mode`). Read the frontmatter directly from the mode skill file at `.claude/skills/<name>/SKILL.md` to detect this — do not rely on body prose. Invoke the base via the Skill tool **immediately after** the extension. The base provides Lead Identity, Facilitator, Phase Arc, and base rules/guidance. The extension adds supplementary Mode-Specific Rules and Suggest-Members Guidance.
 
-If the mode skill was already invoked earlier in the workflow (e.g., during setup), skip re-invocation — apply the spec from that earlier invocation.
+Apply the lead identity to yourself. Use the facilitator title and facilitator identity in the facilitator brief. Treat mode-specific rules (base plus extension additions) as equally binding to the hard rules above. If the mode skill (or its base) includes **Pre-flight Reads**, read those files now — before spawning any agents. Carry their content into spawn prompts where relevant.
 
-When invoking `swarm:suggest-members`, pass the mode skill's **Suggest-Members Guidance** and the confirmed outcomes as context.
+If the mode skill was already invoked earlier in the workflow (e.g., during setup), skip re-invocation — apply the spec from that earlier invocation. The same rule applies to a base mode invoked on behalf of an extension.
+
+When invoking `swarm:suggest-members`, pass the mode skill's **Suggest-Members Guidance** (for extension modes: the base's guidance plus the extension's supplement) and the confirmed outcomes as context.
+
+**Extension hard contract.** Extension modes cannot override the base's phase arc, lead identity, or facilitator. Their Mode-Specific Rules and Lead Allowlist contributions are additive-only — they may add new rules or new forbidden items, but cannot remove or contradict base-mode governance. If an extension declares anything that violates this contract (e.g., redefines a phase), treat the file as malformed: surface the conflict to the user before proceeding. The contract exists to keep wrappers thin and governance inherited; a mode that needs to change phase semantics should be authored as a full mode instead.
 
 ### Spawn the facilitator
 

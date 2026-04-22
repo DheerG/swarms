@@ -26,11 +26,73 @@ Validate: the name should be kebab-case. If not, convert it silently.
 
 ---
 
+## Step 0.5: Determine Workflow Type
+
+Before inferring the spec, decide whether this workflow should be a **thin wrapper** (extension of a built-in mode) or a **full custom mode**.
+
+**Infer the closest built-in mode** from the purpose:
+- Writing / editing / documentation / narrative → `swarm:writing-mode`
+- Code / engineering / building / debugging → `swarm:code-mode`
+- Anything else (research, synthesis, evaluation) → `swarm:general-mode`
+
+Use **AskUserQuestion**:
+
+- question: "How should this workflow be structured?"
+- header: "Type"
+- options:
+  - label: "Thin wrapper over [inferred base] (Recommended)"
+    description: "Inherits phase arc, lead identity, and facilitator from the base. You add intake (Pre-flight actions), an outcomes question, and additive Mode-Specific Rules + Suggest-Members Guidance. Stays in sync with swarm updates."
+  - label: "Full custom mode"
+    description: "Use when the workflow needs custom phase semantics, a distinct lead identity, or substantial domain governance. More surface to maintain; runs /swarm:update-workflow to stay current on wiring."
+  - label: "Wrapper — pick a different base"
+    description: "Create a thin wrapper but choose the base mode explicitly."
+
+**If "Thin wrapper over [inferred base]"**: store `type = wrapper`, `base_mode = <inferred>`. Proceed to Step 1.
+
+**If "Full custom mode"**: store `type = full_mode`. Proceed to Step 1.
+
+**If "Wrapper — pick a different base"**: use **AskUserQuestion**:
+- question: "Which base mode should this wrapper extend?"
+- header: "Base mode"
+- options:
+  - label: "swarm:code-mode"
+    description: "Engineering work — building, fixing, refactoring software"
+  - label: "swarm:writing-mode"
+    description: "Prose work — articles, essays, documentation, narrative"
+  - label: "swarm:general-mode"
+    description: "Work that doesn't fit a specific mode"
+
+Store `type = wrapper` and `base_mode = <selected>`. Proceed to Step 1.
+
+**Hard contract for wrappers.** Wrappers cannot override the base's phase arc, lead identity, or facilitator. Wrapper Mode-Specific Rules are additive-only. If the purpose statement implies the workflow needs to change phase semantics or replace the lead identity, prefer the full custom mode path — tell the user why when presenting the spec.
+
+---
+
 ## Step 1: Generate Spec
 
-From the **name** and **purpose statement**, infer the complete workflow spec. Do not ask the user any questions in this step — generate everything using smart defaults and present it for review. If the purpose statement is too thin to infer a domain confidently, make your best guess and note it in the spec presentation (e.g., "I inferred this as a writing workflow — adjust if that's wrong"). Do not stop to ask.
+From the **name** and **purpose statement**, infer the workflow spec. Do not ask the user any questions in this step — generate using smart defaults and present for review. If the purpose statement is too thin to infer confidently, make your best guess and note it in the spec presentation. Do not stop to ask.
 
-### Inference rules
+What you infer depends on the `type` chosen in Step 0.5:
+
+### Inference rules — wrapper workflows
+
+For a wrapper, the base mode provides Lead Identity, Facilitator, Phase Arc, and base Mode-Specific Rules. Do not re-infer those. Infer only:
+
+**Outcomes Question.** Infer from the purpose. Lives in the shortcut's `## Settings` section, not in the mode skill. Examples: "What's the GitHub issue number?" (intake-driven), "What are you building?" (code), "What do you want to write about?" (writing).
+
+**Pre-flight intake** (for the shortcut command — optional). Only include if the purpose implies setup actions: fetching external data (e.g., `gh issue view`), parsing structured arguments, creating branches before work, reading project-specific files. If the workflow is pure "mode + outcomes question," omit Pre-flight.
+
+**Mode-Specific Rules (additive).** Draft ONLY rules genuinely domain-specific to this workflow that don't exist in the base mode. Do NOT duplicate base mode rules or swarm's universal hard rules. Additive-only — cannot remove or contradict base rules. If the workflow has no domain-specific rules beyond the base, omit this section.
+
+**Lead Allowlist additions** (optional). Only include if the workflow needs domain-specific `Permitted` or `Forbidden` bullets beyond the base mode's allowlist. Additive-only — cannot remove base-mode forbidden items. If no additions are needed, omit this subsection.
+
+**Suggest-Members Guidance (supplement).** Domain-specific voices this workflow should favor, in addition to the base mode's guidance. Short, actionable. If the base's guidance is sufficient, omit this section.
+
+Do not infer Lead Identity, Facilitator, Phase Arc, Information Flow, or Pre-flight Reads for wrappers — they come from the base mode or don't apply.
+
+**Hard contract reminder.** If the inferred spec would require overriding the base's phase arc, lead identity, or facilitator, stop and tell the user: "This workflow's requirements exceed what a thin wrapper can express. Recommend authoring as a full custom mode instead." Then return to Step 0.5.
+
+### Inference rules — full custom modes
 
 **Closest built-in mode.** Identify which built-in mode (Code, Writing, General) is closest to this workflow's domain. Use its mode skill as a structural template for the generated spec.
 
@@ -66,7 +128,28 @@ Only include rules that would NOT apply to a generic swarm run — behavioral co
 
 ### Present the spec
 
-Present the complete spec in this format:
+**For wrapper workflows**, present in this format:
+
+> **Workflow: /[name]** (thin wrapper over [base_mode])
+>
+> **Purpose:** [one sentence]
+>
+> **Inherited from [base_mode]:** Lead Identity, Facilitator, Phase Arc, base Mode-Specific Rules, base Suggest-Members Guidance.
+>
+> **Outcomes Question (what the user is asked when they run the workflow):** "[inferred question]"
+>
+> **Pre-flight intake (runs before the team spawns):** [intake actions, or "None"]
+>
+> **Mode-Specific Rules (additive, on top of [base_mode]'s rules):**
+> [only domain-specific additive rules, bulleted, or "None"]
+>
+> **Lead Allowlist additions:**
+> - Permitted additions: [list, or "None"]
+> - Forbidden additions: [list, or "None"]
+>
+> **Suggest-Members Guidance (supplement to [base_mode]'s guidance):** [supplement text, or "None — the base mode's guidance is sufficient"]
+
+**For full custom modes**, present in this format:
 
 > **Workflow: /[name]**
 >
@@ -93,7 +176,7 @@ Present the complete spec in this format:
 > **Mode-Specific Rules (domain constraints on top of swarm's standard governance):**
 > [only domain-specific rules, bulleted]
 
-Then use **AskUserQuestion**:
+Then use **AskUserQuestion** (both paths):
 - question: "Does this spec look right?"
 - header: "Confirm"
 - options:
@@ -102,7 +185,7 @@ Then use **AskUserQuestion**:
   - label: "I have changes"
     description: "Let me adjust before generating"
 
-If "I have changes": ask what to change with a prompt that names the editable fields — e.g., "What would you like to adjust? You can change the lead title, facilitator role, phases, rules, outcomes question, or any other field above." Apply the change, re-present the **full** spec (not just the changed field — the user needs the complete picture). Repeat until confirmed.
+If "I have changes": ask what to change with a prompt that names the editable fields. Apply the change, re-present the **full** spec (not just the changed field — the user needs the complete picture). Repeat until confirmed.
 
 ---
 
@@ -112,12 +195,68 @@ If "I have changes": ask what to change with a prompt that names the editable fi
 
 Create the file at `.claude/skills/[name]-mode/SKILL.md` in the user's project directory (the current working directory). Use the **Write** tool.
 
+**Version stamp.** Before writing, read `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json` and extract the `version` field. Stamp `generated-by: swarm@<version>` in the frontmatter of every generated file. This is informational provenance — consumers can see what version of swarm produced the file and run `/swarm:update-workflow` to sync if needed.
+
+Pick the template that matches the `type` from Step 0.5.
+
+#### Template — wrapper mode skill (`type: wrapper`)
+
+Use this template. Omit any section whose inferred content was "None" (heading and body together). Fill `<base_mode>` from Step 0.5 (e.g., `swarm:code-mode`).
+
+```markdown
+---
+name: [name]-mode
+user-invocable: false
+extends: <base_mode>
+generated-by: swarm@<version>
+description: |
+  [Purpose sentence] mode. Extension of <base_mode>. Adds additive Mode-Specific Rules, Lead Allowlist additions, and Suggest-Members Guidance supplement. Phase arc, lead identity, and facilitator are inherited from the base mode.
+keywords: [domain-relevant keywords]
+---
+
+Return the following mode definition verbatim to the team lead. Do not summarize or interpret — the lead needs the full specification.
+
+---
+
+# [Name] Mode (extends <base_mode>)
+
+This is an extension mode. The team lead MUST invoke `<base_mode>` via the Skill tool to receive the base spec (lead identity, facilitator, phase arc, base rules, base suggest-members guidance). The sections below are additive overlays — they do not replace any part of the base spec.
+
+## Extension Contract
+
+- **Phase arc, Lead Identity, Facilitator:** inherited from `<base_mode>`, not overrideable.
+- **Mode-Specific Rules below:** additive to the base mode's rules. Cannot remove or contradict base rules.
+- **Lead Allowlist additions below:** additive. Permitted additions expand what the lead may do; Forbidden additions expand what the lead must not do. Cannot remove base-mode forbidden items.
+- **Suggest-Members Guidance below:** supplements the base mode's guidance.
+
+If this extension needs to change phase semantics, the lead identity, or the facilitator, it must be rewritten as a full mode.
+
+## Mode-Specific Rules (additive)
+
+[Each additive rule as a bullet, grouped by section if multiple concerns.]
+
+## Lead Allowlist (additions)
+
+**Permitted additions:**
+[- each permitted addition]
+
+**Forbidden additions:**
+[- each forbidden addition]
+
+## Suggest-Members Guidance (supplement)
+
+[Domain-specific voices that supplement the base mode's guidance. Short and actionable.]
+```
+
+#### Template — full custom mode (`type: full_mode`)
+
 Use this template, filling from the confirmed spec. Include `## Pre-flight Reads` only if domain knowledge files were specified. Include `## Information Flow` only if custom routing was defined. Omit those sections entirely (heading and body) if they don't apply.
 
 ```markdown
 ---
 name: [name]-mode
 user-invocable: false
+generated-by: swarm@<version>
 description: |
   [Purpose sentence] mode operational spec. Returns lead identity, facilitator identity, lead allowlist, pre-flight reads (optional), mode-specific rules, outcomes question (optional), suggest-members guidance, and phase arc.
 keywords: [domain-relevant keywords]
@@ -187,19 +326,20 @@ If "Deliver now": skip to Deliver. If "Run recursive refinement": starting at 9.
 When 9/10+ confidence is reached, present completed work to the user. Follow the ship definition from `.claude/swarm-ship.md` — execute the defined shipping steps with the user's approval. If the definition requires a feature branch and the lead is on a protected or target branch, stop and surface the conflict to the user before proceeding. Do not commit or ship without explicit user sign-off.
 ```
 
-When generating both files (mode skill and shortcut command), omit all bracket comments, placeholder instructions, and conditional markers. Generated files should contain only filled content. If a conditional section doesn't apply (e.g., no Pre-flight Reads, no Information Flow, no intake-specific Pre-flight), omit the entire section including its heading. Remove extra blank lines left by omitted sections.
+When generating both files (mode skill and shortcut command), omit all bracket comments, placeholder instructions, and conditional markers. Generated files should contain only filled content. If a conditional section doesn't apply (e.g., no Pre-flight Reads, no Information Flow, no intake-specific Pre-flight, no additions), omit the entire section including its heading. Remove extra blank lines left by omitted sections.
 
 ### 2b: Generate the shortcut command
 
 Create the file at `.claude/commands/[name].md` in the user's project directory. Use the **Write** tool.
 
-Use this template:
+Use this template (the shortcut is identical for wrapper and full-mode workflows — the mode skill invoked at step 6 is what differs):
 
 ```markdown
 ---
 description: [purpose sentence]
 argument-hint: [appropriate hint based on outcomes question]
 disable-model-invocation: true
+generated-by: swarm@<version>
 ---
 
 # /[name]
@@ -239,7 +379,24 @@ Apply the same cleanup rules from Step 2a: omit bracket comments, conditional ma
 
 ### 2c: Report
 
-Tell the user what was generated:
+Tell the user what was generated. Pick the message matching the `type` from Step 0.5.
+
+**For wrappers:**
+
+> **Generated files:**
+>
+> 1. `.claude/skills/[name]-mode/SKILL.md` — thin wrapper extending `[base_mode]`
+> 2. `.claude/commands/[name].md` — your shortcut command
+>
+> **To use it:** Run `/[name]` followed by your context.
+>
+> **What's inherited:** Phase arc, lead identity, facilitator, and base rules come from `[base_mode]` at runtime. The wrapper only carries domain-specific additions.
+>
+> **To customize:** Edit the wrapper to adjust additive rules, allowlist additions, or the suggest-members supplement. If you need phase-arc changes or a distinct lead identity, re-run `/swarm:create-workflow` and pick Full custom mode.
+>
+> **To keep current:** Run `/swarm:update-workflow [name]` to refresh the shortcut wiring when the plugin updates. The wrapper mode skill inherits from the base, so governance changes in the base apply automatically.
+
+**For full custom modes:**
 
 > **Generated files:**
 >
@@ -250,4 +407,6 @@ Tell the user what was generated:
 >
 > **To customize:** Edit the mode skill to adjust phases, rules, or team guidance. The shortcut command rarely needs changes — it's thin wiring.
 >
-> **Swarm governance:** Hard rules, briefing templates, and team protocol come from swarm via `swarm:workflow-rules`. Your mode skill provides the domain-specific layer. Keep your swarm plugin updated to get governance improvements.
+> **To keep current:** Run `/swarm:update-workflow [name]` to refresh the shortcut wiring when the plugin updates. The mode skill is consumer-owned and never touched by updates.
+>
+> **Swarm governance:** Hard rules, briefing templates, and team protocol come from swarm via `swarm:workflow-rules`. Your mode skill provides the domain-specific layer.
