@@ -208,11 +208,24 @@ If it does not exist, first check `git rev-parse --is-inside-work-tree`. If not 
 
 ---
 
+## Rung Commit Rule (Recursive Refinement)
+
+Modes using Recursive Refinement (9 → 9.25 → 9.5 → 9.75 → 10) apply this rule for every rung commit:
+
+- Each rung commit is a new commit — never amend.
+- Before committing, run `git branch --show-current`. If the ship definition specifies a branch strategy that the current branch does not satisfy, stop and present the user with Keep / Rename (or Switch) / Abort — never silently switch. "Keep" is the right answer when the current branch satisfies structural intent (dedicated branch off the target base) but not the naming template.
+- If no branch strategy is specified, commit to the current branch. If that is the repo's default (main/master), inform the user and confirm before the first commit.
+- If nothing to commit at this rung, skip and continue.
+- If a pre-commit hook rejects the commit, stop and surface the hook output; do not retry with `--no-verify`.
+- Commit messages: `checkpoint: rung 9 — <one-line summary>` for the baseline, `refine: rung <score> — <one-line summary>` for 9.25/9.5/9.75/10.
+
+---
+
 Follow the **phase arc from your mode skill**. Universal rules:
 - Lead does no research unless the user explicitly enabled it (exception: the ship definition detection sub-agent runs unconditionally)
 - Questions the team cannot resolve go to the user via AskUserQuestion — most consequential first, one at a time
 - Post-greenlight execution is autonomous — escalate only per the hard rules
 - Phase transitions that require user input (Approve, Refine, Deliver) are mandatory stops — do not advance past them autonomously
 - After 9/10+ review confidence, ask the user about recursive refinement before delivering — do not skip to Deliver
-- Final delivery requires explicit user sign-off — follow the ship definition from `.claude/swarm-ship.md` and execute the defined shipping steps with the user's approval. If the mode's Refine phase committed at a rung (e.g., `checkpoint: rung 9` or a `refine: rung <score>` commit), the commit has already landed; Deliver begins from push/PR.
+- Final delivery requires explicit user sign-off — follow the ship definition from `.claude/swarm-ship.md` and execute the defined shipping steps with the user's approval. If a rung commit already landed in Refine (per the Rung Commit Rule above), the commit is done; Deliver begins from push/PR.
 - When an explicit shutdown request has been received, delete the pulse cron job using CronDelete
