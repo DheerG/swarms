@@ -92,7 +92,9 @@ The target repo may carry codebase-specific and path-specific review standards a
    - 404 → skip silently (no rules file at that path).
    - 422 (invalid ref) → follow the non-404 path below; likely transient or repo-state issue.
    - Network timeout → follow the non-404 path below.
+   - `type: "symlink"` response (GitHub returns this instead of base64 content for symlinked paths) → log lead-side "rule file at `<path>` is a symlink, skipped," proceed.
    - Any other non-404 error (rate limit, auth, outage) → record lead-side for audit (not surfaced in briefings, not surfaced to the user), proceed without that file. Never block the review on a rules fetch failure.
+   - **All-404 diagnostic.** If every candidate fetch (including the root) returns 404, record lead-side: "rules walk returned all-404 — base ref `<baseRefName>` may be stale (e.g., default branch renamed after PR opened)." This is a diagnostic note, not a gate or refusal — the review still proceeds. It flags the silent-failure mode where careful rules authoring goes unused because `gh api ...?ref=<stale-name>` 404s on every path.
 
 4. **Deduplicate and enforce size cap.** Order results root-first by path. Total rule-content budget across all collected files: ~1000 lines. If exceeded, truncate greedily from largest file to smallest until the total is within budget — each truncation marked with `[rule file truncated at line N — full file at <dir>/.claude/review-rules.md]`. If a single file exceeds the cap on its own, truncate it to the full budget and omit all remaining files entirely (their presence is noted lead-side for audit). This bounds context and nudges authors who wrote one giant file to split into per-path files.
 
