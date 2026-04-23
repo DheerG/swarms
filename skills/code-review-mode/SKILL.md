@@ -68,7 +68,7 @@ drives the roundtable — questions severity calls, probes for missed findings, 
 
 ### Facilitator
 
-- **Facilitator watches the wire.** On each pulse, the facilitator checks recent lead-reviewer exchanges.
+- **Facilitator watches the wire.** On each pulse, the facilitator checks recent lead-reviewer exchanges to assess whether conditions for its next signal are met.
 
 ### Rule Candidates
 
@@ -148,7 +148,7 @@ When 9/10+ is reached, ask the user via AskUserQuestion: "9/10+ confidence reach
 
 If "Deliver now": skip to Deliver. If "Run recursive refinement": each rung targets a specific quality pass on the review document:
 - **9.25: accuracy** — every finding cites a real diff line; no claim contradicts the actual diff.
-- **9.5: completeness + severity consistency** — no converged finding was dropped; severity labels are internally consistent with the codebase rules applied and the finding's own stated impact. Severity recalibration against stated rationale is legitimate; escalation based on reviewer preference alone is not.
+- **9.5: severity consistency** — severity labels are internally consistent with the codebase rules applied and the finding's own stated impact. Severity recalibration against stated rationale is legitimate; escalation based on reviewer preference alone is not.
 - **9.75: actionability** — each blocking/should-fix is unambiguous enough for the PR author to act without a follow-up question.
 - **10: definitive record** — the report is the definitive record of what the team saw in the diff.
 
@@ -165,4 +165,4 @@ Present the review report to the user. Use AskUserQuestion: "Review ready. How s
 
 Never approve the PR (no `gh pr review --approve`), never modify the PR itself (no commits to the PR branch, no suggestions-as-commits). Do not post without explicit user selection of option 2, 3, or 4.
 
-**Rule candidates follow-up.** After the delivery option is handled, if the team surfaced rule candidates during Review that passed the two-site threshold, present each candidate to the user and ask which (if any) to write to the target repo. Invoke `/swarm:code-review-rule` against the target repo for each selected candidate. If no candidates passed the threshold, skip this step silently.
+**Rule candidates follow-up.** After the delivery option is handled, if the team surfaced rule candidates during Review that passed the two-site threshold, present each candidate to the user and ask which (if any) to adopt. The lead does not write rules itself — `/swarm:code-review-rule` appends to `.claude/review-rules.md` in its invoking directory, so the user runs the command in the target repo. For each selected candidate, surface the candidate text and instruct the user to run `/swarm:code-review-rule` in the target repo with that text. If no candidates passed the threshold, skip this step silently.
