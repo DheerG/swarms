@@ -117,7 +117,7 @@ The standard hard-rule escalation path still applies (see Step 1: "scope needs t
 
 ### Execute
 
-Lead drafts the review document from the synthesized findings. **No modifications to the target repo.** Write the report to `/tmp/swarm-reviews/<owner>-<repo>-pr-<N>-<short-title>.md` (owner/repo prefix prevents cross-repo PR-number collisions).
+Lead drafts the review document from the synthesized findings. **No modifications to the target repo.** Ensure `/tmp/swarm-reviews/` exists (`mkdir -p /tmp/swarm-reviews/`) and write the report to `/tmp/swarm-reviews/<owner>-<repo>-pr-<N>-<short-title>.md` (owner/repo prefix prevents cross-repo PR-number collisions).
 
 Report structure:
 1. One-line PR summary (from the PR description)
