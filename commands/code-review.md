@@ -80,6 +80,8 @@ The target repo may carry codebase-specific and path-specific review standards a
 
 1. **Enumerate candidate directories.** For each changed file in the PR, take each of its ancestor directories from repo root to the file's parent. Example: a PR touching `apps/web/Button.tsx` and `apps/shared/api.ts` yields candidates `./`, `apps/`, `apps/web/`, `apps/shared/`. Deduplicate, sort root-first.
 
+   **Candidate cap.** If the deduplicated list exceeds **20 unique directories** or **3 levels deep from root**, skip the rules walk entirely. Record lead-side that the PR is too wide for path-specific rules; proceed without any. This prevents `gh api` call floods on monorepo-wide PRs. The reviewer still has the PR content; only path-scoped rules are skipped.
+
 2. **Fetch each candidate rule file.** Strip any trailing `/` from candidate dir paths before URL construction (avoids a `//` in the path). For each unique directory `<dir>`, run:
    - Root directory (empty or `.`): `gh api "repos/<owner>/<repo>/contents/.claude/review-rules.md?ref=<baseRefName>"`
    - Any other directory: `gh api "repos/<owner>/<repo>/contents/<dir>/.claude/review-rules.md?ref=<baseRefName>"`
@@ -92,7 +94,7 @@ The target repo may carry codebase-specific and path-specific review standards a
    - Network timeout → follow the non-404 path below.
    - Any other non-404 error (rate limit, auth, outage) → record lead-side for audit (not surfaced in briefings, not surfaced to the user), proceed without that file. Never block the review on a rules fetch failure.
 
-4. **Deduplicate and enforce size cap.** Order results root-first by path. Total rule-content budget across all collected files: ~1000 lines. If exceeded, truncate the largest file(s) first with a trailing marker: `[rule file truncated at line N — full file at <dir>/.claude/review-rules.md]`. This bounds context and nudges authors who wrote one giant file to split into per-path files.
+4. **Deduplicate and enforce size cap.** Order results root-first by path. Total rule-content budget across all collected files: ~1000 lines. If exceeded, truncate greedily from largest file to smallest until the total is within budget — each truncation marked with `[rule file truncated at line N — full file at <dir>/.claude/review-rules.md]`. If a single file exceeds the cap on its own, truncate it to the full budget and omit all remaining files entirely (their presence is noted lead-side for audit). This bounds context and nudges authors who wrote one giant file to split into per-path files.
 
 5. **Store the ordered rule-file list** for inclusion in the resolved User-Provided Context at Workflow step 4. If no rule files were found, store nothing — the rules section will be omitted entirely (silent no-op).
 

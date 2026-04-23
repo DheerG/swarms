@@ -64,7 +64,7 @@ Mode skills are invoked by the team lead at runtime (Step 8b) using the Skill to
 Users extend swarm by creating custom mode skills in their project's `.claude/skills/` directory. Two variants are supported:
 
 - **Full custom mode** — carries its own Lead Identity, Facilitator, Phase Arc, and rules. Use when the workflow's governance truly differs from the built-in modes.
-- **Thin wrapper (extension mode)** — declares `extends: swarm:code-mode | swarm:writing-mode | swarm:general-mode` in frontmatter and carries only additive overlays. Phase arc, lead identity, and facilitator are inherited from the base at runtime; extensions add Mode-Specific Rules (additive), Lead Allowlist additions, and a Suggest-Members Guidance supplement.
+- **Thin wrapper (extension mode)** — declares `extends: swarm:code-mode | swarm:writing-mode | swarm:general-mode | swarm:code-review-mode` in frontmatter and carries only additive overlays. Phase arc, lead identity, and facilitator are inherited from the base at runtime; extensions add Mode-Specific Rules (additive), Lead Allowlist additions, and a Suggest-Members Guidance supplement. Any full custom mode shipped with the plugin is a valid wrapper base.
 
 Entry points:
 
@@ -76,7 +76,7 @@ Entry points:
 
 **Extension hard contract.** Wrappers cannot override the base's phase arc, lead identity, or facilitator. Their Mode-Specific Rules and Lead Allowlist additions are additive-only — they may add but never remove or contradict base-mode governance. A workflow that needs to change phase semantics must be authored as a full custom mode.
 
-**Custom mode skill interface — full mode:**
+**Full custom mode skill interface (including built-in plugin modes):**
 1. Lead Identity
 2. Facilitator Title
 3. Facilitator Identity
@@ -107,6 +107,7 @@ Generated files carry a `generated-by: swarm@<version>` frontmatter stamp — in
 ## Development Notes
 
 - No build step, no tests, no linter. The deliverables are markdown prompts.
+- **`disable-model-invocation: true`** frontmatter on command files tells Claude Code to hide the command from model-suggested invocations — users invoke it explicitly via `/swarm:<name>`. All swarm shortcut commands use this flag; remove only if a command should be proactively offered by the model.
 - `REFERENCE_PROMPT.md` is gitignored — it's the original requirements doc, kept locally for reference.
 - Plugin enablement requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS: "1"` in Claude Code settings.
 - **Governance sync.** `skills/workflow-rules/SKILL.md` inlines the hard rules from launch.md Step 1. When updating hard rules in launch.md, propagate changes to `workflow-rules/SKILL.md`. launch.md Step 1 is the canonical source.

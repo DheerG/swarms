@@ -47,6 +47,7 @@ leaves the review authorship to the team lead.
   2. When the fix is the logical complement of the problem statement (e.g., two systems disagreeing — naming both sides IS the finding, and stating the consistent value completes the problem rather than prescribing a fix).
 - **Severity is mandatory.** Every finding is tagged `blocking`, `should-fix`, or `nit`.
 - **Location is mandatory.** Every finding cites `file:line` or `file:symbol`. Findings without location are lead-rejected.
+- **State findings assertively.** Hedged phrasing ("ideally," "perhaps," "generally," "might want to") weakens findings and makes it easy for PR authors to dismiss them; strip hedges when drafting the finding body.
 
 ### Duplication Routing
 

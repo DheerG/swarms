@@ -17,8 +17,10 @@ $ARGUMENTS
 - **Per-rule target:** one sentence, ≤ ~120 characters.
 - **Per-rule soft cap:** two sentences or >120 characters. Exceed → the command offers a condensed alternative; user picks condensed or original.
 - **Per-rule hard cap:** three sentences. Exceed → the command refuses and asks the user to rewrite.
-- **Per-file warn:** 20 rules — the command prompts for confirmation before writing.
-- **Per-file hard stop:** 30 rules — the command refuses to append and asks the user to consolidate existing rules first.
+- **Per-file warn (rule count):** 15 rules — the command prompts for confirmation before writing. Gives 15 rules of headroom before the first warning.
+- **Per-file hard stop (rule count):** 30 rules — the command refuses to append and asks the user to consolidate existing rules first.
+- **Per-file warn (line count):** 100 lines — the command notes "file is N lines; files over 100 lines are harder for reviewers to apply" before writing.
+- **Per-file soft stop (line count):** 200 lines — the command prompts for confirmation via AskUserQuestion before writing.
 - **Canonical phrasing patterns:** `never X`, `must X`, `prefer X over Y`, `avoid Y`. The command nudges drafts that don't start with a directive verb toward one of these forms.
 - **Hedging flag:** drafts containing `generally`, `when possible`, `try to`, `might want to`, `when it makes sense`, `if you can`, or similar hedging tokens → the command surfaces a nudge suggesting an imperative rewrite. The nudge is visible, not a refusal.
 - **Dated entries:** every rule is prefixed with an HTML comment — `<!-- added YYYY-MM-DD -->` — visible in raw markdown, invisible when rendered. Serves as a staleness audit signal for anyone grepping the raw file; reviewers do not surface it.
@@ -68,10 +70,15 @@ If the user replies with empty text, use the default. Resolve the target directo
 
 Compute target path: `<target-directory>/.claude/review-rules.md`.
 
-- If the file exists, count rules (lines starting with `-` or `*` at indent level 0).
-  - If count ≥ 30: refuse. Tell the user: "`<path>` already has N rules (hard cap 30). Consolidate or split into a nested path before adding more." Stop.
-  - If count ≥ 20: use AskUserQuestion: "`<path>` has N rules — append anyway?", options "Yes, append" / "Cancel." If Cancel, stop.
+- If the file exists, count rules (lines starting with `-` or `*` at indent level 0) AND count total file lines.
+  - **Rule-count checks:**
+    - If count ≥ 30: refuse. Tell the user: "`<path>` already has N rules (hard cap 30). Consolidate or split into a nested path before adding more." Stop.
+    - If count ≥ 15: use AskUserQuestion: "`<path>` has N rules — append anyway?", options "Yes, append" / "Cancel." If Cancel, stop.
+  - **Line-count checks:**
+    - If lines ≥ 200: use AskUserQuestion: "`<path>` is N lines — files over 200 lines are hard for reviewers to apply. Append anyway?", options "Yes, append" / "Cancel." If Cancel, stop.
+    - If lines ≥ 100 (and < 200): print a warning inline ("file is N lines; files over 100 lines are harder for reviewers to apply") but proceed without a prompt.
 - Read the existing file and check whether the new rule is textually or semantically similar to any existing rule (overlap of key nouns/verbs is a good signal). If so, surface the similar rule and ask via AskUserQuestion: "This looks similar to an existing rule: '<existing text>'. Append anyway?", options "Yes, append" / "Cancel."
+- **`.gitignore` check.** Run `git check-ignore -q <path>` on the target file path. If the exit status is 0 (path is ignored), print a warning: "`<path>` is excluded by `.gitignore` — the rule file won't be tracked by git. Consider updating `.gitignore` if you want rules committed." Do not refuse; the user may have intentional reasons.
 
 ### 7. Write (or dry-run output).
 
@@ -93,7 +100,7 @@ If dry-run mode:
 
 Otherwise:
 
-1. `mkdir -p <target-directory>/.claude` (creates the directory if absent).
+1. `mkdir -p <target-directory>/.claude` (creates the directory if absent; assumes a POSIX-compatible shell — Git Bash, WSL, or Unix).
 2. If `<path>` does not exist, create it with a header line `# Code-Review Rules` and a blank line, then the two rule lines.
 3. If `<path>` exists, append a blank line (if not already present at EOF) followed by the two rule lines.
 
@@ -112,3 +119,4 @@ Print:
 - **Do not read or analyze other files in the repo.** This command only touches `<target-directory>/.claude/review-rules.md`.
 - **Do not open a swarm team, invoke mode skills, or read launch.md.** This is a single-file authoring tool; swarm governance doesn't apply.
 - **One rule per invocation.** Users who want to add multiple rules re-run the command.
+- **HTML date comments are invisible in GitHub's rendered markdown view.** They're only visible in raw file view, via `grep`, or locally — so the date signal doesn't pollute PR-preview screenshots but is fully available to anyone auditing rule rot.
