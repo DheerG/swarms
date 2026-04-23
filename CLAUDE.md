@@ -61,7 +61,7 @@ Mode skills are invoked by the team lead at runtime (Step 8b) using the Skill to
 Users extend swarm by creating custom mode skills in their project's `.claude/skills/` directory. Two variants are supported:
 
 - **Full custom mode** — carries its own Lead Identity, Facilitator, Phase Arc, and rules. Use when the workflow's governance truly differs from the built-in modes.
-- **Thin wrapper (extension mode)** — declares `extends: swarm:code-mode | swarm:writing-mode | swarm:general-mode` in frontmatter and carries only additive overlays. Phase arc, lead identity, and facilitator are inherited from the base at runtime; extensions add Mode-Specific Rules (additive), Lead Allowlist additions, and a Suggest-Members Guidance supplement.
+- **Thin wrapper (extension mode)** — declares `extends: swarm:code-mode | swarm:writing-mode | swarm:general-mode` in frontmatter and carries only additive overlays. Phase arc, lead identity, and facilitator are inherited from the base at runtime; extensions add Mode-Specific Rules (additive), Lead Allowlist additions, and a Suggest-Members Guidance supplement. Any full custom mode shipped with the plugin is a valid wrapper base.
 
 Entry points:
 
