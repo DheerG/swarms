@@ -80,7 +80,7 @@ The target repo may carry codebase-specific and path-specific review standards a
 
 1. **Enumerate candidate directories.** For each changed file in the PR, take each of its ancestor directories from repo root to the file's parent. Example: a PR touching `apps/web/Button.tsx` and `apps/shared/api.ts` yields candidates `./`, `apps/`, `apps/web/`, `apps/shared/`. Deduplicate, sort root-first.
 
-   **Candidate cap.** If the deduplicated list exceeds **20 unique directories** or **3 levels deep from root**, skip the rules walk entirely. Record lead-side that the PR is too wide for path-specific rules; proceed without any. This prevents `gh api` call floods on monorepo-wide PRs. The reviewer still has the PR content; only path-scoped rules are skipped.
+   **Candidate cap.** If the deduplicated list exceeds **20 unique directories**, skip the rules walk entirely. Record lead-side that the PR is too wide for path-specific rules; proceed without any. This prevents `gh api` call floods on monorepo-wide PRs. The reviewer still has the PR content; only path-scoped rules are skipped. (Depth alone is not a disqualifier — standard repo layouts like `src/components/Button/index.tsx` or `internal/pkg/auth/handler.go` are deep by design.)
 
 2. **Fetch each candidate rule file.** Strip any trailing `/` from candidate dir paths before URL construction (avoids a `//` in the path). For each unique directory `<dir>`, run:
    - Root directory (empty or `.`): `gh api "repos/<owner>/<repo>/contents/.claude/review-rules.md?ref=<baseRefName>"`
@@ -131,7 +131,7 @@ If codebase review rules were found in step 5, the confirmation line should note
    Size: +<additions> −<deletions> across <changedFiles> files
    URL: <url>
 
-   PR body:
+   PR body (omit this section if the PR body is empty or whitespace-only):
    <body>
 
    Applicable review rules (from target repo's .claude/review-rules.md at each applicable path):

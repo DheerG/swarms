@@ -47,7 +47,7 @@ leaves the review authorship to the team lead.
   2. When the fix is the logical complement of the problem statement (e.g., two systems disagreeing — naming both sides IS the finding, and stating the consistent value completes the problem rather than prescribing a fix).
 - **Severity is mandatory.** Every finding is tagged `blocking`, `should-fix`, or `nit`.
 - **Location is mandatory.** Every finding cites `file:line` or `file:symbol`. Findings without location are lead-rejected.
-- **State findings assertively.** Hedged phrasing ("ideally," "perhaps," "generally," "might want to") weakens findings and makes it easy for PR authors to dismiss them; strip hedges when drafting the finding body.
+- **State findings assertively.** Hedged phrasing — the same tokens flagged by `/swarm:code-review-rule`'s authoring-side nudge (`generally`, `in general`, `when possible`, `try to`, `might want to`, `when it makes sense`, `if you can`, `if applicable`, `probably`, `ideally`, `somewhat`, `should try`, `where feasible`, `where practical`, `as much as possible`) — weakens findings and makes it easy for PR authors to dismiss them; strip hedges when drafting the finding body.
 
 ### Duplication Routing
 
@@ -61,6 +61,7 @@ leaves the review authorship to the team lead.
 - **Severity follows rule phrasing.** Strong imperative forms — "never X" / "must X" / "always X" / "don't X" / "do not X" / "ensure X" / "require X" — → blocking-level. Softer directive forms — "prefer X over Y" / "avoid Y" — → should-fix or nit depending on diff context. Hedged forms — "generally prefer X" / "try to avoid Y" — → typically nit, or drop if the diff context doesn't clearly contradict. Rule authors do not set severity tags; you judge from phrasing.
 - **Contradictions signal maintenance, not violations.** If a nearer-path rule directly contradicts a root rule without explicit exception language (e.g., root says "prefer composition," `legacy/` is silent; both apply via root-to-leaf append and there's no conflict — but if `legacy/` said "prefer inheritance" without framing it as an exception, that's a conflict), flag the conflict to the lead as a separate note — it's a rules-maintenance signal for the codebase owner, not a finding on the PR.
 - **Observed rule/code divergence is a normal finding.** If the code in the diff appears to diverge from a stated rule but looks intentional, note the tension in the finding body as a normal finding ("this code may be diverging from the stated convention; verify with the author") — no special rot signal, no separate finding class.
+- **Throttle noisy-rule findings.** If a single rule flags the same pattern at more than three diff locations, consolidate into ONE finding at the first instance with a count suffix ("also at N other sites: `file:line`, `file:line`, ..."). If the pattern is pervasive across many files, note it in the Rules-maintenance signals section — "rule X flags N instances in this PR; consider whether the rule reflects current team convention." This prevents a badly-authored rule ("never use map()") from burying legitimate findings in noise.
 
 ### Team Lead
 

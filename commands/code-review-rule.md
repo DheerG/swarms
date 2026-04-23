@@ -52,11 +52,12 @@ Wait for the user's reply.
 Apply checks in order. The phrasing-nudge pass (step 4.2) is the load-bearing value of this command — ambiguity in rule phrasing makes reviewers drop findings, so the rewrite suggestion is not optional even when the draft parses fine. Validation runs before the directory prompt so the user's input isn't wasted when the draft fails a hard cap.
 
 1. **Sentence count.** Rough heuristic: count `.`, `?`, `!` terminators, excluding common abbreviations (`e.g.`, `i.e.`, etc.). If > 3 sentences, tell the user the hard cap is three sentences and ask them to rewrite. Return to step 3.
-2. **Phrasing + hedging pass.** Check two things:
-   - Does the rule open with a canonical directive verb (`never`, `must`, `prefer`, `avoid`, `always`, `don't`, `ensure`, `require`, `do not`)? If not, propose an imperative rewrite.
-   - Does the rule contain hedging tokens (`generally`, `in general`, `when possible`, `try to`, `might want to`, `when it makes sense`, `if you can`, `if applicable`, `probably`, `ideally`, `somewhat`, `should try`, `where appropriate`, `where feasible`, `where practical`, `as much as possible`)? If so, propose a rewrite that removes the hedge and commits to an imperative.
-   - If either check fires, use AskUserQuestion: question "Reviewers may treat this phrasing as low-priority. Use the imperative rewrite?", options "Use rewrite (show rewrite text in the description)" / "Keep original (show original in the description)." Prefer the rewrite in the recommended position (first option).
-3. **Length check.** If > 1 sentence or > ~120 characters, compose a condensed version that preserves the semantic core. Use AskUserQuestion: question "Your rule is long (N sentences / M chars) — use the condensed version?", options "Use condensed (show condensed text in description)" / "Keep original (show original in description)." If the condensed version would change meaning, surface that in the description.
+2. **Consolidated phrasing + length pass.** Detect all of the following in a single analysis, then emit ONE AskUserQuestion prompt with a single combined rewrite if any fired:
+   - **Non-canonical opener:** does the rule start with a directive verb (`never`, `must`, `prefer`, `avoid`, `always`, `don't`, `ensure`, `require`, `do not`)? If not, the rewrite should canonicalize it.
+   - **Hedging tokens:** does the rule contain any of `generally`, `in general`, `when possible`, `try to`, `might want to`, `when it makes sense`, `if you can`, `if applicable`, `probably`, `ideally`, `somewhat`, `should try`, `where feasible`, `where practical`, `as much as possible`? If so, the rewrite should remove the hedge and commit to an imperative. (Note: `where appropriate` is intentionally excluded — it scopes rather than hedges in natural imperative English, e.g. "avoid side effects where appropriate.")
+   - **Length:** is the rule > 1 sentence or > ~120 characters? If so, the rewrite should be a one-sentence condensed version that preserves the semantic core.
+
+   If any issue fires, compose ONE combined rewrite that addresses everything detected (imperative opener + hedge removal + length condensation as needed). Use AskUserQuestion: question "Reviewers may treat this phrasing as low-priority / it's long for a single rule. Use the imperative, tighter rewrite?" (adapt the question to which issues fired), options "Use rewrite (show rewrite text in the description)" / "Keep original (show original in the description)." Prefer the rewrite in the recommended position. One prompt per draft, not two or three.
 
 ### 5. Ask for the target directory.
 
@@ -118,5 +119,6 @@ Print:
 
 - **Do not read or analyze other files in the repo.** This command only touches `<target-directory>/.claude/review-rules.md`.
 - **Do not open a swarm team, invoke mode skills, or read launch.md.** This is a single-file authoring tool; swarm governance doesn't apply.
+- **Invoke outside an active swarm team run.** This command writes files; the read-only-member hard rule would conflict if a non-lead teammate invoked it during a team run. Safe for the lead (who is the sole file writer in swarm) and for solo use outside any team.
 - **One rule per invocation.** Users who want to add multiple rules re-run the command.
 - **HTML date comments are invisible in GitHub's rendered markdown view.** They're only visible in raw file view, via `grep`, or locally — so the date signal doesn't pollute PR-preview screenshots but is fully available to anyone auditing rule rot.
