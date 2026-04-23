@@ -18,7 +18,7 @@ $ARGUMENTS
 
 **If $ARGUMENTS contains a name and description** (has sentence structure, verbs, or a separator like `write-article — takes raw thoughts and produces a polished blog post`): extract both and proceed directly to Step 1.
 
-**If $ARGUMENTS appears to be a name only** (kebab-case identifier, no verb or sentence structure — e.g., `write-article`, `code-review`): use it as the workflow name. Ask one question (plain text): "What does this workflow do? What does the user get at the end?" Wait for their response. Then proceed to Step 1.
+**If $ARGUMENTS appears to be a name only** (kebab-case identifier, no verb or sentence structure — e.g., `write-article`): use it as the workflow name. Ask one question (plain text): "What does this workflow do? What does the user get at the end?" Wait for their response. Then proceed to Step 1.
 
 **If $ARGUMENTS is empty**: ask one question (plain text): "What's this workflow called, and what does it do? (e.g., `write-article — takes raw dictated thoughts and produces a polished blog post`)" Wait for their response. Parse the name and purpose. Then proceed to Step 1.
 
