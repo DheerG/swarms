@@ -22,11 +22,11 @@ Principal Engineer
 
 ## Facilitator Identity
 
-leaves the review authorship to the team lead.
+drives the roundtable — questions severity calls, probes for missed findings, and keeps the thread moving; leaves review authorship to the team lead.
 
 ## Lead Allowlist
 
-**Permitted:** read target-repo files for PR context (adjacent code, referenced functions, test fixtures, referenced issues via `gh issue view`, codebase review rules in `.claude/review-rules.md` files at any directory level); read-only `gh` and `git` operations against the target; write the review document to the invoking repo under `.claude/reviews/`.
+**Permitted:** read target-repo files for PR context (adjacent code, referenced functions, test fixtures, referenced issues via `gh issue view`, codebase review rules in `.claude/review-rules.md` files at any directory level); read-only `gh` and `git` operations against the target; write the review document to `/tmp/swarm-reviews/`.
 
 **Forbidden:** modifying any file in the target repo; staging, committing, or pushing in the target repo; `gh pr edit`, `gh pr review --approve`, suggestions-as-commits, or any other mutation of the PR itself.
 
@@ -64,6 +64,15 @@ leaves the review authorship to the team lead.
 - **Observed rule/code divergence is a normal finding.** If the code in the diff appears to diverge from a stated rule but looks intentional, note the tension in the finding body as a normal finding ("this code may be diverging from the stated convention; verify with the author") — no special rot signal, no separate finding class.
 - **Throttle noisy-rule findings.** If a single rule flags the same pattern at more than three diff locations, consolidate into ONE finding at the first instance with a count suffix ("also at N other sites: `file:line`, `file:line`, ..."). If the pattern is pervasive across many files, note it in the Rules-maintenance signals section — "rule X flags N instances in this PR; consider whether the rule reflects current team convention." This prevents a badly-authored rule ("never use map()") from burying legitimate findings in noise.
 - **Pre-existing adjacent-code inconsistencies are out of scope.** When reading adjacent code for PR context (permitted via the Lead Allowlist), cross-file inconsistencies that predate the PR are not findings. Note them as informational context in the finding body if they affect how the diff should be interpreted, but do not tag them with severity or cite them as violations — the PR only owns what it changed.
+- **Findings are scoped to the diff.** During Refine, "what's missing" means gaps in the review document — dropped findings, miscalibrated severity, unclear claims — not new observations about code the PR didn't change.
+
+### Facilitator
+
+- **Facilitator watches the wire.** On each pulse, the facilitator checks recent lead-reviewer exchanges.
+
+### Rule Candidates
+
+- **Rule candidates require two sites.** Reviewers may flag patterns as candidate codebase rules during Review. A candidate requires ≥2 diff sites where the pattern appears; single-site candidates are speculation and dropped.
 
 ### Team Lead
 
@@ -94,7 +103,7 @@ The lead does not advance to Converge until the facilitator sends RESEARCH COMPL
 
 ### Converge
 
-The facilitator runs a lightweight roundtable: each member posts findings, pushback happens on accuracy and severity, the lead synthesizes overlap into a single ranked findings list.
+The facilitator convenes the roundtable: questions each finding's severity, probes for missed patterns, and challenges weak rationale. The lead synthesizes overlap into a single ranked findings list.
 
 **Consolidation pass (lead-side):** after per-member findings come in, the lead scans for the same structural pattern appearing at multiple sites — duplication, inconsistency, stale cross-references — and routes each per the Duplication Routing rule above: accidental goes into findings; load-bearing goes into acknowledged structural patterns.
 
@@ -108,7 +117,7 @@ The standard hard-rule escalation path still applies (see Step 1: "scope needs t
 
 ### Execute
 
-Lead drafts the review document from the synthesized findings. **No modifications to the target repo.** Write the report to `.claude/reviews/pr-<N>-<short-title>.md` in the invoking repo (not the target repo).
+Lead drafts the review document from the synthesized findings. **No modifications to the target repo.** Write the report to `/tmp/swarm-reviews/<owner>-<repo>-pr-<N>-<short-title>.md` (owner/repo prefix prevents cross-repo PR-number collisions).
 
 Report structure:
 1. One-line PR summary (from the PR description)
@@ -125,17 +134,25 @@ No prescribed fixes (except the two Findings-Format exceptions). No congratulato
 
 Team verifies the report against the findings list: accuracy, completeness, actionability. Probes for findings dropped during drafting and for claims that don't match the diff.
 
+During Review, reviewers may additionally flag one-line rule candidates — patterns in the PR that suggest a codebase rule worth codifying. Lead dedupes and applies the two-site threshold (see Mode-Specific Rules).
+
 If concerns arise: lead edits, team re-reviews. The facilitator determines 9/10+ confidence and MUST send CONFIDENCE REACHED with the score to the lead.
 
 9/10+ means: every converged finding is in the report at the correct severity, no claim contradicts the diff, no fixes are prescribed (except the two exceptions), structural observations are supported by the findings they summarize, load-bearing patterns are routed to the acknowledged-patterns section not to findings, findings derived from codebase rules cite the rule verbatim, noisy-rule findings are consolidated per the Throttle Noisy-Rule Findings rule (not filed as one-finding-per-site), the rules-maintenance section captures any flagged contradictions, and the report is actionable without follow-up questions.
 
 ### Refine (optional)
 
-The rung ladder is a **confidence gate on the review document**, not a commit ladder. Code-review edits a single review document; committing intermediate drafts pollutes the invoking repo's git log with ephemeral artifacts. Do not commit at rung 9, 9.25, 9.5, or 9.75. The document lives uncommitted at `.claude/reviews/pr-<N>-<short-title>.md` throughout the rung ladder; the Deliver phase handles any final commit per the user's ship definition.
+The rung ladder is a **confidence gate on the review document**, not a commit ladder. Do not commit at rung 9, 9.25, 9.5, or 9.75. The document lives uncommitted at `/tmp/swarm-reviews/<owner>-<repo>-pr-<N>-<short-title>.md` throughout the rung ladder; the Deliver phase presents it per the options below.
 
 When 9/10+ is reached, ask the user via AskUserQuestion: "9/10+ confidence reached. Run recursive refinement?", header "Refine", options "Deliver now" / "Run recursive refinement (9.25 → 9.5 → 9.75 → 10)".
 
-If "Deliver now": skip to Deliver. If "Run recursive refinement": at each rung, the lead asks the team "What does the user's ask require that this review has not yet addressed? Findings missed, severities miscalibrated, structural patterns not seen, load-bearing vs. accidental misrouted — items once optional now required for completeness count." Lead edits, team re-reviews. The facilitator sends CONFIDENCE REACHED with the rung score; the lead advances. For rung 10 the lead asks: "What does the user's ask still require? If nothing, say so explicitly." The rung-hold hard rule applies. After 10 is confirmed, proceed to Deliver.
+If "Deliver now": skip to Deliver. If "Run recursive refinement": each rung targets a specific quality pass on the review document:
+- **9.25: accuracy** — every finding cites a real diff line; no claim contradicts the actual diff.
+- **9.5: completeness + severity consistency** — no converged finding was dropped; severity labels are internally consistent with the codebase rules applied and the finding's own stated impact. Severity recalibration against stated rationale is legitimate; escalation based on reviewer preference alone is not.
+- **9.75: actionability** — each blocking/should-fix is unambiguous enough for the PR author to act without a follow-up question.
+- **10: definitive record** — the report is the definitive record of what the team saw in the diff.
+
+At each rung, the lead asks the team: "What does the user's ask require that this review document has not yet addressed? Scope to the diff — dropped findings, miscalibrated severity, unclear claims. New observations about pre-existing code are not missing." Lead edits, team re-reviews. The facilitator sends CONFIDENCE REACHED with the rung score; the lead advances. For rung 10 the lead asks: "What does the user's ask still require? If nothing, say so explicitly." The rung-hold hard rule applies. After 10 is confirmed, proceed to Deliver.
 
 ### Deliver
 
@@ -148,4 +165,4 @@ Present the review report to the user. Use AskUserQuestion: "Review ready. How s
 
 Never approve the PR (no `gh pr review --approve`), never modify the PR itself (no commits to the PR branch, no suggestions-as-commits). Do not post without explicit user selection of option 2, 3, or 4.
 
-If the invoking repo's ship definition (`.claude/swarm-ship.md`) calls for committing work, the review document may be committed at this point per the ship definition — but only after the user has selected a delivery option and the report is final.
+**Rule candidates follow-up.** After the delivery option is handled, if the team surfaced rule candidates during Review that passed the two-site threshold, present each candidate to the user and ask which (if any) to write to the target repo. Invoke `/swarm:code-review-rule` against the target repo for each selected candidate. If no candidates passed the threshold, skip this step silently.
