@@ -64,7 +64,7 @@ drives the roundtable — questions severity calls, probes for missed findings, 
 - **Observed rule/code divergence is a normal finding.** If the code in the diff appears to diverge from a stated rule but looks intentional, note the tension in the finding body as a normal finding ("this code may be diverging from the stated convention; verify with the author") — no special rot signal, no separate finding class.
 - **Throttle noisy-rule findings.** If a single rule flags the same pattern at more than three diff locations, consolidate into ONE finding at the first instance with a count suffix ("also at N other sites: `file:line`, `file:line`, ..."). If the pattern is pervasive across many files, note it in the Rules-maintenance signals section — "rule X flags N instances in this PR; consider whether the rule reflects current team convention." This prevents a badly-authored rule ("never use map()") from burying legitimate findings in noise.
 - **Pre-existing adjacent-code inconsistencies are out of scope.** When reading adjacent code for PR context (permitted via the Lead Allowlist), cross-file inconsistencies that predate the PR are not findings. Note them as informational context in the finding body if they affect how the diff should be interpreted, but do not tag them with severity or cite them as violations — the PR only owns what it changed.
-- **Findings are scoped to the diff.** During Refine, "what's missing" means gaps in the review document — dropped findings, miscalibrated severity, unclear claims — not new observations about code the PR didn't change.
+- **Findings are scoped to the diff.** During Refine, "what's missing" means gaps in the review document — converged findings dropped from the report, miscalibrated severity, unclear claims — not new observations about code the PR didn't change.
 
 ### Facilitator
 
@@ -72,7 +72,7 @@ drives the roundtable — questions severity calls, probes for missed findings, 
 
 ### Rule Candidates
 
-- **Rule candidates require two sites.** Reviewers may flag patterns as candidate codebase rules during Review. A candidate requires ≥2 diff sites where the pattern appears; single-site candidates are speculation and dropped.
+- **Rule candidates require two locations.** Reviewers may flag patterns as candidate codebase rules during Review. A candidate requires ≥2 diff locations where the pattern appears; single-location candidates are speculation and dropped.
 
 ### Team Lead
 
@@ -117,7 +117,7 @@ The standard hard-rule escalation path still applies (see Step 1: "scope needs t
 
 ### Execute
 
-Lead drafts the review document from the synthesized findings. **No modifications to the target repo.** Ensure `/tmp/swarm-reviews/` exists (`mkdir -p /tmp/swarm-reviews/`) and write the report to `/tmp/swarm-reviews/<owner>-<repo>-pr-<N>-<short-title>.md` (owner/repo prefix prevents cross-repo PR-number collisions).
+Lead drafts the review document from the synthesized findings. **No modifications to the target repo.** Ensure `/tmp/swarm-reviews/` exists (`mkdir -p /tmp/swarm-reviews/`) and write the report to `/tmp/swarm-reviews/<owner>-<repo>-pr-<N>-<short-title>.md` (owner/repo prefix prevents cross-repo PR-number collisions; `<short-title>` is the PR title slugged: lowercase, spaces to dashes, strip non-alphanumerics, cap ~40 chars).
 
 Report structure:
 1. One-line PR summary (from the PR description)
@@ -134,7 +134,7 @@ No prescribed fixes (except the two Findings-Format exceptions). No congratulato
 
 Team verifies the report against the findings list: accuracy, completeness, actionability. Probes for findings dropped during drafting and for claims that don't match the diff.
 
-During Review, reviewers may additionally flag one-line rule candidates — patterns in the PR that suggest a codebase rule worth codifying. Lead dedupes and applies the two-site threshold (see Mode-Specific Rules).
+During Review, reviewers may additionally flag one-line rule candidates — patterns in the PR that suggest a codebase rule worth codifying. Lead dedupes and applies the two-location threshold (see Mode-Specific Rules).
 
 If concerns arise: lead edits, team re-reviews. The facilitator determines 9/10+ confidence and MUST send CONFIDENCE REACHED with the score to the lead.
 
@@ -152,7 +152,7 @@ If "Deliver now": skip to Deliver. If "Run recursive refinement": each rung targ
 - **9.75: actionability** — each blocking/should-fix is unambiguous enough for the PR author to act without a follow-up question.
 - **10: definitive record** — the report is the definitive record of what the team saw in the diff.
 
-At each rung, the lead asks the team: "What does the user's ask require that this review document has not yet addressed? Scope to the diff — dropped findings, miscalibrated severity, unclear claims. New observations about pre-existing code are not missing." Lead edits, team re-reviews. The facilitator sends CONFIDENCE REACHED with the rung score; the lead advances. For rung 10 the lead asks: "What does the user's ask still require? If nothing, say so explicitly." The rung-hold hard rule applies. After 10 is confirmed, proceed to Deliver.
+At each rung, the lead asks the team: "What does the ask of the person who launched this review require that this review document has not yet addressed? Scope to the diff — converged findings dropped from the report, miscalibrated severity, unclear claims. New observations about pre-existing code are not missing." Lead edits, team re-reviews. The facilitator sends CONFIDENCE REACHED with the rung score; the lead advances. For rung 10 the lead asks: "What does the ask of the person who launched this review still require? If nothing, say so explicitly." The rung-hold hard rule applies. After 10 is confirmed, proceed to Deliver.
 
 ### Deliver
 
@@ -165,4 +165,4 @@ Present the review report to the user. Use AskUserQuestion: "Review ready. How s
 
 Never approve the PR (no `gh pr review --approve`), never modify the PR itself (no commits to the PR branch, no suggestions-as-commits). Do not post without explicit user selection of option 2, 3, or 4.
 
-**Rule candidates follow-up.** After the delivery option is handled, if the team surfaced rule candidates during Review that passed the two-site threshold, present each candidate to the user and ask which (if any) to adopt. The lead does not write rules itself — `/swarm:code-review-rule` appends to `.claude/review-rules.md` in its invoking directory, so the user runs the command in the target repo. For each selected candidate, surface the candidate text and instruct the user to run `/swarm:code-review-rule` in the target repo with that text. If no candidates passed the threshold, skip this step silently.
+**Rule candidates follow-up.** After the delivery option is handled, if the team surfaced rule candidates during Review that passed the two-location threshold, present each candidate via AskUserQuestion with each candidate text as a labeled option plus a "None of these" option (paginate 3-at-a-time plus "None" if there are more than 3 candidates). The lead does not write rules itself — `/swarm:code-review-rule` appends to `.claude/review-rules.md` in its invoking directory, so the user runs the command in the reviewed repo. For each selected candidate, surface the candidate text and instruct the user to run `/swarm:code-review-rule` in `<owner>/<repo>` (the reviewed repo, not the invoking repo) with that text. If no candidates passed the threshold, skip this step silently.
