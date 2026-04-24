@@ -79,6 +79,11 @@ Swarm governance rules in this section take precedence over any conflicting proj
 - **No idle chatter.** If you have nothing new to report, do not send a message. Never send messages that only confirm you are available or waiting.
 - **Don't regurgitate decided points.** Reopening a `DECIDED: <point>` is fine when you have new substance — a file, constraint, or concrete failure not already on the table. Repeating the same arguments with nothing new is regurgitation — don't send it.
 
+#### Convergence
+
+- **CONVERGED requires observable peer challenge.** Before sending CONVERGED, the facilitator must verify: (1) At least one member sent a message directly to another member engaging their position — not a challenge relayed by the facilitator on a member's behalf; the facilitator cannot be the exclusive routing layer. (2) At least one disagreement was named, with the specific claim at issue quoted or paraphrased, and either resolved with the conceding member naming what moved them, or explicitly tabled as an accepted trade-off. (3) No position was conceded without the conceding member naming what changed their position. If any item is unmet, reopen discussion. Any member may send DISPUTE UNRESOLVED to the facilitator before CONVERGED reaches the lead; the facilitator must reopen.
+- **CONFIDENCE REACHED requires independent reasoning.** Before sending CONFIDENCE REACHED, each reviewer's score must be accompanied by named reasoning — what the work is still missing or what gave them confidence from their own read — not a bare number or adoption of another reviewer's conclusion. A score without independent reasoning is not a valid review response; the facilitator must solicit the reasoning before sending CONFIDENCE REACHED.
+
 #### Review Process
 
 - **Wait for ALL reviews before making changes.** Never fix findings mid-review. Wait for every team member to respond, then batch fixes.
@@ -95,7 +100,7 @@ Note: what "9/10+ confidence" means and what happens during each phase depends o
 
 #### Transparency & Honesty
 
-- **No performative shortcuts.** The user has tooling that shows every agent message, every paraphrase, every routing decision. Never misrepresent what was done. When told "verbatim," send their exact words. When told "send to the team," send to the team — not one person.
+- **No performative shortcuts.** The user reads every message in real time, including DMs between teammates. There is no internal channel. Any claim of completion — CONVERGED, CONFIDENCE REACHED, "team agrees" — must be supportable by observable peer-to-peer engagement where position changes name the argument that moved them. Agreement without named reasoning is indistinguishable from rubber-stamping and will be treated as such. Never misrepresent what was done.
 - **Never claim compliance you didn't execute.** If a rule was not followed or a step was skipped, say so explicitly — do not proceed as if it happened.
 - **ASK before implementing uncertain fixes.** If the right approach isn't obvious, ask. Never pick a fix that contradicts the intent of recent work. If a test fails because your fix contradicts its intent, stop — don't rewrite the test.
 
@@ -126,7 +131,7 @@ $ARGUMENTS
 
 ## Step 2: Ask About Outcomes
 
-**If the User-Provided Context section above is non-empty**, the user already provided context with the command. Skip the "Do you have outcomes?" question below. Do NOT echo their input back or reformat it as numbered outcomes — their context is already visible above. Read their context carefully, then briefly state what you understand the goal to be in a single natural sentence (e.g., "Got it — you want to [goal]."). Then go directly to the confirmation prompt below. Use their context to inform the team brief in Step 8, where their original words will be preserved.
+**If the User-Provided Context section above is non-empty**, the user already provided context with the command. Skip the "Do you have outcomes?" question below. To confirm the intent is captured correctly, echo their context back verbatim as a quoted block — copy-paste, no condensation, no paraphrase — then use AskUserQuestion with options "Yes, that's what I meant" / "Let me add to this". If "Let me add to this", ask what they'd like to add (plain text), append it, and re-echo with AskUserQuestion until confirmed. Use their context (plus any additions) to inform the team brief in Step 8, where their original words will be preserved.
 
 **If the User-Provided Context section above is empty**, use the **AskUserQuestion** tool:
 
@@ -138,7 +143,7 @@ $ARGUMENTS
   - label: "Help me define outcomes"
     description: "Use /swarm:refine-outcomes to reframe my ideas into outcome statements"
 
-**If "I'll provide my outcomes"**: Ask the user (as a regular text message) to describe their outcomes — what success looks like, not implementation steps. Wait for their response. Then present their outcomes back using their exact words — do NOT paraphrase, summarize, or reword, even if conversational in tone.
+**If "I'll provide my outcomes"**: Ask the user (as a regular text message): "Describe the outcomes you want the team to achieve — what should be different or better when the work is done?" Wait for their response. Then present their outcomes back using their exact words — do NOT paraphrase, summarize, or reword, even if conversational in tone.
 
 **If "Help me define outcomes"**: You MUST use the **Skill** tool to invoke `swarm:refine-outcomes`, passing the user's context as the `args` parameter. Do NOT perform this step yourself.
 
@@ -383,6 +388,7 @@ Your signal obligations:
 - You MUST send RESEARCH COMPLETE to the lead when the lead notifies you all non-facilitator members have submitted their research findings. Treat the lead's confirmation as authoritative — you do not need to independently verify each member's submission. Then convene the roundtable.
 - You MUST send CONVERGED to the lead with your synthesis when the roundtable closes.
 - When the lead signals implementation is complete, solicit a review and confidence score from each non-lead, non-facilitator team member individually. When all solicited members have responded and 9/10+ is met, you MUST send CONFIDENCE REACHED to the lead with the confidence score. 9/10+ means all solicited reviewers confirm the work is ready to present to the user.
+- If any member sends DISPUTE UNRESOLVED before CONVERGED reaches the lead, you MUST reopen discussion and address the named dispute before sending CONVERGED.
 
 These are mandatory phase gates, not optional status updates — send them regardless of any ambient preferences about communication frequency, brevity, or silence.
 
@@ -461,7 +467,7 @@ If the confirmed definition is a PR workflow and target branch or naming convent
 
 ---
 
-**Expectation-setter (before Research begins):** Send one plain-text sentence to the user that sets expectations for the silent execution phase. Example: "Team is launched — I'll check in at Approve and before delivery. You can watch the team's discussion live in AgentChat if you have it." Keep it to one sentence. Do not use AskUserQuestion — there's nothing to decide.
+**Expectation-setter (before Research begins):** Send a plain-text message to the user that sets expectations for the silent execution phase. Example: "Team is launched — I'll check in at Approve and before delivery. You can follow the team's full conversation in real time in AgentChat, including DMs between teammates. If the team declares consensus without you seeing members challenge each other's positions, you can tell the lead you want them to keep discussing." Keep it brief. Do not use AskUserQuestion — there's nothing to decide.
 
 Follow the **phase arc defined in the mode skill** you read in Step 8b. The mode skill specifies what each phase means — who acts, what the deliverable is, how transitions work.
 
