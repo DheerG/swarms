@@ -44,7 +44,49 @@ If TeamCreate is NOT available, agent teams are **DISABLED**. Use the **AskUserQ
 
 **STOP HERE if agent teams are not enabled. Do NOT proceed until confirmed enabled.**
 
-**If ENABLED**, proceed to Step 1.
+**If ENABLED**, run the auto-mode shipping check below before proceeding to Step 1.
+
+### Auto-mode shipping check
+
+Auto mode (activated via `defaultMode: "auto"` in settings, `--permission-mode auto` at startup, or Shift+Tab mid-session) applies a classifier that may stall the team's ship phase (commit, push, `gh pr create`) unless the user's source-control infrastructure is declared as trusted in `~/.claude/settings.json` `autoMode.environment`. The classifier intentionally ignores `autoMode` from project-scoped settings — the entry must live in user scope.
+
+Detection: read `~/.claude/settings.json`. If `autoMode.environment` is absent or contains no string mentioning a source-control hostname (e.g., `github.com`, `gitlab.com`, `bitbucket.org`, `github.example.com`), present the block below. The check runs against settings only — the model cannot reliably detect the live permission mode from inside the session (Shift+Tab activations leave no in-session signal). The entry is a one-time setup that benefits any future auto-mode session.
+
+Also run `git remote get-url origin 2>/dev/null` to extract the actual host and org/user. Check for `ssh://` prefix first; if present, apply the SSH-with-port rule, otherwise apply the form rule that matches. Three URL forms to handle:
+- SSH with port (GHES on non-standard ports), starts with `ssh://`: `ssh://git@git.company.com:2222/org/repo.git` → strip the `:2222` port, then extract host `git.company.com` and org `org`
+- SSH shorthand (no `ssh://` prefix, contains `git@host:path`): `git@github.com:DheerG/swarms.git` → host `github.com`, org `DheerG`
+- HTTPS: `https://gitlab.example.com/team/repo.git` → host `gitlab.example.com`, org `team`
+
+Substitute these into the shown block. If no remote exists, fall back to `<your-host>` and `<your-org>` placeholders.
+
+If the entry is missing, use **AskUserQuestion**:
+
+- question: "Your `~/.claude/settings.json` is missing or doesn't declare source-control trust in `autoMode.environment`. If you ever run swarm in auto mode (available on Max, Team, Enterprise, or API plans — not Pro), the ship phase (commit/push/PR) may stall on classifier prompts. Want to see the block to add?"
+- header: "Auto mode"
+- options:
+  - label: "Show me the block"
+    description: "I'll paste it into ~/.claude/settings.json and restart Claude Code"
+  - label: "Skip — proceed anyway"
+    description: "I'll handle prompts as they come"
+
+**If "Show me the block"**: print the block to the user, with `<host>` and `<org>` substituted from the detected remote (or placeholders if none):
+
+> Add this to your `~/.claude/settings.json` (creating the file or the `autoMode` block if missing), then restart Claude Code:
+> ```json
+> {
+>   "autoMode": {
+>     "environment": [
+>       "$defaults",
+>       "Source control: <host>/<org>. Creating feature branches, pushing them for the first time, and opening pull requests against the configured target branch is part of the standard development workflow."
+>     ]
+>   }
+> }
+> ```
+> This entry must live in user scope — Claude Code's classifier ignores `autoMode` from project-scoped settings. The `$defaults` token preserves all built-in trust rules. After adding, restart Claude Code and re-run. (If you toggle auto mode mid-session via Shift+Tab and hit ship-phase classifier blocks, the same fix applies.)
+
+Do not auto-write user-scope settings — the classifier may flag self-modification, and the trusted org is the user's choice. Then proceed to Step 1 regardless of which option was chosen; this check is informational, not blocking.
+
+If `autoMode.environment` already contains a source-control hostname, skip this subsection silently and proceed to Step 1.
 
 ---
 
@@ -475,4 +517,5 @@ Follow the **phase arc defined in the mode skill** you read in Step 8b. The mode
 - Lead does no research unless the user explicitly enabled it in Step 6 (exception: the ship definition detection sub-agent above runs unconditionally)
 - Questions the team cannot resolve internally go to the user via AskUserQuestion — most consequential first, one at a time, using options when the answer is one of a small known set
 - Post-greenlight execution is autonomous — escalate only per the hard rules (tiebreaker, scope change, convergence failure, uncovered decision)
+- **Use file-based input for PR bodies.** Run `mktemp` and capture its output as a single file path. Use that exact captured path string in every subsequent step: write the body to it via Write, then `gh pr create --body-file <captured-path>`, then `rm <captured-path>`. Do not regenerate the path between steps — one `mktemp` call binds one path used across all three operations. Inline `--body "$(cat <<EOF ...)"` triggers the bash safety heuristic and prompts unconditionally in auto mode. `mktemp` defends against symlink-race attacks on shared systems.
 - When an explicit shutdown request has been received, delete the pulse cron job using CronDelete after the team has been shut down
