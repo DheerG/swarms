@@ -43,6 +43,21 @@ claude --plugin-dir /path/to/swarms
 
 Changes take effect in the next session.
 
+If you run Claude Code in **auto mode** (`defaultMode: "auto"`, `--permission-mode auto`, or Shift+Tab during a session), declare your source-control host/org as trusted infrastructure so the team's ship phase (commit, push, PR creation) doesn't stall on classifier prompts. Add to `~/.claude/settings.json`:
+
+```json
+{
+  "autoMode": {
+    "environment": [
+      "$defaults",
+      "Source control: github.com/<your-org>. Creating feature branches, pushing them for the first time, and opening pull requests against the configured target branch is part of the standard development workflow."
+    ]
+  }
+}
+```
+
+This entry must live in user scope — Claude Code's classifier intentionally ignores `autoMode` from project-scoped settings. The `$defaults` token preserves all built-in trust rules. `/swarm:launch` checks for a source-control entry on each run and shows you a host-specific block to paste if it's missing.
+
 ---
 
 ## Why I built this
