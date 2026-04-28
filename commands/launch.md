@@ -56,7 +56,7 @@ Also run `git remote get-url origin 2>/dev/null` to extract the actual host and 
 
 If the entry is missing, use **AskUserQuestion**:
 
-- question: "Your `~/.claude/settings.json` is missing or doesn't declare source-control trust in `autoMode.environment`. If you ever run swarm in auto mode, the ship phase (commit/push/PR) may stall on classifier prompts. Want to see the block to add?"
+- question: "Your `~/.claude/settings.json` is missing or doesn't declare source-control trust in `autoMode.environment`. If you ever run swarm in auto mode (available on Max, Team, Enterprise, or API plans — not Pro), the ship phase (commit/push/PR) may stall on classifier prompts. Want to see the block to add?"
 - header: "Auto mode"
 - options:
   - label: "Show me the block"
