@@ -52,7 +52,12 @@ Auto mode (activated via `defaultMode: "auto"` in settings, `--permission-mode a
 
 Detection: read `~/.claude/settings.json`. If `autoMode.environment` is absent or contains no string mentioning a source-control hostname (e.g., `github.com`, `gitlab.com`, `bitbucket.org`, `github.example.com`), present the block below. The check runs against settings only — the model cannot reliably detect the live permission mode from inside the session (Shift+Tab activations leave no in-session signal). The entry is a one-time setup that benefits any future auto-mode session.
 
-Also run `git remote get-url origin 2>/dev/null` to extract the actual host and org/user (e.g., `git@github.com:DheerG/swarms.git` → host `github.com`, org `DheerG`; `https://gitlab.example.com/team/repo.git` → host `gitlab.example.com`, org `team`). Substitute these into the shown block. If no remote exists, fall back to `<your-host>` and `<your-org>` placeholders.
+Also run `git remote get-url origin 2>/dev/null` to extract the actual host and org/user. Check for `ssh://` prefix first; if present, apply the SSH-with-port rule, otherwise apply the form rule that matches. Three URL forms to handle:
+- SSH with port (GHES on non-standard ports), starts with `ssh://`: `ssh://git@git.company.com:2222/org/repo.git` → strip the `:2222` port, then extract host `git.company.com` and org `org`
+- SSH shorthand (no `ssh://` prefix, contains `git@host:path`): `git@github.com:DheerG/swarms.git` → host `github.com`, org `DheerG`
+- HTTPS: `https://gitlab.example.com/team/repo.git` → host `gitlab.example.com`, org `team`
+
+Substitute these into the shown block. If no remote exists, fall back to `<your-host>` and `<your-org>` placeholders.
 
 If the entry is missing, use **AskUserQuestion**:
 
@@ -512,5 +517,5 @@ Follow the **phase arc defined in the mode skill** you read in Step 8b. The mode
 - Lead does no research unless the user explicitly enabled it in Step 6 (exception: the ship definition detection sub-agent above runs unconditionally)
 - Questions the team cannot resolve internally go to the user via AskUserQuestion — most consequential first, one at a time, using options when the answer is one of a small known set
 - Post-greenlight execution is autonomous — escalate only per the hard rules (tiebreaker, scope change, convergence failure, uncovered decision)
-- **Use file-based input for PR bodies.** Write the body to `/tmp/swarm-pr-body.md` (overwriting if it exists — never reuse a stale file), then `gh pr create --body-file /tmp/swarm-pr-body.md`, then delete the file. Inline `--body "$(cat <<EOF ...)"` triggers the bash safety heuristic and prompts unconditionally in auto mode.
+- **Use file-based input for PR bodies.** Run `mktemp` and capture its output as a single file path. Use that exact captured path string in every subsequent step: write the body to it via Write, then `gh pr create --body-file <captured-path>`, then `rm <captured-path>`. Do not regenerate the path between steps — one `mktemp` call binds one path used across all three operations. Inline `--body "$(cat <<EOF ...)"` triggers the bash safety heuristic and prompts unconditionally in auto mode. `mktemp` defends against symlink-race attacks on shared systems.
 - When an explicit shutdown request has been received, delete the pulse cron job using CronDelete after the team has been shut down

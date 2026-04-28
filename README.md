@@ -43,7 +43,7 @@ claude --plugin-dir /path/to/swarms
 
 Changes take effect in the next session.
 
-If you run Claude Code in **auto mode** (`defaultMode: "auto"`, `--permission-mode auto`, or Shift+Tab during a session — available on Max, Team, Enterprise, or API plans), declare your source-control host/org as trusted infrastructure so the team's ship phase (commit, push, PR creation) doesn't stall on classifier prompts. Add to `~/.claude/settings.json`:
+If you run Claude Code in **auto mode** (`defaultMode: "auto"`, `--permission-mode auto`, or Shift+Tab during a session — available on Max, Team, Enterprise, or API plans — not Pro), declare your source-control host/org as trusted infrastructure so the team's ship phase (commit, push, PR creation) doesn't stall on classifier prompts. Add to `~/.claude/settings.json`:
 
 ```json
 {
