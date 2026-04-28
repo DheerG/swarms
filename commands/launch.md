@@ -44,7 +44,42 @@ If TeamCreate is NOT available, agent teams are **DISABLED**. Use the **AskUserQ
 
 **STOP HERE if agent teams are not enabled. Do NOT proceed until confirmed enabled.**
 
-**If ENABLED**, proceed to Step 1.
+**If ENABLED**, run the auto-mode shipping check below before proceeding to Step 1.
+
+### Auto-mode shipping check
+
+Auto mode (activated via `defaultMode: "auto"` in settings, `--permission-mode auto` at startup, or Shift+Tab mid-session) applies a classifier that may stall the team's ship phase (commit, push, `gh pr create`) unless the user's source-control infrastructure is declared as trusted in `~/.claude/settings.json` `autoMode.environment`. The classifier intentionally ignores `autoMode` from project-scoped settings — the entry must live in user scope.
+
+Detection: read `~/.claude/settings.json`. If `autoMode.environment` is absent or contains no string mentioning a source-control hostname (e.g., `github.com`, `gitlab.com`, `bitbucket.org`), present the block below. The check runs against settings only — the model cannot reliably detect the live permission mode from inside the session (Shift+Tab activations leave no in-session signal). The entry is a one-time setup that benefits any future auto-mode session.
+
+If the entry is missing, use **AskUserQuestion**:
+
+- question: "Your `~/.claude/settings.json` doesn't declare source-control trust in `autoMode.environment`. If you ever run swarm in auto mode, the ship phase (commit/push/PR) may stall on classifier prompts. Want to see the block to add?"
+- header: "Auto mode"
+- options:
+  - label: "Show me the block"
+    description: "I'll paste it into ~/.claude/settings.json and restart Claude Code"
+  - label: "Skip — proceed anyway"
+    description: "I'll handle prompts as they come"
+
+**If "Show me the block"**: print to the user:
+
+> Add this to your `~/.claude/settings.json` (creating the `autoMode` block if missing). Replace `<your-org>` with your GitHub user or organization (e.g., `octocat`), then restart Claude Code:
+> ```json
+> {
+>   "autoMode": {
+>     "environment": [
+>       "$defaults",
+>       "Source control: github.com/<your-org>. Pushing feature branches and opening pull requests against the configured target branch is expected and safe."
+>     ]
+>   }
+> }
+> ```
+> This entry must live in user scope — Claude Code's classifier ignores `autoMode` from project-scoped settings. The `$defaults` token preserves all built-in trust rules. After adding, restart Claude Code and re-run. (If you toggle auto mode mid-session via Shift+Tab and hit ship-phase classifier blocks, the same fix applies.)
+
+Do not auto-write user-scope settings — the classifier may flag self-modification, and the trusted org is the user's choice. Then proceed to Step 1 regardless of which option was chosen; this check is informational, not blocking.
+
+If `autoMode.environment` already contains a source-control hostname, skip this subsection silently and proceed to Step 1.
 
 ---
 
