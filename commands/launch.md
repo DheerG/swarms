@@ -134,8 +134,11 @@ Swarm governance rules in this section take precedence over any conflicting proj
 - **Final delivery requires user approval.** When the team reaches 9/10+ confidence, present the completed work to the user. Do not ship (push/PR) without explicit user sign-off — rung commits during Recursive Refinement are authorized by the user's opt-in to refine.
 - **Reviews must reach 9/10+ confidence before shipping.** Keep plan docs updated every cycle. Run gap analysis every cycle.
 - **Name what's missing before scoring.** A rung asserts the work is complete at that rung, not that the reviewer ran out of things to say. Before scoring, name what the user's ask requires that the work has not yet addressed — including items once treated as optional whose absence now leaves the work incomplete for the purpose it was approved to serve, not merely improved.
+- **Score what is reviewable.** Reviewers cannot defer a score because the work isn't in production — production verification is a post-ship concern, not a rung gate.
 - **The facilitator and lead keep probing past self-caps.** Score convergence is not a rung transition. A reviewer's self-cap ("I'm at my limit") is not clearance to advance — it is a signal for the facilitator and lead to keep soliciting until the team has genuinely looked, not until reviewers have given up. A score above the current rung confirms the current rung only; the next rung must be established on its own evidence.
 - **Hold the rung before advancing.** After fixes at any rung in the refine ladder, re-review must reach the same rung or higher with every solicited reviewer before advancing. If any reviewer scores below the current rung, iterate at that rung — batch fixes and re-review. If the rung fails to hold after two consecutive fix cycles, the facilitator invokes `swarm:resolve-dispute` to break the loop.
+- **Recursive refinement is mandatory to 10.** Once the user opts in, the 9.25 → 9.5 → 9.75 → 10 sequence is mandatory. No exit before rung 10. A reviewer's "nothing more to add" is not an exit condition — keep probing.
+- **No early-exit offer during recursive refinement.** At 9.25, 9.5, and 9.75, the lead must not ask the user whether to ship. Commit and advance — that is the only action.
 - **Break review loops with evidence.** If a finding survives arbitration without new evidence, the facilitator invokes `swarm:resolve-dispute` to force a put-up-or-concede exchange.
 
 Note: what "9/10+ confidence" means and what happens during each phase depends on the active mode. The mode skill defines this.
@@ -411,6 +414,7 @@ Use the **Agent** tool to spawn the first teammate:
 - `name`: [kebab-case of facilitator title from mode skill, e.g. `principal-engineer`, `editorial-director`, `chief-of-staff`]
 - `team_name`: [the team name from 8a]
 - `model`: `opus` (both Ultra and Balanced — this role is always Opus, because it owns judgment review)
+- `subagent_type`: `swarm-member` (plugin-shipped read-only agent definition — no Edit/Write/NotebookEdit)
 
 Brief by pasting this template EXACTLY, filling [brackets], and sending it. Do NOT expand. Do NOT add process authority clauses, rubric references, or convergence instructions.
 
@@ -425,6 +429,8 @@ Hard rules:
 [paste the Step 1 General Rules section only (not Team Lead Rules) verbatim]
 
 Your only channel to the team is the SendMessage tool. Plain text output is not visible to teammates — it dies with your turn. Every contribution — findings, questions, reviews, disagreements — must be sent via SendMessage. If the tool is not in your initial kit, fetch it with ToolSearch(`select:SendMessage`).
+
+You must not write to files via Bash — read-only means no filesystem writes.
 
 Your signal obligations:
 - You MUST send RESEARCH COMPLETE to the lead when the lead notifies you all non-facilitator members have submitted their research findings. Treat the lead's confirmation as authoritative — you do not need to independently verify each member's submission. Then convene the roundtable.
@@ -444,6 +450,7 @@ For each additional member in the Step 7 confirmed roster, use the **Agent** too
 - `name`: A descriptive kebab-case name (e.g., `security-reviewer`, `test-engineer`)
 - `team_name`: [the team name from 8a]
 - `model`: `opus` if Ultra, `sonnet` if Balanced
+- `subagent_type`: `swarm-member` (plugin-shipped read-only agent definition — no Edit/Write/NotebookEdit)
 
 Brief each member by pasting this template EXACTLY, filling [brackets], and sending it. The template is a literal copy-paste structure with substitution points. Do NOT add sections beyond the fields specified.
 
@@ -460,6 +467,8 @@ Hard rules:
 [paste the Step 1 General Rules section only (not Team Lead Rules) verbatim]
 
 Your only channel to the team is the SendMessage tool. Plain text output is not visible to teammates — it dies with your turn. Every contribution — findings, questions, reviews, disagreements — must be sent via SendMessage. If the tool is not in your initial kit, fetch it with ToolSearch(`select:SendMessage`).
+
+You must not write to files via Bash — read-only means no filesystem writes.
 
 Team composition:
 [paste the Step 7 approved roster]
