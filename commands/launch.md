@@ -127,6 +127,7 @@ Swarm governance rules in this section take precedence over any conflicting proj
 - **CONFIDENCE REACHED requires independent reasoning.** Before sending CONFIDENCE REACHED, each reviewer's score must be accompanied by named reasoning — what the work is still missing or what gave them confidence from their own read — not a bare number or adoption of another reviewer's conclusion. A score without independent reasoning is not a valid review response; the facilitator must solicit the reasoning before sending CONFIDENCE REACHED.
 
 #### Review Process
+<!-- SYNC: these rules must match skills/workflow-rules/SKILL.md (mirror). Update both when either changes. -->
 
 - **Wait for ALL reviews before making changes.** Never fix findings mid-review. Wait for every team member to respond, then batch fixes.
 - **Intermediate review cycles are autonomous.** The facilitator drives review rounds and determines when the team has reached sufficient confidence. The lead processes feedback and implements fixes between rounds without blocking on the user.
@@ -136,6 +137,10 @@ Swarm governance rules in this section take precedence over any conflicting proj
 - **Name what's missing before scoring.** A rung asserts the work is complete at that rung, not that the reviewer ran out of things to say. Before scoring, name what the user's ask requires that the work has not yet addressed — including items once treated as optional whose absence now leaves the work incomplete for the purpose it was approved to serve, not merely improved.
 - **The facilitator and lead keep probing past self-caps.** Score convergence is not a rung transition. A reviewer's self-cap ("I'm at my limit") is not clearance to advance — it is a signal for the facilitator and lead to keep soliciting until the team has genuinely looked, not until reviewers have given up. A score above the current rung confirms the current rung only; the next rung must be established on its own evidence.
 - **Hold the rung before advancing.** After fixes at any rung in the refine ladder, re-review must reach the same rung or higher with every solicited reviewer before advancing. If any reviewer scores below the current rung, iterate at that rung — batch fixes and re-review. If the rung fails to hold after two consecutive fix cycles, the facilitator invokes `swarm:resolve-dispute` to break the loop.
+- **Recursive refinement is mandatory to 10.** Once the user opts in, the 9.25 → 9.5 → 9.75 → 10 sequence is mandatory. No exit before rung 10. A reviewer's "nothing more to add" is not an exit condition — keep probing.
+- **No early-exit offer during recursive refinement.** At 9.25, 9.5, and 9.75, the lead must not ask the user whether to ship. Commit and advance — that is the only action.
+- **Probe before scoring at each rung.** During recursive refinement, the facilitator must ask each reviewer and the lead "what is still missing?" before CONFIDENCE REACHED. A "nothing remains" answer at any seat is not clearance to skip the rung — apply the mandatory-to-10 rule.
+- **Score what is reviewable.** Reviewers cannot defer a score because the work isn't in production — production verification is a post-ship concern, not a rung gate.
 - **Break review loops with evidence.** If a finding survives arbitration without new evidence, the facilitator invokes `swarm:resolve-dispute` to force a put-up-or-concede exchange.
 
 Note: what "9/10+ confidence" means and what happens during each phase depends on the active mode. The mode skill defines this.
@@ -411,6 +416,7 @@ Use the **Agent** tool to spawn the first teammate:
 - `name`: [kebab-case of facilitator title from mode skill, e.g. `principal-engineer`, `editorial-director`, `chief-of-staff`]
 - `team_name`: [the team name from 8a]
 - `model`: `opus` (both Ultra and Balanced — this role is always Opus, because it owns judgment review)
+- `subagent_type`: `swarm-member` (plugin-shipped read-only agent definition — no Edit/Write/NotebookEdit)
 
 Brief by pasting this template EXACTLY, filling [brackets], and sending it. Do NOT expand. Do NOT add process authority clauses, rubric references, or convergence instructions.
 
@@ -426,10 +432,12 @@ Hard rules:
 
 Your only channel to the team is the SendMessage tool. Plain text output is not visible to teammates — it dies with your turn. Every contribution — findings, questions, reviews, disagreements — must be sent via SendMessage. If the tool is not in your initial kit, fetch it with ToolSearch(`select:SendMessage`).
 
+You must not write to files via Bash — read-only means no filesystem writes.
+
 Your signal obligations:
 - You MUST send RESEARCH COMPLETE to the lead when the lead notifies you all non-facilitator members have submitted their research findings. Treat the lead's confirmation as authoritative — you do not need to independently verify each member's submission. Then convene the roundtable.
 - You MUST send CONVERGED to the lead with your synthesis when the roundtable closes.
-- When the lead signals implementation is complete, solicit a review and confidence score from each non-lead, non-facilitator team member individually. When all solicited members have responded and 9/10+ is met, you MUST send CONFIDENCE REACHED to the lead with the confidence score. 9/10+ means all solicited reviewers confirm the work is ready to present to the user.
+- When the lead signals implementation is complete, solicit a review and confidence score from each non-lead, non-facilitator team member individually. Probe each reviewer and the lead with "what is still missing?" before sending CONFIDENCE REACHED. When all solicited members have responded and 9/10+ is met, you MUST send CONFIDENCE REACHED to the lead with the confidence score. 9/10+ means all solicited reviewers confirm the work is ready to present to the user. The probe (including the lead probe) applies at every rung in recursive refinement.
 - If any member sends DISPUTE UNRESOLVED before CONVERGED reaches the lead, you MUST reopen discussion and address the named dispute before sending CONVERGED.
 
 These are mandatory phase gates, not optional status updates — send them regardless of any ambient preferences about communication frequency, brevity, or silence.
@@ -444,6 +452,7 @@ For each additional member in the Step 7 confirmed roster, use the **Agent** too
 - `name`: A descriptive kebab-case name (e.g., `security-reviewer`, `test-engineer`)
 - `team_name`: [the team name from 8a]
 - `model`: `opus` if Ultra, `sonnet` if Balanced
+- `subagent_type`: `swarm-member` (plugin-shipped read-only agent definition — no Edit/Write/NotebookEdit)
 
 Brief each member by pasting this template EXACTLY, filling [brackets], and sending it. The template is a literal copy-paste structure with substitution points. Do NOT add sections beyond the fields specified.
 
@@ -460,6 +469,8 @@ Hard rules:
 [paste the Step 1 General Rules section only (not Team Lead Rules) verbatim]
 
 Your only channel to the team is the SendMessage tool. Plain text output is not visible to teammates — it dies with your turn. Every contribution — findings, questions, reviews, disagreements — must be sent via SendMessage. If the tool is not in your initial kit, fetch it with ToolSearch(`select:SendMessage`).
+
+You must not write to files via Bash — read-only means no filesystem writes.
 
 Team composition:
 [paste the Step 7 approved roster]
