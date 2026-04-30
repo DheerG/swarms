@@ -56,7 +56,7 @@ If you run Claude Code in **auto mode** (`defaultMode: "auto"`, `--permission-mo
 }
 ```
 
-Replace `<your-host>` and `<your-org>` with your actual values (e.g., `github.com/octocat`, `gitlab.example.com/team`). This entry must live in user scope — Claude Code's classifier intentionally ignores `autoMode` from project-scoped settings. The `$defaults` token preserves all built-in trust rules. `/swarm:launch` detects your origin remote and substitutes the actual host and org at runtime; the template above is for manual setup before first launch.
+Replace `<your-host>` and `<your-org>` with your actual values (e.g., `github.com/octocat`, `gitlab.example.com/team`). The entry must live in user scope (`~/.claude/settings.json`) or local scope (`.claude/settings.local.json`, gitignored) — Claude Code's classifier intentionally ignores `autoMode` from shared project scope (`.claude/settings.json`). The `$defaults` token preserves all built-in trust rules. `/swarm:launch` detects your origin remote, substitutes the actual host and org, and offers an "Add it for me" option that writes the file directly so you don't have to paste it manually; the template above is for reference.
 
 ---
 
