@@ -55,7 +55,7 @@ Auto mode (activated via `defaultMode: "auto"` in settings, `--permission-mode a
 2. `.claude/settings.local.json` — local scope, valid for `autoMode`.
 3. `.claude/settings.json` — shared project scope, **invalid** for `autoMode` (read only to detect the wrong-place case).
 
-For each file, examine `autoMode.environment` strings (coerce a bare string to a one-element array). A string is **valid** if it mentions a source-control hostname (`github.com`, `gitlab.com`, `bitbucket.org`, or the host extracted from the working tree's `git remote get-url origin`) AND does not contain a literal `<` (placeholders disqualify the entry).
+For each file, examine `autoMode.environment` strings (coerce a bare string to a one-element array; if `autoMode.environment` exists but is neither a string nor an array — e.g., null, number, object — treat it as having no entries). A string is **valid** if it mentions a source-control hostname (`github.com`, `gitlab.com`, `bitbucket.org`, or the host extracted from the working tree's `git remote get-url origin`) AND does not contain a literal `<` (placeholders disqualify the entry). If `autoMode` itself exists in a file but is not an object (e.g., `"autoMode": true` or `"autoMode": "auto"`), treat that file as having no entry.
 
 Also run `git remote get-url origin 2>/dev/null` to extract the actual host and org/user. Check for `ssh://` prefix first; if present, apply the SSH-with-port rule, otherwise apply the form rule that matches. Three URL forms to handle:
 - SSH with port (GHES on non-standard ports), starts with `ssh://`: `ssh://git@git.company.com:2222/org/repo.git` → strip the `:2222` port, then extract host `git.company.com` and org `org`
@@ -74,8 +74,8 @@ Resolve detection to one of three outcomes:
 
 **Outcome B** — entry absent or invalid in all three files → use **AskUserQuestion**. If a git remote was detected, present the constructed string with real host/org. If no remote was detected, present it with placeholder values and add a one-line note that placeholders will be used:
 
-- question (with remote): "Your `~/.claude/settings.json` doesn't declare source-control trust in `autoMode.environment`. If you ever run swarm in auto mode (available on Max, Team, Enterprise, or API plans — not Pro), the ship phase (commit/push/PR) may stall on classifier prompts. The entry to add is: `<paste full constructed string verbatim>`."
-- question (no remote): "Your `autoMode.environment` doesn't declare source-control trust. If you ever run swarm in auto mode (available on Max, Team, Enterprise, or API plans — not Pro), the ship phase (commit/push/PR) may stall on classifier prompts. No git remote detected — placeholders will be used; edit them after adding. The entry to add is: `<paste full constructed string with placeholders verbatim>`."
+- question (with remote): "Your settings don't declare source-control trust in `autoMode.environment` in either user scope (`~/.claude/settings.json`) or local scope (`.claude/settings.local.json`). If you ever run swarm in auto mode (available on Max, Team, Enterprise, or API plans — not Pro), the ship phase (commit/push/PR) may stall on classifier prompts. The entry to add is: `<paste full constructed string verbatim>`."
+- question (no remote): "Your settings don't declare source-control trust in `autoMode.environment` in either user scope (`~/.claude/settings.json`) or local scope (`.claude/settings.local.json`). If you ever run swarm in auto mode (available on Max, Team, Enterprise, or API plans — not Pro), the ship phase (commit/push/PR) may stall on classifier prompts. No git remote detected — placeholders will be used; edit them after adding. The entry to add is: `<paste full constructed string with placeholders verbatim>`."
 - header: "Auto mode"
 - options:
   - label: "Add it for me (Recommended)"
@@ -106,7 +106,9 @@ Resolve detection to one of three outcomes:
 - Outcome C → user picks: "Add to user settings" → `~/.claude/settings.json`; "Add to local settings" → `.claude/settings.local.json`.
 
 **If the user picks any "Add..." option**: read the chosen target file (treat as `{}` if missing). If the file is malformed JSON, surface a one-line error with the path and fall through to the "Show me the block" behavior. Otherwise use Edit (or Write if creating) to deep-merge the `autoMode.environment` block:
-- If `autoMode.environment` exists as a bare string (not an array), coerce it to a one-element array first, then apply the array-merge rules below.
+- If `autoMode` exists but is not an object (e.g., `"autoMode": true`, a string, an array), overwrite the entire `autoMode` value with `{"environment": ["$defaults", "<constructed string>"]}` and finish (skip the remaining merge bullets).
+- If `autoMode.environment` exists as a bare string, coerce it to a one-element array first, then apply the rules below.
+- If `autoMode.environment` exists but is neither a string nor an array (e.g., null, number, object), overwrite it with `["$defaults", "<constructed string>"]` and finish (skip the remaining merge bullets).
 - If `autoMode.environment` is missing → set to `["$defaults", "<constructed string>"]`.
 - If it exists as an array without `$defaults` → prepend `$defaults`.
 - If the target file's `autoMode.environment` already contains an entry with `<` placeholders → tell the user, then ask via AskUserQuestion whether to replace the placeholder entry with the constructed string. If "yes" → replace that entry with the constructed string and finish (skip the remaining merge bullets). If "no" → leave the placeholder entry in place and fall through to the exact-token append rule below; if that rule then skips on a same-host match, do nothing further.
