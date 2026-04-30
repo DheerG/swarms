@@ -48,30 +48,84 @@ If TeamCreate is NOT available, agent teams are **DISABLED**. Use the **AskUserQ
 
 ### Auto-mode shipping check
 
-Auto mode (activated via `defaultMode: "auto"` in settings, `--permission-mode auto` at startup, or Shift+Tab mid-session) applies a classifier that may stall the team's ship phase (commit, push, `gh pr create`) unless the user's source-control infrastructure is declared as trusted in `~/.claude/settings.json` `autoMode.environment`. The classifier intentionally ignores `autoMode` from project-scoped settings — the entry must live in user scope.
+Auto mode (activated via `defaultMode: "auto"` in settings, `--permission-mode auto` at startup, or Shift+Tab mid-session) applies a classifier that may stall the team's ship phase (commit, push, `gh pr create`) unless the user's source-control infrastructure is declared as trusted in `autoMode.environment`. Claude Code reads `autoMode` from user scope (`~/.claude/settings.json`) and local scope (`.claude/settings.local.json`, gitignored) — it intentionally ignores shared project scope (`.claude/settings.json`). The entry must live in one of the two valid scopes.
 
-Detection: read `~/.claude/settings.json`. If `autoMode.environment` is absent or contains no string mentioning a source-control hostname (e.g., `github.com`, `gitlab.com`, `bitbucket.org`, `github.example.com`), present the block below. The check runs against settings only — the model cannot reliably detect the live permission mode from inside the session (Shift+Tab activations leave no in-session signal). The entry is a one-time setup that benefits any future auto-mode session.
+**Detection:** read all three settings files (treat missing files or malformed JSON as having no entry — do not abort):
+1. `~/.claude/settings.json` — user scope, valid for `autoMode`.
+2. `.claude/settings.local.json` — local scope, valid for `autoMode`.
+3. `.claude/settings.json` — shared project scope, **invalid** for `autoMode` (read only to detect the wrong-place case).
+
+For each file, examine `autoMode.environment` strings (coerce a bare string to a one-element array). A string is **valid** if it mentions a source-control hostname (`github.com`, `gitlab.com`, `bitbucket.org`, or the host extracted from the working tree's `git remote get-url origin`) AND does not contain a literal `<` (placeholders disqualify the entry).
 
 Also run `git remote get-url origin 2>/dev/null` to extract the actual host and org/user. Check for `ssh://` prefix first; if present, apply the SSH-with-port rule, otherwise apply the form rule that matches. Three URL forms to handle:
 - SSH with port (GHES on non-standard ports), starts with `ssh://`: `ssh://git@git.company.com:2222/org/repo.git` → strip the `:2222` port, then extract host `git.company.com` and org `org`
 - SSH shorthand (no `ssh://` prefix, contains `git@host:path`): `git@github.com:DheerG/swarms.git` → host `github.com`, org `DheerG`
 - HTTPS: `https://gitlab.example.com/team/repo.git` → host `gitlab.example.com`, org `team`
 
-Substitute these into the shown block. If no remote exists, fall back to `<your-host>` and `<your-org>` placeholders.
+Build the **constructed string** from the template — if no remote is detected, leave `<your-host>` / `<your-org>` placeholders in:
 
-If the entry is missing, use **AskUserQuestion**:
+> `Source control: <host>/<org>. Creating feature branches, pushing them for the first time, and opening pull requests against the configured target branch is part of the standard development workflow.`
 
-- question: "Your `~/.claude/settings.json` is missing or doesn't declare source-control trust in `autoMode.environment`. If you ever run swarm in auto mode (available on Max, Team, Enterprise, or API plans — not Pro), the ship phase (commit/push/PR) may stall on classifier prompts. Want to see the block to add?"
+The check runs against settings only — the model cannot reliably detect the live permission mode from inside the session (Shift+Tab activations leave no in-session signal). The entry is a one-time setup that benefits any future auto-mode session.
+
+Resolve detection to one of three outcomes:
+
+**Outcome A** — any valid-scope file (1 or 2) has a valid entry → skip silently and proceed to Step 1.
+
+**Outcome B** — entry absent or invalid in all three files → use **AskUserQuestion**. If a git remote was detected, present the constructed string with real host/org. If no remote was detected, present it with placeholder values and add a one-line note that placeholders will be used:
+
+- question (with remote): "Your `~/.claude/settings.json` doesn't declare source-control trust in `autoMode.environment`. If you ever run swarm in auto mode (available on Max, Team, Enterprise, or API plans — not Pro), the ship phase (commit/push/PR) may stall on classifier prompts. The entry to add is: `<paste full constructed string verbatim>`."
+- question (no remote): "Your `autoMode.environment` doesn't declare source-control trust. If you ever run swarm in auto mode (available on Max, Team, Enterprise, or API plans — not Pro), the ship phase (commit/push/PR) may stall on classifier prompts. No git remote detected — placeholders will be used; edit them after adding. The entry to add is: `<paste full constructed string with placeholders verbatim>`."
 - header: "Auto mode"
 - options:
+  - label: "Add it for me (Recommended)"
+    description (with remote): "Write it to ~/.claude/settings.json now"
+    description (no remote): "Write it to .claude/settings.local.json (gitignored) — edit placeholders afterward"
   - label: "Show me the block"
-    description: "I'll paste it into ~/.claude/settings.json and restart Claude Code"
+    description: "I'll paste it into a settings file myself"
   - label: "Skip — proceed anyway"
     description: "I'll handle prompts as they come"
 
+**Outcome C** — entry valid only in invalid-scope file (`.claude/settings.json`, shared project) → the user has already declared their intent; reuse that string verbatim as the **constructed string** for this outcome. Use **AskUserQuestion**:
+
+- question: "Found this entry in `.claude/settings.json`, but Claude Code doesn't read `autoMode` from that file: `<paste the matched project-scope string verbatim>`. Where should I move it?"
+- header: "Auto mode"
+- options:
+  - label: "Add to user settings (Recommended)"
+    description: "Write it to ~/.claude/settings.json — benefits all projects"
+  - label: "Add to local settings"
+    description: "Write it to .claude/settings.local.json — gitignored, project-scoped"
+  - label: "Show me the block"
+    description: "I'll paste it into a settings file myself"
+  - label: "Skip — proceed anyway"
+    description: "I'll handle prompts as they come"
+
+**Write target selection**:
+- Outcome B with git remote → user scope (`~/.claude/settings.json`).
+- Outcome B without git remote → local scope (`.claude/settings.local.json`). Rationale: a no-remote / fresh-repo context is project-local territory by definition; placeholder text in user-scope would pollute every other project's settings. Local scope is gitignored so the placeholder doesn't leak to other contributors.
+- Outcome C → user picks: "Add to user settings" → `~/.claude/settings.json`; "Add to local settings" → `.claude/settings.local.json`.
+
+**If the user picks any "Add..." option**: read the chosen target file (treat as `{}` if missing). If the file is malformed JSON, surface a one-line error with the path and fall through to the "Show me the block" behavior. Otherwise use Edit (or Write if creating) to deep-merge the `autoMode.environment` block:
+- If `autoMode.environment` exists as a bare string (not an array), coerce it to a one-element array first, then apply the array-merge rules below.
+- If `autoMode.environment` is missing → set to `["$defaults", "<constructed string>"]`.
+- If it exists as an array without `$defaults` → prepend `$defaults`.
+- If the target file's `autoMode.environment` already contains an entry with `<` placeholders → tell the user, then ask via AskUserQuestion whether to replace the placeholder entry with the constructed string. If "yes" → replace that entry with the constructed string and finish (skip the remaining merge bullets). If "no" → leave the placeholder entry in place and fall through to the exact-token append rule below; if that rule then skips on a same-host match, do nothing further.
+- Otherwise append the constructed string. Skip the append if any existing entry contains the constructed string's host as an exact token match — match `<host>/` (host followed by `/`) or `<host>"` (host followed by string-end), so `github.com` does not match inside `github.example.com`.
+- If the write fails for any other reason (read-only file, symlink target unreachable, permission denied), surface a one-line error with the path and fall through to the "Show me the block" behavior — do not retry.
+
+After a successful write, tell the user (substituting the actual target path):
+
+> Added to `<target path>`. Restart Claude Code for it to take effect.
+
+If the target was `.claude/settings.local.json` AND the constructed string contained `<your-host>` / `<your-org>` placeholders, use this message instead:
+
+> Added to `.claude/settings.local.json` with `<your-host>` and `<your-org>` as placeholders. Edit those two values to match your actual source-control host and org (e.g., `github.com` and `your-username`), then restart Claude Code for it to take effect. (Local scope is gitignored — won't leak to other contributors.)
+
+Otherwise, if the target was `.claude/settings.local.json` (no placeholders), append: "(Local scope is gitignored — won't leak to other contributors.)"
+
 **If "Show me the block"**: print the block to the user, with `<host>` and `<org>` substituted from the detected remote (or placeholders if none):
 
-> Add this to your `~/.claude/settings.json` (creating the file or the `autoMode` block if missing), then restart Claude Code:
+> Add this to your `~/.claude/settings.json` (user scope) or `.claude/settings.local.json` (local scope, gitignored), creating the file or the `autoMode` block if missing, then restart Claude Code:
 > ```json
 > {
 >   "autoMode": {
@@ -82,11 +136,9 @@ If the entry is missing, use **AskUserQuestion**:
 >   }
 > }
 > ```
-> This entry must live in user scope — Claude Code's classifier ignores `autoMode` from project-scoped settings. The `$defaults` token preserves all built-in trust rules. After adding, restart Claude Code and re-run. (If you toggle auto mode mid-session via Shift+Tab and hit ship-phase classifier blocks, the same fix applies.)
+> Claude Code's classifier reads `autoMode` from user scope and local scope but ignores shared project scope (`.claude/settings.json`). The `$defaults` token preserves all built-in trust rules. After adding, restart Claude Code and re-run. (If you toggle auto mode mid-session via Shift+Tab and hit ship-phase classifier blocks, the same fix applies.)
 
-Do not auto-write user-scope settings — the classifier may flag self-modification, and the trusted org is the user's choice. Then proceed to Step 1 regardless of which option was chosen; this check is informational, not blocking.
-
-If `autoMode.environment` already contains a source-control hostname, skip this subsection silently and proceed to Step 1.
+Auto-write to a settings file happens only when the user explicitly opts in via "Add..." — the trusted org is the user's choice. Then proceed to Step 1 regardless of which option was chosen; this check is informational, not blocking.
 
 ---
 
