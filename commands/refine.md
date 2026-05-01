@@ -31,35 +31,49 @@ $ARGUMENTS
 1. **Pre-flight reads.** Run via Bash, capture each output as a raw string. Use the exact abort messages below — they are the user's only signal that something is wrong, so consistency matters across invocations.
 
    - `git rev-parse --is-inside-work-tree` — if not in a git repo, abort with: `Not in a git repository. /swarm:refine works on a branch and pull request.`
-   - `git branch --show-current` — capture. If empty (detached HEAD), abort with: `Cannot run /swarm:refine in detached HEAD state. Check out a branch first.` If equal to the repo's default branch (resolved via `git symbolic-ref refs/remotes/origin/HEAD --short 2>/dev/null` then stripping `origin/`), abort with: `Cannot refine the default branch directly. Switch to a feature branch.`
+   - `git branch --show-current` — capture. If empty (detached HEAD), abort with: `Cannot run /swarm:refine in detached HEAD state. Run "git checkout <branch-name>" to switch to a branch first.` If equal to the repo's default branch (resolved via `git symbolic-ref refs/remotes/origin/HEAD --short 2>/dev/null` then stripping `origin/`), abort with: `Cannot refine the default branch directly. Switch to a feature branch.`
    - `gh pr view --json title,body,baseRefName,url 2>/dev/null` — capture PR data if present. Extract `baseRefName` for the diff base. If no PR exists, fall back to `main` and surface that fallback explicitly in the Step 7 confirmation summary so the user can correct the base before launch.
-   - `git diff <base>...HEAD` — capture. If empty (HEAD == base), abort with: `No changes detected between <branch> and <base>. Nothing to refine.` (substitute the actual branch and base names).
+   - `git diff <base>...HEAD` — capture. If empty (HEAD == base), abort with: `No changes detected between <branch> and <base>. Nothing to refine. If this is unexpected, verify the diff base is correct.` (substitute the actual branch and base names).
 
 2. **Outcomes.** If User-Provided Context is non-empty, use as outcomes. Otherwise ask the outcomes question (plain text, not AskUserQuestion). Echo the outcomes back verbatim — copy-paste, no condensation, no paraphrase — and use AskUserQuestion with options "Yes, that's what I meant" / "Let me add to this". If "Let me add to this", ask what they'd like to add (plain text), append it, and re-echo until confirmed.
 
-3. **Confirmation.** Present the team plan summary using launch.md Step 7's format with these specifics:
+3. **Confirmation.** Present the team plan summary as a blockquote (matching launch.md Step 7's format):
 
-   - **Mode:** Code
-   - **Outcomes:** [confirmed outcomes verbatim]
-   - **Branch under review:** [current branch]
-   - **Diff base:** [PR base if found, otherwise `main`]
-   - **PR:** [PR URL if found, otherwise `(no open PR detected)`]
-   - **Team:**
-     1. Team lead — (main session) [research: no]
-     2. Principal Engineer — Socratic facilitator, read-only
-     3. Correctness Reviewer — verifies logic correctness, edge cases, test coverage
-     4. Outcomes Reviewer — verifies the work delivers the stated outcomes
-     5. Regression Reviewer — verifies adjacent code and in-repo automation are not broken
-   - **Team shape:** Balanced
-   - **Phase arc:** Review → Refine → Deliver
-   - **Ship definition:** [contents of `.claude/swarm-ship.md` if present, otherwise auto-detect per launch.md Step 8f rules]
-   - **Rules:** Active
+   > **Team Plan**
+   >
+   > **Mode:** Code
+   >
+   > **Outcomes:**
+   > [confirmed outcomes verbatim]
+   >
+   > **Branch under review:** [current branch]
+   >
+   > **Diff base:** [PR base if found, otherwise `main`]
+   >
+   > **PR:** [PR URL if found, otherwise `(no open PR detected)`]
+   >
+   > **Team:**
+   > 1. Team lead — (main session) [research: no]
+   > 2. Principal Engineer — Socratic facilitator, read-only
+   > 3. Correctness Reviewer — verifies logic correctness, edge cases, test coverage
+   > 4. Outcomes Reviewer — verifies the work delivers the stated outcomes
+   > 5. Regression Reviewer — verifies adjacent code and in-repo automation are not broken
+   >
+   > **Team shape:** Balanced
+   >
+   > **Phase arc:** Review → Refine → Deliver
+   >
+   > **Ship definition:** [contents of `.claude/swarm-ship.md` if present, otherwise auto-detect per launch.md Step 8f rules]
+   >
+   > **Rules:** Active
 
-   If the diff base is the `main` fallback (no PR detected), add a distinct line below the summary so it is not missed: `Note: no PR detected — diff base falls back to `main`. Verify before launch.`
+   If the diff base is the `main` fallback (no PR detected), add a distinct bold line below the summary so it is not missed: **Note:** no PR detected — diff base falls back to `main`. Verify before launch.
 
    Then AskUserQuestion: question "Is this plan final, or do you have remaining inputs?", header "Confirm", options "Launch the team" / "I have changes". Step 7 is mandatory.
 
 4. **Launch.** Follow launch.md Step 8a (TeamCreate), Step 8b (invoke `swarm:code-mode`), Steps 8c–8d (spawn the four members named in the roster above), Step 8e (pulse). The `swarm:code-mode` skill returns the full Code-mode spec — for this command, **apply only the Refine and Deliver phase definitions from that spec; ignore the Research, Converge, Approve, Execute, and Review phase definitions, which are superseded by the inline arc in Step 5 below.** When pasting the user's input into briefings — the `[paste the user's original $ARGUMENTS or Step 2 input — full text, unmodified]` slot in the launch.md 8c/8d templates — substitute with: confirmed outcomes verbatim, then a `---` divider line, then `Branch under review: <branch>`, then raw `gh pr view` output (or `(no open PR detected)`), then a `---` divider line, then raw `git diff <base>...HEAD` output. **Paste raw output only — no lead-authored framing, commentary, or summary around the captures.** Do not add sections beyond the briefing template.
+
+   After spawning, send the user a plain-text expectation-setter so they aren't dropped into silence (mirrors launch.md Step 8f). Example: "Team is launched — reviewers will inspect the diff and PR against the outcomes, and I'll check in when the rung-9 review is in. You can follow the team's full conversation in AgentChat." Keep it brief; do not use AskUserQuestion.
 
 5. **Phase arc (replaces launch.md Step 8f).**
 
