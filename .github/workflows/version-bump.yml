@@ -1,8 +1,22 @@
 name: Bump version on merge
 
+# Trigger note: GitHub Actions treats `[skip ci]` (and `[skip actions]`,
+# `[no ci]`, etc.) anywhere in a push's HEAD commit message — title or
+# body — as a request to suppress ALL workflows on that push. Squash-
+# merges concatenate every PR commit message into the merge commit body,
+# so a `[skip ci]` token mentioned in any PR commit body will prevent
+# this workflow from running on merge. Reviewers: flag any PR commit
+# that quotes the token literally; recover via the workflow_dispatch
+# trigger below if it slips through.
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      pr_sha:
+        description: "Merge commit SHA to attribute the bump to (defaults to current HEAD)."
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -19,13 +33,18 @@ jobs:
       - name: Bump version, commit, tag, and release
         env:
           GH_TOKEN: ${{ github.token }}
+          INPUT_PR_SHA: ${{ inputs.pr_sha }}
         run: |
           CURRENT=$(jq -r '.version' .claude-plugin/plugin.json)
           IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
 
-          # Determine bump type from merged PR labels (default: patch)
+          # Determine bump type from merged PR labels (default: patch).
+          # On push, attribute to the PR whose merge commit equals the
+          # event SHA. On workflow_dispatch, prefer the explicit pr_sha
+          # input so a missed run can be recovered after the fact.
+          LOOKUP_SHA="${INPUT_PR_SHA:-$GITHUB_SHA}"
           PR_NUMBER=$(gh pr list --state merged --base main --json number,mergeCommit \
-            --jq ".[] | select(.mergeCommit.oid == \"$GITHUB_SHA\") | .number")
+            --jq ".[] | select(.mergeCommit.oid == \"$LOOKUP_SHA\") | .number")
 
           BUMP="patch"
           if [ -n "$PR_NUMBER" ]; then
