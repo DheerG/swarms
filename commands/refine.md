@@ -32,11 +32,11 @@ $ARGUMENTS
 
    - `git rev-parse --is-inside-work-tree` — if not in a git repo, abort with: `Not in a git repository. /swarm:refine works on a branch and pull request.`
    - `git branch --show-current` — capture. If empty (detached HEAD), abort with: `Cannot run /swarm:refine in detached HEAD state. Run "git checkout <branch-name>" to switch to a branch first.` If equal to the repo's default branch (resolved via `git symbolic-ref refs/remotes/origin/HEAD --short 2>/dev/null` then stripping `origin/`), abort with: `Cannot refine the default branch directly. Switch to a feature branch.`
-   - `gh pr view --json title,body,baseRefName,url 2>/dev/null` — capture PR data if present. Extract `baseRefName` for the diff base. If no PR exists, fall back to `main` and surface that fallback explicitly in the Step 7 confirmation summary so the user can correct the base before launch.
+   - `gh pr view --json title,body,baseRefName,url 2>/dev/null` — capture PR data if present. Extract `baseRefName` for the diff base. If no PR exists, fall back to the repo's default branch resolved earlier via `git symbolic-ref refs/remotes/origin/HEAD --short 2>/dev/null` (stripped of `origin/`) — `master`, `develop`, or whatever the repo actually uses. Do not hardcode `main`. If `git symbolic-ref` itself returns nothing (no `origin/HEAD` set), abort with: `Cannot determine the default branch — origin/HEAD is not set. Run "git remote set-head origin -a" or open a PR with the correct base before re-running /swarm:refine.` Surface the fallback (whichever branch was resolved) explicitly in the Step 7 confirmation summary so the user can correct the base before launch.
    - `git diff <base>...HEAD` — capture. If empty (HEAD == base), abort with: `No changes detected between <branch> and <base>. Nothing to refine. If this is unexpected, verify the diff base is correct.` (substitute the actual branch and base names).
    - `git diff --stat <base>...HEAD | tail -1` — capture the one-line diff stat (e.g., `12 files changed, 340 insertions(+), 45 deletions(-)`) for the Step 3 confirmation summary. If the diff is empty this is moot — the empty-diff abort above fires first.
 
-2. **Outcomes.** If User-Provided Context is non-empty, use as outcomes. Otherwise ask the outcomes question (plain text, not AskUserQuestion). Echo the outcomes back verbatim — copy-paste, no condensation, no paraphrase — and use AskUserQuestion with options "Yes, that's what I meant" / "Let me add to this" / "Help me frame these as outcomes". If "Let me add to this", ask what they'd like to add (plain text), append it, and re-echo until confirmed. If "Help me frame these as outcomes", invoke the `swarm:refine-outcomes` skill (passing the user's stated outcomes as `args`); preserve the user's original words alongside the refined outcomes, then return to the confirmation prompt.
+2. **Outcomes.** If User-Provided Context is non-empty, use as outcomes. Otherwise ask the outcomes question (plain text, not AskUserQuestion). Echo the outcomes back verbatim — copy-paste, no condensation, no paraphrase — and use AskUserQuestion with options "Yes, that's what I meant" / "Let me add to this" / "Help me frame these as outcomes". If "Let me add to this", ask what they'd like to add (plain text), append it, and re-echo until confirmed. If "Help me frame these as outcomes", invoke the `swarm:refine-outcomes` skill (passing the user's stated outcomes as `args`); preserve the user's original words alongside the refined outcomes; then present both the original words and the refined outcomes to the user via AskUserQuestion ("Do these refined outcomes capture what you meant?" / "Let me adjust") before returning to Step 3 — a user who asked for framing help has no way to catch a bad interpretation otherwise.
 
 3. **Confirmation.** Present the team plan summary as a blockquote (matching launch.md Step 7's format):
 
@@ -49,7 +49,7 @@ $ARGUMENTS
    >
    > **Branch under review:** [current branch]
    >
-   > **Diff base:** [PR base if found, otherwise `main`]
+   > **Diff base:** [PR base if found, otherwise the resolved default branch — e.g., `main`, `master`, `develop`]
    >
    > **PR:** [PR URL if found, otherwise `(no open PR detected)`]
    >
@@ -70,15 +70,15 @@ $ARGUMENTS
    >
    > **Rules:** Active
 
-   If the diff base is the `main` fallback (no PR detected), add a distinct bold line below the summary so it is not missed: **Note:** no PR detected — diff base falls back to `main`. Verify before launch.
+   If the diff base is the default-branch fallback (no PR detected), add a distinct bold line below the summary so it is not missed: **Note:** no PR detected — diff base falls back to the repo's default branch (`<resolved-default>`). Verify before launch.
 
    Then AskUserQuestion: question "Is this plan final, or do you have remaining inputs?", header "Confirm", options "Launch the team" / "I have changes". Step 7 is mandatory.
 
-   If the user picks "I have changes," surface the recoverability scope before re-prompting: the diff base (`<base>`) is inferred from the open PR or defaults to `main` and cannot be changed from this prompt. To use a different base, open a PR with the correct base branch or check out a different branch. Outcomes can be re-stated by re-entering Step 2; roster and shape are fixed for `/swarm:refine` and not adjustable.
+   If the user picks "I have changes," surface the recoverability scope before re-prompting: the diff base (`<base>`) is inferred from the open PR or falls back to the repo's default branch and cannot be changed from this prompt. To use a different base, open a PR with the correct base branch or check out a different branch. Outcomes can be re-stated by re-entering Step 2; roster and shape are fixed for `/swarm:refine` and not adjustable.
 
 4. **Launch.** Follow launch.md Step 8a (TeamCreate), Step 8b (invoke `swarm:code-mode`), Steps 8c–8d (spawn the four members named in the roster above), Step 8e (pulse). The `swarm:code-mode` skill returns the full Code-mode spec — for this command, **apply only the Refine and Deliver phase definitions from that spec; ignore the Research, Converge, Approve, Execute, and Review phase definitions, which are superseded by the inline arc in Step 5 below.** When pasting the user's input into briefings — the `[paste the user's original $ARGUMENTS or Step 2 input — full text, unmodified]` slot in the launch.md 8c/8d templates — substitute with: confirmed outcomes verbatim, then a `---` divider line, then `Branch under review: <branch>`, then raw `gh pr view` output (or `(no open PR detected)`), then a `---` divider line, then raw `git diff <base>...HEAD` output. **Paste raw output only — no lead-authored framing, commentary, or summary around the captures.** Do not add sections beyond the briefing template.
 
-   After spawning, send the user a plain-text expectation-setter so they aren't dropped into silence (mirrors launch.md Step 8f). Example: "Team is launched — reviewers will inspect the diff and PR against the outcomes, and I'll check in when the first review round is in. You can follow the team's full conversation in AgentChat." Keep it brief, use plain language, and do not use AskUserQuestion. Avoid internal scoring vocabulary like "rung 9" — first-time users have not seen it before.
+   After spawning, send the user a plain-text expectation-setter so they aren't dropped into silence (mirrors launch.md Step 8f). Example: "Team is launched — reviewers will inspect the diff and PR against the outcomes, and I'll check in when the first review round is in." If you reference any optional companion tooling (e.g., AgentChat for live agent-to-agent conversation), hedge it as optional ("if you have it installed") so first-time users don't think they're missing something essential. Keep it brief, use plain language, and do not use AskUserQuestion. Avoid internal scoring vocabulary like "rung 9" — first-time users have not seen it before.
 
 5. **Phase arc (replaces launch.md Step 8f).**
 
