@@ -379,6 +379,14 @@ Pass outcomes inline to skip the opening question:
 /swarm:write Help me write a blog article on healing trauma
 ```
 
+### Refine an existing branch and PR
+
+```
+/swarm:refine            # Review and recursively refine the current branch/PR against stated outcomes
+```
+
+`/swarm:refine` runs against work already on a branch — it reads the current branch, the open PR (if any), and the diff against the PR's base branch, then enters at Review → Refine → Deliver. Pass the outcomes the branch was supposed to achieve, and a fixed roster of correctness, outcomes, and regression reviewers iterates the recursive refinement ladder to 10. Use it when a PR is "almost done" and you want the team to push it the rest of the way.
+
 ### Other commands
 
 ```

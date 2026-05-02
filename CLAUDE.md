@@ -10,7 +10,7 @@ launch.md Step 8 briefing templates are FIXED. Do not add sections to member bri
 
 ## What This Is
 
-Swarm is a Claude Code plugin for launching agent teams. Seven commands — `/swarm:launch` (catch-all), `/swarm:code`, `/swarm:write`, `/swarm:general` (mode shortcuts), `/swarm:workflow` (custom mode entry point), `/swarm:create-workflow` (scaffolding), `/swarm:update-workflow` (refresh generated workflows) — drive an interactive setup that creates a coordinated team of agents with defined roles and rules. Users can extend swarm by creating custom mode skills in their own codebases — either as **full custom modes** or as **thin wrappers** that extend a built-in mode.
+Swarm is a Claude Code plugin for launching agent teams. Eight commands — `/swarm:launch` (catch-all), `/swarm:code`, `/swarm:write`, `/swarm:general` (mode shortcuts), `/swarm:refine` (refine the current branch and PR), `/swarm:workflow` (custom mode entry point), `/swarm:create-workflow` (scaffolding), `/swarm:update-workflow` (refresh generated workflows) — drive an interactive setup that creates a coordinated team of agents with defined roles and rules. Users can extend swarm by creating custom mode skills in their own codebases — either as **full custom modes** or as **thin wrappers** that extend a built-in mode.
 
 ## Architecture
 
@@ -21,6 +21,7 @@ commands/launch.md          # Catch-all command — interactive team setup (Step
 commands/code.md            # Mode shortcut — pre-selects Code, delegates to launch.md
 commands/write.md           # Mode shortcut — pre-selects Writing, delegates to launch.md
 commands/general.md         # Mode shortcut — pre-selects General, delegates to launch.md
+commands/refine.md          # Standalone — runs Review/Refine/Deliver against the current branch + PR
 commands/workflow.md         # Custom mode entry point — takes a mode skill name, delegates to launch.md
 commands/create-workflow.md  # Scaffolding — interviews user, generates mode skill + shortcut command (wrapper or full)
 commands/update-workflow.md  # Refresh — regenerates the plugin-owned wiring of an existing shortcut command
