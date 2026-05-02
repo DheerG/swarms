@@ -59,7 +59,7 @@ For each file, examine `autoMode.environment` strings (coerce a bare string to a
 
 Also run `git remote get-url origin 2>/dev/null` to extract the actual host and org/user. Check for `ssh://` prefix first; if present, apply the SSH-with-port rule, otherwise apply the form rule that matches. Three URL forms to handle:
 - SSH with port (GHES on non-standard ports), starts with `ssh://`: `ssh://git@git.company.com:2222/org/repo.git` → strip the `:2222` port, then extract host `git.company.com` and org `org`
-- SSH shorthand (no `ssh://` prefix, contains `git@host:path`): `git@github.com:DheerG/swarms.git` → host `github.com`, org `DheerG`
+- SSH shorthand (no `ssh://` prefix, contains `git@host:path`): `git@github.com:arthrod/swarms.git` → host `github.com`, org `arthrod`
 - HTTPS: `https://gitlab.example.com/team/repo.git` → host `gitlab.example.com`, org `team`
 
 Build the **constructed string** from the template — if no remote is detected, leave `<your-host>` / `<your-org>` placeholders in:

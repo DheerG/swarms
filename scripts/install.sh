@@ -2,11 +2,11 @@
 # Swarm one-shot installer — runnable from anywhere, installs into the current project.
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/DheerG/swarms/main/scripts/install.sh | bash
-#   curl -fsSL https://raw.githubusercontent.com/DheerG/swarms/main/scripts/install.sh | bash -s -- /path/to/project
+#   curl -fsSL https://raw.githubusercontent.com/arthrod/swarms/main/scripts/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/arthrod/swarms/main/scripts/install.sh | bash -s -- /path/to/project
 #
 # Env overrides:
-#   SWARM_SOURCE          Marketplace source (default: DheerG/swarms)
+#   SWARM_SOURCE          Marketplace source (default: arthrod/swarms)
 #   SWARM_PLUGIN_NAME     Plugin name (default: swarm)
 #   SWARM_MARKETPLACE     Marketplace alias (default: swarms)
 #   SWARM_ENABLE_TEAMS    "1" to add CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 to ~/.claude/settings.json
@@ -20,7 +20,7 @@
 
 set -euo pipefail
 
-SWARM_SOURCE="${SWARM_SOURCE:-DheerG/swarms}"
+SWARM_SOURCE="${SWARM_SOURCE:-arthrod/swarms}"
 SWARM_PLUGIN_NAME="${SWARM_PLUGIN_NAME:-swarm}"
 SWARM_MARKETPLACE="${SWARM_MARKETPLACE:-swarms}"
 SWARM_SCOPE="${SWARM_SCOPE:-project}"

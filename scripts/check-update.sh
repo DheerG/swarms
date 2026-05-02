@@ -11,7 +11,7 @@
 # Opt-out: set SWARM_SKIP_UPDATE_CHECK=1
 
 CACHE_FILE="$HOME/.claude/.swarms-update-cache"
-GITHUB_URL="https://raw.githubusercontent.com/DheerG/swarms/main/.claude-plugin/plugin.json"
+GITHUB_URL="https://raw.githubusercontent.com/arthrod/swarms/main/.claude-plugin/plugin.json"
 
 [[ "${SWARM_SKIP_UPDATE_CHECK}" == "1" ]] && exit 0
 
