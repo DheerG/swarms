@@ -18,30 +18,28 @@ Swarm launches a small team of agents for each task: a lead, a Socratic facilita
 
 ## Quick start
 
-One-shot installer (runs from anywhere, installs into the current project):
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/arthrod/swarms/main/scripts/install.sh | bash
-```
-
-Pass a path to install into a different project:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/arthrod/swarms/main/scripts/install.sh | bash -s -- /path/to/project
-```
-
-Set `SWARM_ENABLE_TEAMS=1` to also write the experimental agent-teams flag to `~/.claude/settings.json` in the same step:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/arthrod/swarms/main/scripts/install.sh | SWARM_ENABLE_TEAMS=1 bash
-```
-
-Or install manually:
+### Option A — Manual install (always works)
 
 ```bash
 claude plugin marketplace add arthrod/swarms
 claude plugin install swarm@swarms --scope project
 ```
+
+### Option B — `/conejo-swarms` skill (guided, costs-flagged install)
+
+Once the [`conejo-swarms` skill](skills/conejo-swarms/SKILL.md) is on your machine, you can install swarm into any project by typing `/conejo-swarms` inside Claude Code. The skill enumerates the real costs (global hooks, token spend, governance overrides, experimental flag), confirms the target directory, runs the marketplace add + install, and merges the agent-teams flag into your user settings without clobbering existing keys.
+
+Bootstrap the skill globally (one-time, runnable from anywhere):
+
+```bash
+mkdir -p ~/.claude/skills/conejo-swarms && \
+  curl -fsSL https://raw.githubusercontent.com/arthrod/swarms/main/skills/conejo-swarms/SKILL.md \
+  -o ~/.claude/skills/conejo-swarms/SKILL.md
+```
+
+After that, open Claude Code in any project and invoke `/conejo-swarms`. The skill stays available globally and can install swarm into other projects later.
+
+> The skill itself can't bootstrap swarm into existence the first time — that's why this `curl` lives outside the plugin. After the first install, the skill ships *inside* swarm too (`skills/conejo-swarms/`), so reinstalling into project N+1 is just `/conejo-swarms` with no curl.
 
 Agent teams must also be enabled in Claude Code. Add to `~/.claude/settings.json`:
 
