@@ -18,7 +18,25 @@ Swarm launches a small team of agents for each task: a lead, a Socratic facilita
 
 ## Quick start
 
-Install the plugin:
+One-shot installer (runs from anywhere, installs into the current project):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/DheerG/swarms/main/scripts/install.sh | bash
+```
+
+Pass a path to install into a different project:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/DheerG/swarms/main/scripts/install.sh | bash -s -- /path/to/project
+```
+
+Set `SWARM_ENABLE_TEAMS=1` to also write the experimental agent-teams flag to `~/.claude/settings.json` in the same step:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/DheerG/swarms/main/scripts/install.sh | SWARM_ENABLE_TEAMS=1 bash
+```
+
+Or install manually:
 
 ```bash
 claude plugin marketplace add DheerG/swarms
