@@ -200,7 +200,7 @@ Use the Facilitator Brief template above.
 Use the **Agent** tool for each additional member:
 - `name`: descriptive kebab-case name
 - `team_name`: the team name
-- `model`: `opus` if Ultra shape, `sonnet` if Balanced shape
+- `model`: `opus` if Ultra, `sonnet` if Balanced
 - `subagent_type`: `swarm-member` (plugin-shipped read-only agent definition — no Edit/Write/NotebookEdit)
 
 Use the Member Brief template above.

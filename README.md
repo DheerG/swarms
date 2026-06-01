@@ -117,12 +117,14 @@ Once outcomes are captured, swarm asks how configured you want the setup to be:
 
 > **How would you like to set up the team?**
 >
-> - Use defaults (Recommended)
->   *Auto-configure mode, team, shape, and research — review before launch*
+> - Defaults — Ultra (Recommended)
+>   *Auto-configure mode, team, and research; full team on the stronger model — reliable rule-following*
+> - Defaults — Balanced
+>   *Same auto-config; cheaper model for members — lower cost, less reliable rule-following*
 > - Configure each step
->   *Choose mode, team members, shape, and research individually*
+>   *Choose mode, team members, tier, and research individually*
 
-Defaults path: swarm infers the mode (Code / Writing / General) from your outcomes, suggests a team automatically, picks Balanced shape, and jumps to the final confirmation. Configure path: four short questions, your call on each.
+Defaults path: swarm infers the mode (Code / Writing / General) from your outcomes, suggests a team automatically, asks which cost tier you want (Ultra recommended for reliable rule-following, or Balanced for lower cost), and jumps to the final confirmation. Configure path: four short questions, your call on each.
 
 ### 3. See the team
 
@@ -148,7 +150,7 @@ You see the complete plan before a single agent is spawned:
 > 2. Principal Engineer — Socratic facilitator, read-only
 > 3–N. Additional members — personality and behavioral identity
 >
-> **Team shape:** Balanced
+> **Cost tier:** Ultra
 > **Ship definition:** Create a feature branch from main, commit, push, open PR
 > **Rules:** Active
 >
@@ -294,7 +296,7 @@ The plugin is the contract that travels with the work.
 
 ---
 
-## Modes and shapes
+## Modes and tiers
 
 ### Modes
 
@@ -306,16 +308,20 @@ The plugin is the contract that travels with the work.
 
 Mode shortcuts bypass the mode question: `/swarm:code`, `/swarm:write`, `/swarm:general`.
 
-### Team shapes
+### Cost tiers
 
-| Shape | Members | Facilitator | When to use |
-|-------|---------|-------------|-------------|
-| **Balanced** (default) | Sonnet | Opus | Well-scoped work where quality-per-dollar matters |
-| **Ultra** | Opus | Opus | Hard problems, novel architecture, or anything where you'd rather overspend than re-do |
+| Tier | Members | Facilitator | When to use |
+|------|---------|-------------|-------------|
+| **Ultra** (recommended) | Opus | Opus | Reliable rule-following across the whole team — the recommended pick |
+| **Balanced** | Sonnet | Opus | Lower cost; well-scoped, lower-stakes work where occasional rule-slips are acceptable |
 
-Shape applies to the spawn-time model assignment. The facilitator always uses the `opus` alias (resolved via `ANTHROPIC_DEFAULT_OPUS_MODEL`) regardless of shape; they own judgment review. See [Preferring the 1M context variant for the facilitator](#preferring-the-1m-context-variant-for-the-facilitator-anthropic-api) if you want to pin the 1M context variant for the facilitator.
+The tier is an explicit pick at setup (Ultra is pre-selected as Recommended) rather than a silent default, so no one lands on a tier they didn't choose. The tier applies to the spawn-time model assignment. The facilitator always uses the `opus` alias (resolved via `ANTHROPIC_DEFAULT_OPUS_MODEL`) regardless of tier; they own judgment review. See [Preferring the 1M context variant for the facilitator](#preferring-the-1m-context-variant-for-the-facilitator-anthropic-api) if you want to pin the 1M context variant for the facilitator.
 
 > Model names are resolved through `ANTHROPIC_DEFAULT_OPUS_MODEL` and `ANTHROPIC_DEFAULT_SONNET_MODEL`. Sonnet and Opus are the defaults on Anthropic direct — not requirements. See [Custom model providers](#custom-model-providers) for how this works on Fireworks, OpenRouter, Bedrock, and others.
+
+**Per-member reasoning effort is not a tier.** Swarm can only set *which model* each teammate runs, not its reasoning effort — the agent-teams spawn path honors `model` but ignores per-member `effort`. To spend less without dropping to Balanced, lower your session's reasoning effort (`/effort medium` before launch); medium is the lowest we'd recommend — below it, the review phase (gap analysis, independent scoring) starts going through the motions, and the gap grows across the refine rungs (9.25→10), so the last checks before ship are where it bites most. Effort is session-wide, so it also lowers the facilitator (always Opus, the judgment-review seat).
+
+> Two harness settings sit above the tier picker and can override it silently. `CLAUDE_CODE_SUBAGENT_MODEL`, if set, forces one model for every teammate — collapsing all tiers to that model; unset it (or set `inherit`) for the picker to take effect. And session effort (`/effort`) is global, lowering the facilitator along with the members.
 
 ### Custom model providers
 
@@ -341,23 +347,23 @@ If your provider's best available model is meaningfully weaker than Opus, expect
 
 ### Preferring the 1M context variant for the facilitator (Anthropic API)
 
-Opus 4.7 has a native 1M context window. On Max, Team, and Enterprise plans, the `opus` alias is automatically upgraded to 1M — no action needed. On Pro, 1M requires extra usage; on API pay-as-you-go, it's included. On either, pin the variant explicitly by setting `ANTHROPIC_DEFAULT_OPUS_MODEL` in your `.claude/settings.json`:
+Opus 4.8 has a native 1M context window. On Max, Team, and Enterprise plans, the `opus` alias is automatically upgraded to 1M — no action needed. On Pro, 1M requires extra usage; on API pay-as-you-go, it's included. On either, pin the variant explicitly by setting `ANTHROPIC_DEFAULT_OPUS_MODEL` in your `.claude/settings.json`:
 
 ```json
 {
   "env": {
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-7[1m]"
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-8[1m]"
   }
 }
 ```
 
-On Opus 4.7, effort stays at `xhigh` by default — no additional config needed.
+On Opus 4.8, swarm runs at your session's default reasoning effort — no additional config needed.
 
 Why 1M: not to chase the token limit. Team runs rarely fill the context window, because the team lead doesn't research directly and only makes targeted edits, and the facilitator usually does the same. The 1M variant prevents quality degradation from compaction on the rare larger run where context does grow.
 
-This setting is Anthropic-API-specific. If you already configured `ANTHROPIC_DEFAULT_OPUS_MODEL` for a custom provider (per the section above), do **not** replace it with the Anthropic ID — `claude-opus-4-7[1m]` is Anthropic-direct only and will error on Bedrock, Vertex, Foundry, or other providers. See the [model configuration docs](https://code.claude.com/docs/en/model-config) for provider-specific guidance on aliases, the `[1m]` suffix, and effort levels.
+This setting is Anthropic-API-specific. If you already configured `ANTHROPIC_DEFAULT_OPUS_MODEL` for a custom provider (per the section above), do **not** replace it with the Anthropic ID — `claude-opus-4-8[1m]` is Anthropic-direct only and will error on Bedrock, Vertex, Foundry, or other providers. See the [model configuration docs](https://code.claude.com/docs/en/model-config) for provider-specific guidance on aliases, the `[1m]` suffix, and effort levels.
 
-The team lead is your own Claude Code session, so swarm can't set its model or effort. To strengthen the lead, configure your session directly: `/model opus[1m]`, or set `"model": "claude-opus-4-7[1m]"` in your settings.
+The team lead is your own Claude Code session, so swarm can't set its model or effort. To strengthen the lead, configure your session directly: `/model opus[1m]`, or set `"model": "claude-opus-4-8[1m]"` in your settings.
 
 ---
 
@@ -438,7 +444,7 @@ Swarm runs fine in plain Claude Code; you see the lead's messages and approvals 
 | **facilitator** | The Socratic facilitator role (Principal Engineer / Editorial Director / Chief of Staff) |
 | **outcome** | What the user wants to achieve, state-based, not implementation steps |
 | **mode** | The team's domain configuration (Code, Writing, General) |
-| **shape** | Model allocation tier (Balanced, Ultra) |
+| **tier** | Model allocation tier (Balanced, Ultra) |
 | **phase arc** | Research, Converge, Approve, Execute, Review, Refine, Deliver |
 | **launch** | Start a team via `/swarm:launch` or a mode shortcut |
 | **ship definition** | Per-project rules for branch strategy and delivery, stored in `.claude/swarm-ship.md` |

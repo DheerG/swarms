@@ -269,15 +269,19 @@ Once outcomes are stated, use **AskUserQuestion** to confirm:
 - question: "How would you like to set up the team?"
 - header: "Setup"
 - options:
-  - label: "Use defaults (Recommended)"
-    description: "Auto-configure mode, team, shape, and research — review before launch"
+  - label: "Defaults — Ultra (Recommended)"
+    description: "Auto-configure mode, team, and research. Full team on the stronger model — reliable rule-following."
+  - label: "Defaults — Balanced"
+    description: "Same auto-config, but members run a cheaper model — lower cost, less reliable rule-following."
   - label: "Configure each step"
-    description: "Choose mode, team members, shape, and research individually"
+    description: "Choose mode, team members, tier, and research individually."
 
-**If "Use defaults"**: Apply these defaults silently (do NOT ask each question):
+The two Defaults options differ only in the cost tier they apply; both make the tier an explicit choice rather than a silent default, so no one lands on a tier they didn't pick.
+
+**If "Defaults — Ultra" or "Defaults — Balanced"**: Apply these defaults silently (do NOT ask each question):
 1. **Mode**: Infer from outcomes (Writing/Code/General per Step 3 rules). If genuinely ambiguous, ask just this one question using Step 3's AskUserQuestion. Once answered, immediately invoke suggest-members and proceed to Step 7 in the same response — do not pause again.
 2. **Team**: Invoke `swarm:suggest-members` with the inferred mode and outcomes.
-3. **Shape**: Balanced.
+3. **Cost tier**: the one the user selected — Ultra or Balanced.
 4. **Lead research**: No.
 
 Then, in the same response — without pausing or waiting for user input — skip to **Step 7 (Confirmation)** and present the full summary with AskUserQuestion. The user reviews everything and can adjust before launch.
@@ -365,19 +369,19 @@ If adjusting, ask what they'd like to change (free text), apply changes, then co
 
 ---
 
-## Step 5: Ask About Team Shape
+## Step 5: Ask About Cost Tier
 
 Use the **AskUserQuestion** tool:
 
-- question: "Which team shape?"
-- header: "Shape"
+- question: "Which cost tier?"
+- header: "Tier"
 - options:
-  - label: "Balanced (Recommended)"
-    description: "Full team, strong quality at lower cost. Good for well-scoped work."
-  - label: "Ultra"
-    description: "Maximum depth on every decision. For hard problems and novel architecture."
+  - label: "Ultra (Recommended)"
+    description: "Full team on the stronger model — reliable rule-following across the whole team."
+  - label: "Balanced"
+    description: "Cheaper model for members — lower cost, less reliable rule-following. Good for well-scoped, lower-stakes work."
 
-Store the selection. Step 8 uses it for the spawn-time `model` field. Default: Balanced.
+Store the selection. Step 8 uses it for the spawn-time `model` field. Default: Ultra.
 
 **STOP HERE. Wait for the user's selection before proceeding to Step 6.**
 
@@ -418,7 +422,7 @@ Present a summary of the team plan:
 > 2. [facilitator title from mode skill] — Socratic facilitator, read-only
 > [3-N. Additional members — personality and behavioral identity, not task assignments or focus areas]
 >
-> **Team shape:** [Balanced / Ultra — the selection from Step 5]
+> **Cost tier:** [Balanced / Ultra — the selection from Step 5]
 >
 > **Ship definition:** [if `.claude/swarm-ship.md` exists, show its contents in plain language — e.g., "Create a PR against main from branch feat/<description>". If it doesn't exist yet, show "Will be auto-detected before work begins."]
 >
@@ -446,7 +450,7 @@ Then use the **AskUserQuestion** tool:
 
 Once the user confirms, execute the following:
 
-**Before proceeding: did you render the Step 7 summary block (the full Team Plan with Mode, Outcomes, Team, Shape, Ship definition, and Rules) AND receive an explicit "Launch the team" selection via AskUserQuestion? If no to either, go back and do it now.**
+**Before proceeding: did you render the Step 7 summary block (the full Team Plan with Mode, Outcomes, Team, Cost tier, Ship definition, and Rules) AND receive an explicit "Launch the team" selection via AskUserQuestion? If no to either, go back and do it now.**
 
 ### 8a: Create the team
 
