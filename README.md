@@ -444,7 +444,7 @@ Swarm runs fine in plain Claude Code; you see the lead's messages and approvals 
 | **facilitator** | The Socratic facilitator role (Principal Engineer / Editorial Director / Chief of Staff) |
 | **outcome** | What the user wants to achieve, state-based, not implementation steps |
 | **mode** | The team's domain configuration (Code, Writing, General) |
-| **tier** | Model allocation tier (Balanced, Ultra) |
+| **tier** | Model allocation tier (Ultra, Balanced) |
 | **phase arc** | Research, Converge, Approve, Execute, Review, Refine, Deliver |
 | **launch** | Start a team via `/swarm:launch` or a mode shortcut |
 | **ship definition** | Per-project rules for branch strategy and delivery, stored in `.claude/swarm-ship.md` |

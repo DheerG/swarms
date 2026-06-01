@@ -422,7 +422,7 @@ Present a summary of the team plan:
 > 2. [facilitator title from mode skill] — Socratic facilitator, read-only
 > [3-N. Additional members — personality and behavioral identity, not task assignments or focus areas]
 >
-> **Cost tier:** [Balanced / Ultra — the selection from Step 5]
+> **Cost tier:** [the selected tier — Ultra or Balanced]
 >
 > **Ship definition:** [if `.claude/swarm-ship.md` exists, show its contents in plain language — e.g., "Create a PR against main from branch feat/<description>". If it doesn't exist yet, show "Will be auto-detected before work begins."]
 >
