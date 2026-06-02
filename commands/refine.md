@@ -18,7 +18,7 @@ Read `${CLAUDE_PLUGIN_ROOT}/commands/launch.md` for Step 0 (pre-flight), Step 1 
 
 - **Mode:** Code
 - **Outcomes question:** "What outcomes was this branch/PR supposed to achieve? (Describe what was meant to be working differently or better — the team will refine the work against these outcomes.)"
-- **Shape:** Balanced
+- **Cost tier:** Ultra
 - **Lead research:** No
 - **Roster (fixed):** Principal Engineer (facilitator), Correctness Reviewer, Outcomes Reviewer, Regression Reviewer
 
@@ -62,7 +62,7 @@ $ARGUMENTS
    > 4. Outcomes Reviewer — verifies the work delivers the stated outcomes
    > 5. Regression Reviewer — verifies adjacent code and in-repo automation are not broken
    >
-   > **Team shape:** Balanced
+   > **Cost tier:** Ultra
    >
    > **Phase arc:** Review → Refine → Deliver
    >
@@ -74,7 +74,7 @@ $ARGUMENTS
 
    Then AskUserQuestion: question "Is this plan final, or do you have remaining inputs?", header "Confirm", options "Launch the team" / "I have changes". Step 7 is mandatory.
 
-   If the user picks "I have changes," surface the recoverability scope before re-prompting: the diff base (`<base>`) is inferred from the open PR or falls back to the repo's default branch and cannot be changed from this prompt. To use a different base, open a PR with the correct base branch or check out a different branch. Outcomes can be re-stated by re-entering Step 2; roster and shape are fixed for `/swarm:refine` and not adjustable.
+   If the user picks "I have changes," surface the recoverability scope before re-prompting: the diff base (`<base>`) is inferred from the open PR or falls back to the repo's default branch and cannot be changed from this prompt. To use a different base, open a PR with the correct base branch or check out a different branch. Outcomes can be re-stated by re-entering Step 2; roster and tier are fixed for `/swarm:refine` and not adjustable.
 
 4. **Launch.** Follow launch.md Step 8a (TeamCreate), Step 8b (invoke `swarm:code-mode`), Steps 8c–8d (spawn the four members named in the roster above), Step 8e (pulse). The `swarm:code-mode` skill returns the full Code-mode spec — for this command, **apply only the Refine and Deliver phase definitions from that spec; ignore the Research, Converge, Approve, Execute, and Review phase definitions, which are superseded by the inline arc in Step 5 below.** When pasting the user's input into briefings — the `[paste the user's original $ARGUMENTS or Step 2 input — full text, unmodified]` slot in the launch.md 8c/8d templates — substitute with: confirmed outcomes verbatim, then a `---` divider line, then `Branch under review: <branch>`, then raw `gh pr view` output (or `(no open PR detected)`), then a `---` divider line, then raw `git diff <base>...HEAD` output. **Paste raw output only — no lead-authored framing, commentary, or summary around the captures.** Do not add sections beyond the briefing template.
 

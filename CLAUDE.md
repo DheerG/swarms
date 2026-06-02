@@ -43,9 +43,9 @@ skills/define-rubric/       # Available skill for teams that genuinely need form
 
 ### How launch.md Works
 
-Step 0 (pre-flight) → Step 1 (universal hard rules) → Step 2 (outcomes + defaults/configure fork) → Step 3 (mode selection) → Step 4 (team members, mode-aware) → Step 5 (team shape) → Step 6 (lead research toggle) → Step 7 (confirmation) → Step 8 (spawn and execute).
+Step 0 (pre-flight) → Step 1 (universal hard rules) → Step 2 (outcomes + defaults/configure fork) → Step 3 (mode selection) → Step 4 (team members, mode-aware) → Step 5 (cost tier) → Step 6 (lead research toggle) → Step 7 (confirmation) → Step 8 (spawn and execute).
 
-After outcomes are confirmed, Step 2 asks "Use defaults or Configure each step?" The defaults path silently infers mode, suggests a team, applies Balanced shape and no lead research, then skips to Step 7 confirmation. The configure path walks through Steps 3–6 individually. Steps 3–6 also serve as reference definitions when the user says "I have changes" at Step 7.
+After outcomes are confirmed, Step 2 asks how to set up the team. The two Defaults options ("Defaults — Ultra (Recommended)" and "Defaults — Balanced") silently infer mode, suggest a team, and apply no lead research — making the cost tier an explicit pick rather than a silent default — then skip to Step 7 confirmation. The configure path walks through Steps 3–6 individually. Steps 3–6 also serve as reference definitions when the user says "I have changes" at Step 7.
 
 `$ARGUMENTS` is substituted by Claude Code before the model sees the prompt. If the user passes args to `/swarm:launch`, they appear in the `## User-Provided Context` section and the outcomes question is skipped. Mode is inferred from the outcomes when unambiguous. Shortcut commands (`/swarm:code`, `/swarm:write`, `/swarm:general`) read launch.md via `${CLAUDE_PLUGIN_ROOT}` and execute it with mode pre-set and a streamlined outcomes flow.
 
