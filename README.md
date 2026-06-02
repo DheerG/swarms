@@ -43,20 +43,18 @@ claude --plugin-dir /path/to/swarms
 
 Changes take effect in the next session.
 
-If you run Claude Code in **auto mode** (`defaultMode: "auto"`, `--permission-mode auto`, or Shift+Tab during a session — available on Max, Team, Enterprise, or API plans — not Pro), declare your source-control host/org as trusted infrastructure so the team's ship phase (commit, push, PR creation) doesn't stall on classifier prompts. Add to `~/.claude/settings.json`:
+If you ship in **auto mode** to an org that isn't one of this repo's configured remotes (a fork's upstream, a mirror, or a different org), the permission classifier may deny the first push. Press `r` in `/permissions` to approve and ship right then; to stop it recurring, add the destination to `autoMode.environment` in user scope (`~/.claude/settings.json`) or local scope (`.claude/settings.local.json`, gitignored) — Claude Code ignores `autoMode` in shared project scope. Keep `$defaults` (it already trusts this repo's own remotes), and replace the placeholders with your host/org:
 
 ```json
 {
   "autoMode": {
     "environment": [
       "$defaults",
-      "Source control: <your-host>/<your-org>. Creating feature branches, pushing them for the first time, and opening pull requests against the configured target branch is part of the standard development workflow."
+      "Source control: <your-host>/<your-org>. Pushing branches and opening pull requests is part of the standard development workflow."
     ]
   }
 }
 ```
-
-Replace `<your-host>` and `<your-org>` with your actual values (e.g., `github.com/octocat`, `gitlab.example.com/team`). The entry must live in user scope (`~/.claude/settings.json`) or local scope (`.claude/settings.local.json`, gitignored) — Claude Code's classifier intentionally ignores `autoMode` from shared project scope (`.claude/settings.json`). The `$defaults` token preserves all built-in trust rules. `/swarm:launch` detects your origin remote, substitutes the actual host and org, and offers an "Add it for me" option that writes the file directly so you don't have to paste it manually; the template above is for reference.
 
 ---
 
