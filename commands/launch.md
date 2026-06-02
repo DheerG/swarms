@@ -279,7 +279,7 @@ Once outcomes are stated, use **AskUserQuestion** to confirm:
 The two Defaults options differ only in the cost tier they apply; both make the tier an explicit choice rather than a silent default, so no one lands on a tier they didn't pick.
 
 **If "Defaults — Ultra" or "Defaults — Balanced"**: Apply these defaults silently (do NOT ask each question):
-1. **Mode**: Infer from outcomes (Writing/Code/General per Step 3 rules). If genuinely ambiguous, ask just this one question using Step 3's AskUserQuestion. Once answered, immediately invoke suggest-members and proceed to Step 7 in the same response — do not pause again.
+1. **Mode**: Infer from outcomes (Writing/Code/Triage/General per Step 3 rules). If genuinely ambiguous, ask just this one question using Step 3's AskUserQuestion. Once answered, immediately invoke suggest-members and proceed to Step 7 in the same response — do not pause again.
 2. **Team**: Invoke `swarm:suggest-members` with the inferred mode and outcomes.
 3. **Cost tier**: the one the user selected — Ultra or Balanced.
 4. **Lead research**: No.
@@ -297,12 +297,15 @@ Then, in the same response — without pausing or waiting for user input — ski
 Infer the mode from the user's stated outcomes — whether they came from `$ARGUMENTS` or from the Step 2 Q&A:
 - Writing outcomes (articles, blog posts, essays, documentation, copy, narrative) → **Writing**
 - Engineering or code outcomes (building, fixing, refactoring, debugging software) → **Code**
+- Diagnosing a problem without changing it (triage an incident, find the root cause, assess what a fix would break — the user wants to know what's wrong, not to have it fixed) → **Triage**
 - Clearly neither (research synthesis, vendor evaluation, planning, analysis) → **General**
 - Genuinely ambiguous → ask without pre-selecting
 
+When an outcome could be Code or Triage, the deciding question is whether the user asked for a change: a request to fix, build, or refactor is **Code**; a request only to diagnose, explain, or assess is **Triage**.
+
 **If inference is clear**, use **AskUserQuestion** to confirm:
 
-- question: "This looks like [Writing / Code / General] work — is that right?"
+- question: "This looks like [Writing / Code / Triage / General] work — is that right?"
 - header: "Mode"
 - options:
   - label: "Yes, [inferred mode]"
@@ -318,6 +321,8 @@ Infer the mode from the user's stated outcomes — whether they came from `$ARGU
 - options:
   - label: "Code"
     description: "Building, fixing, or refactoring software"
+  - label: "Triage"
+    description: "Diagnose an issue — the likely cause and a fix's blast radius — without changing anything"
   - label: "Writing"
     description: "Articles, essays, documentation, or other prose"
   - label: "General"
@@ -409,7 +414,7 @@ Present a summary of the team plan:
 
 > **Team Plan**
 >
-> **Mode:** [Code / Writing / General]
+> **Mode:** [Code / Triage / Writing / General]
 >
 > **Outcomes:**
 > [list each confirmed outcome numbered — use the exact confirmed wording, do NOT paraphrase]
@@ -424,7 +429,7 @@ Present a summary of the team plan:
 >
 > **Cost tier:** [the selected tier — Ultra or Balanced]
 >
-> **Ship definition:** [if `.claude/swarm-ship.md` exists, show its contents in plain language — e.g., "Create a PR against main from branch feat/<description>". If it doesn't exist yet, show "Will be auto-detected before work begins."]
+> **Ship definition:** [for **Triage** mode, ship definition does not apply — show "In-session diagnosis — no branch, commit, or PR. Writing the diagnosis to an issue/Sentry is a per-run opt-in." For all other modes: if `.claude/swarm-ship.md` exists, show its contents in plain language — e.g., "Create a PR against main from branch feat/<description>". If it doesn't exist yet, show "Will be auto-detected before work begins."]
 >
 > **Rules:** Active
 
@@ -458,7 +463,7 @@ Use **TeamCreate** with a descriptive team name derived from the outcomes. For e
 
 ### 8b: You ARE the team lead
 
-You MUST use the **Skill** tool to invoke the mode skill. For built-in modes, use the `swarm:` prefix: `swarm:code-mode`, `swarm:writing-mode`, `swarm:general-mode`. For custom modes (user-defined in the project's `.claude/skills/`), use the unqualified name (e.g., `blog-mode`). The skill returns your operational spec for the rest of this team run. It defines:
+You MUST use the **Skill** tool to invoke the mode skill. For built-in modes, use the `swarm:` prefix: `swarm:code-mode`, `swarm:triage-mode`, `swarm:writing-mode`, `swarm:general-mode`. For custom modes (user-defined in the project's `.claude/skills/`), use the unqualified name (e.g., `blog-mode`). The skill returns your operational spec for the rest of this team run. It defines:
 - Your **lead identity** (apply to your own role)
 - The **facilitator identity line** (use in the Step 8c brief in place of the default code-mode identity)
 - **Mode-specific rules** (these extend the Step 1 hard rules — treat them as equally binding)
@@ -551,6 +556,8 @@ The pulse fires only when the REPL is idle — it will not interrupt active work
 ### 8f: Begin work
 
 **Ship definition check (before Research begins):**
+
+**Triage mode skips this check entirely.** Triage produces an in-session diagnosis and changes nothing — no branch, commit, or PR. Do not read or write `.claude/swarm-ship.md` and do not run ship detection. The triage mode skill's Deliver phase governs delivery (in-session by default; external write is a per-run opt-in). Skip to the phase arc.
 
 Read `.claude/swarm-ship.md`. If it exists, apply it at Execute (branch creation), Refine (rung commits), and Deliver (shipping). Skip to the phase arc.
 

@@ -124,7 +124,7 @@ Once outcomes are captured, swarm asks how configured you want the setup to be:
 > - Configure each step
 >   *Choose mode, team members, tier, and research individually*
 
-Defaults path: swarm infers the mode (Code / Writing / General) from your outcomes, suggests a team automatically, asks which cost tier you want (Ultra recommended for reliable rule-following, or Balanced for lower cost), and jumps to the final confirmation. Configure path: four short questions, your call on each.
+Defaults path: swarm infers the mode (Code / Triage / Writing / General) from your outcomes, suggests a team automatically, asks which cost tier you want (Ultra recommended for reliable rule-following, or Balanced for lower cost), and jumps to the final confirmation. Configure path: four short questions, your call on each.
 
 ### 3. See the team
 
@@ -135,7 +135,7 @@ Swarm presents a proposed roster and asks:
 > - Yes, looks good — *Proceed with this team composition*
 > - I want to adjust — *Let me add, remove, or change members*
 
-The team always includes a lead (you, via the main Claude session) and a facilitator (Principal Engineer in Code mode, Editorial Director in Writing mode, Chief of Staff in General mode). Everyone else is chosen for the domain expertise your outcomes suggest.
+The team always includes a lead (you, via the main Claude session) and a facilitator (Principal Engineer in Code mode, Principal Investigator in Triage mode, Editorial Director in Writing mode, Chief of Staff in General mode). Everyone else is chosen for the domain expertise your outcomes suggest.
 
 ### 4. Approve before anything runs
 
@@ -303,10 +303,11 @@ The plugin is the contract that travels with the work.
 | Mode | Lead | Facilitator | Review model |
 |------|------|-------------|--------------|
 | **Code** | Writes code | Principal Engineer | Technical — logic correctness, no regressions, reviewers would ship |
+| **Triage** | Diagnoses (no changes) | Principal Investigator | Diagnosis honesty — cause traced to the breaking point, evidence for/against, blast radius, honestly declared confidence; no Refine ladder |
 | **Writing** | Coordinates (can write) | Editorial Director | Editor-sandwich — writer isolation, structural + line pass |
 | **General** | Produces deliverable | Chief of Staff | Facilitator-driven — tailored to the deliverable type |
 
-Mode shortcuts bypass the mode question: `/swarm:code`, `/swarm:write`, `/swarm:general`.
+Mode shortcuts bypass the mode question: `/swarm:code`, `/swarm:triage`, `/swarm:write`, `/swarm:general`.
 
 ### Cost tiers
 
@@ -374,6 +375,7 @@ The team lead is your own Claude Code session, so swarm can't set its model or e
 ```
 /swarm:launch            # Interactive setup (any mode)
 /swarm:code              # Code team
+/swarm:triage            # Triage team — diagnose an issue without changing it
 /swarm:write             # Writing team
 /swarm:general           # General team
 /swarm:onboard           # Walkthrough for new users
@@ -441,9 +443,9 @@ Swarm runs fine in plain Claude Code; you see the lead's messages and approvals 
 | **team** | A group of agents launched for a task |
 | **lead** | The main session that coordinates work |
 | **member** | A teammate agent (read-only) |
-| **facilitator** | The Socratic facilitator role (Principal Engineer / Editorial Director / Chief of Staff) |
+| **facilitator** | The Socratic facilitator role (Principal Engineer / Principal Investigator / Editorial Director / Chief of Staff) |
 | **outcome** | What the user wants to achieve, state-based, not implementation steps |
-| **mode** | The team's domain configuration (Code, Writing, General) |
+| **mode** | The team's domain configuration (Code, Triage, Writing, General) |
 | **tier** | Model allocation tier (Ultra, Balanced) |
 | **phase arc** | Research, Converge, Approve, Execute, Review, Refine, Deliver |
 | **launch** | Start a team via `/swarm:launch` or a mode shortcut |

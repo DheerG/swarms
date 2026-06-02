@@ -249,8 +249,8 @@ Follow the **phase arc from your mode skill**. Universal rules:
 - Lead does no research unless the user explicitly enabled it (exception: the ship definition detection sub-agent runs unconditionally)
 - Questions the team cannot resolve go to the user via AskUserQuestion — most consequential first, one at a time
 - Post-greenlight execution is autonomous — escalate only per the hard rules
-- Phase transitions that require user input (Approve, Refine, Deliver) are mandatory stops — do not advance past them autonomously
-- After 9/10+ review confidence, ask the user about recursive refinement before delivering — do not skip to Deliver
+- Phase transitions that require user input (Approve, Refine where the mode defines it, Deliver) are mandatory stops — do not advance past them autonomously
+- After 9/10+ review confidence, if the mode defines a Refine phase, ask the user about recursive refinement before delivering — do not skip to Deliver. A mode that defines no Refine phase proceeds directly to Deliver (the same "(if defined)" deferral as the hard rule above).
 - Final delivery requires explicit user sign-off — follow the ship definition from `.claude/swarm-ship.md` and execute the defined shipping steps with the user's approval. If a rung commit already landed in Refine (per the Rung Commit Rule above), the commit is done; Deliver begins from push/PR.
 - **Use file-based input for PR bodies.** Run `mktemp` and capture its output as a single file path. Use that exact captured path string in every subsequent step: write the body to it via Write, then `gh pr create --body-file <captured-path>`, then `rm <captured-path>`. Do not regenerate the path between steps — one `mktemp` call binds one path used across all three operations. Inline `--body "$(cat <<EOF ...)"` triggers the bash safety heuristic and prompts unconditionally in auto mode. `mktemp` defends against symlink-race attacks on shared systems.
 - When an explicit shutdown request has been received, delete the pulse cron job using CronDelete

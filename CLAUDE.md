@@ -10,7 +10,7 @@ launch.md Step 8 briefing templates are FIXED. Do not add sections to member bri
 
 ## What This Is
 
-Swarm is a Claude Code plugin for launching agent teams. Eight commands — `/swarm:launch` (catch-all), `/swarm:code`, `/swarm:write`, `/swarm:general` (mode shortcuts), `/swarm:refine` (refine the current branch and PR), `/swarm:workflow` (custom mode entry point), `/swarm:create-workflow` (scaffolding), `/swarm:update-workflow` (refresh generated workflows) — drive an interactive setup that creates a coordinated team of agents with defined roles and rules. Users can extend swarm by creating custom mode skills in their own codebases — either as **full custom modes** or as **thin wrappers** that extend a built-in mode.
+Swarm is a Claude Code plugin for launching agent teams. Nine commands — `/swarm:launch` (catch-all), `/swarm:code`, `/swarm:triage`, `/swarm:write`, `/swarm:general` (mode shortcuts), `/swarm:refine` (refine the current branch and PR), `/swarm:workflow` (custom mode entry point), `/swarm:create-workflow` (scaffolding), `/swarm:update-workflow` (refresh generated workflows) — drive an interactive setup that creates a coordinated team of agents with defined roles and rules. Users can extend swarm by creating custom mode skills in their own codebases — either as **full custom modes** or as **thin wrappers** that extend a built-in mode.
 
 ## Architecture
 
@@ -19,6 +19,7 @@ Swarm is a Claude Code plugin for launching agent teams. Eight commands — `/sw
 ```
 commands/launch.md          # Catch-all command — interactive team setup (Steps 0–8)
 commands/code.md            # Mode shortcut — pre-selects Code, delegates to launch.md
+commands/triage.md          # Mode shortcut — pre-selects Triage, delegates to launch.md
 commands/write.md           # Mode shortcut — pre-selects Writing, delegates to launch.md
 commands/general.md         # Mode shortcut — pre-selects General, delegates to launch.md
 commands/refine.md          # Standalone — runs Review/Refine/Deliver against the current branch + PR
@@ -26,6 +27,7 @@ commands/workflow.md         # Custom mode entry point — takes a mode skill na
 commands/create-workflow.md  # Scaffolding — interviews user, generates mode skill + shortcut command (wrapper or full)
 commands/update-workflow.md  # Refresh — regenerates the plugin-owned wiring of an existing shortcut command
 skills/code-mode/           # Code mode: lead identity, facilitator title, rules, phase arc
+skills/triage-mode/         # Triage mode: diagnose an issue (cause + blast radius), no code change; phase arc has no Refine
 skills/writing-mode/        # Writing mode: lead identity, facilitator title, ownership boundaries, editorial baseline, phase arc
 skills/general-mode/        # General mode: lead identity, facilitator title, lightweight default
 skills/workflow-rules/      # Governance spec for custom workflows — hard rules, briefing templates, launch mechanics
@@ -39,7 +41,7 @@ skills/define-rubric/       # Available skill for teams that genuinely need form
 .claude/swarm-ship.md       # Per-project ship definition (created at first launch, user-owned)
 ```
 
-**Commands** are entry points that can spawn teams (TeamCreate + Agent). Shortcut commands (`/swarm:code`, `/swarm:write`, `/swarm:general`) use `${CLAUDE_PLUGIN_ROOT}` to read launch.md and execute it with mode pre-set. `/swarm:workflow` is the generic entry point for custom modes — it takes a mode skill name as argument. `/swarm:create-workflow` scaffolds a custom mode skill + shortcut command in the user's project. **Skills** are helpers invoked via the Skill tool — they cannot launch teams. **Mode skills** (`swarm:code-mode`, `swarm:writing-mode`, `swarm:general-mode`, and user-defined custom modes) are invoked by the team lead at Step 8b; they return the phase arc and mode-specific rules for that run. `swarm:workflow-rules` returns the universal governance spec (hard rules, briefing templates, launch mechanics) for use by user-authored shortcut commands that cannot access `${CLAUDE_PLUGIN_ROOT}`.
+**Commands** are entry points that can spawn teams (TeamCreate + Agent). Shortcut commands (`/swarm:code`, `/swarm:triage`, `/swarm:write`, `/swarm:general`) use `${CLAUDE_PLUGIN_ROOT}` to read launch.md and execute it with mode pre-set. `/swarm:workflow` is the generic entry point for custom modes — it takes a mode skill name as argument. `/swarm:create-workflow` scaffolds a custom mode skill + shortcut command in the user's project. **Skills** are helpers invoked via the Skill tool — they cannot launch teams. **Mode skills** (`swarm:code-mode`, `swarm:triage-mode`, `swarm:writing-mode`, `swarm:general-mode`, and user-defined custom modes) are invoked by the team lead at Step 8b; they return the phase arc and mode-specific rules for that run. `swarm:workflow-rules` returns the universal governance spec (hard rules, briefing templates, launch mechanics) for use by user-authored shortcut commands that cannot access `${CLAUDE_PLUGIN_ROOT}`.
 
 ### How launch.md Works
 
@@ -47,15 +49,15 @@ Step 0 (pre-flight) → Step 1 (universal hard rules) → Step 2 (outcomes + def
 
 After outcomes are confirmed, Step 2 asks how to set up the team. The two Defaults options ("Defaults — Ultra (Recommended)" and "Defaults — Balanced") silently infer mode, suggest a team, and apply no lead research — making the cost tier an explicit pick rather than a silent default — then skip to Step 7 confirmation. The configure path walks through Steps 3–6 individually. Steps 3–6 also serve as reference definitions when the user says "I have changes" at Step 7.
 
-`$ARGUMENTS` is substituted by Claude Code before the model sees the prompt. If the user passes args to `/swarm:launch`, they appear in the `## User-Provided Context` section and the outcomes question is skipped. Mode is inferred from the outcomes when unambiguous. Shortcut commands (`/swarm:code`, `/swarm:write`, `/swarm:general`) read launch.md via `${CLAUDE_PLUGIN_ROOT}` and execute it with mode pre-set and a streamlined outcomes flow.
+`$ARGUMENTS` is substituted by Claude Code before the model sees the prompt. If the user passes args to `/swarm:launch`, they appear in the `## User-Provided Context` section and the outcomes question is skipped. Mode is inferred from the outcomes when unambiguous. Shortcut commands read launch.md via `${CLAUDE_PLUGIN_ROOT}` and execute it with mode pre-set and a streamlined outcomes flow.
 
 ### Team Execution Phase Arc
 
-The phase arc skeleton is universal: Research → Converge → Approve → Execute → Review → Refine → Deliver. The mode skill (invoked at Step 8b) defines what each phase means — who acts, what the deliverable is, how review works. Code mode and Writing mode have meaningfully different phase semantics.
+The phase arc skeleton is universal: Research → Converge → Approve → Execute → Review → Refine → Deliver. The mode skill (invoked at Step 8b) defines what each phase means — who acts, what the deliverable is, how review works. Code mode and Writing mode have meaningfully different phase semantics. A full mode may also omit a phase: Triage mode drops Refine (and the recursive-refinement ladder), because a diagnosis has an evidentiary terminal and polishing past it manufactures false certainty. By defining no Refine phase, the universal "ask refine-or-deliver" rule (which keys to "the Refine phase in the mode skill, if defined") does not fire — its Deliver phase restates this so the lead does not re-import the question by habit.
 
 ### Mode Skills
 
-Mode skills are invoked by the team lead at runtime (Step 8b) using the Skill tool. Built-in modes use the `swarm:` prefix (`swarm:code-mode`, `swarm:writing-mode`, `swarm:general-mode`). Custom modes use their unqualified name (`blog-mode`, `security-review-mode`). Each returns: lead identity, facilitator title, facilitator identity line, mode-specific rules, suggest-members guidance, and a phase arc. Custom modes may additionally include a Lead Allowlist, Pre-flight Reads, and Information Flow section.
+Mode skills are invoked by the team lead at runtime (Step 8b) using the Skill tool. Built-in modes use the `swarm:` prefix (`swarm:code-mode`, `swarm:triage-mode`, `swarm:writing-mode`, `swarm:general-mode`). Custom modes use their unqualified name (`blog-mode`, `security-review-mode`). Each returns: lead identity, facilitator title, facilitator identity line, mode-specific rules, suggest-members guidance, and a phase arc. Custom modes may additionally include a Lead Allowlist, Pre-flight Reads, and Information Flow section.
 
 ### Custom Workflows
 
