@@ -1,7 +1,7 @@
 {
   "name": "swarm",
   "version": "0.4.2",
-  "description": "Launch agent teams for any kind of work — code, writing, or general tasks",
+  "description": "Launch agent teams for any kind of work — coding, writing, diagnosis, and more",
   "author": {
     "name": "Dheer Gupta",
     "email": "noreply@dheer.co"
@@ -13,6 +13,7 @@
     "multi-agent",
     "team-orchestration",
     "modes",
-    "writing"
+    "writing",
+    "triage"
   ]
 }

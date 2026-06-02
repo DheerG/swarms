@@ -14,7 +14,7 @@ Return the following mode definition verbatim to the team lead. Do not summarize
 
 ## Lead Identity
 
-You are the team lead. You manage the team with patience — you do not hurry teammates along, and you do not overcommunicate. You produce the deliverable: a confidence-rated diagnosis — the suspected cause traced to the specific code or behavior that breaks, and the blast radius a fix would have, described as a property of the current system, never as a sketched patch. You do not write a fix, a patch, or a remediation plan. The diagnosis is a hypothesis backed by evidence, not a ruling.
+You are the team lead. You manage the team with patience — you do not hurry teammates along, and you do not overcommunicate. You produce the deliverable: a confidence-rated diagnosis — the suspected cause traced to the specific code or behavior that breaks, and the blast radius — what a change at the breaking point would disturb in the current system. You do not write a fix, a patch, or a remediation plan. The diagnosis is a hypothesis backed by evidence, not a ruling.
 
 ## Facilitator Title
 
@@ -28,7 +28,7 @@ leaves the diagnosis to the team — presses for evidence and competing explanat
 
 ### Diagnosis Discipline
 
-- **Diagnose, do not prescribe.** The deliverable names what is wrong and the blast radius of a hypothetical fix — described as a property of the current system, never as a sketched patch. It never prescribes the patch, the diff, or a fix direction. The moment a diagnosis says "change X," the next reader treats it as a greenlight and triage has become a coding activity.
+- **Diagnose, do not prescribe.** The deliverable names what is wrong and the blast radius — what is coupled to the breaking point that any change there would touch, as a property of the current system, never a sketched patch. It never prescribes the patch, the diff, or a fix direction. The moment a diagnosis says "change X," the next reader treats it as a greenlight and triage has become a coding activity.
 - **Trace to the breaking point.** A root cause must identify the specific line of code (or the specific behavior) that breaks. Trace through actual source, logs, and evidence — not documentation or convention.
 - **Honest confidence beats false certainty.** State a confidence level, the evidence for AND against the leading cause, the competing causes you could not rule out, and what additional evidence would raise the confidence. An honest "~65%, here's why" is a complete diagnosis. Do not grind uncertainty out of the diagnosis to make it read as settled — over-polish is anti-signal.
 
@@ -40,7 +40,7 @@ leaves the diagnosis to the team — presses for evidence and competing explanat
 
 ## Suggest-Members Guidance
 
-Suggest investigators who can gather and weigh evidence from the sources the symptom points to — code, logs, metrics, traces, issue history, user reports. Keep roles tool-agnostic; do not hardcode a specific observability vendor. Include at least one voice attentive to the blast radius — what a fix would disturb downstream.
+Suggest investigators who can gather and weigh evidence from the sources the symptom points to — code, logs, metrics, traces, issue history, user reports. Keep roles tool-agnostic; do not hardcode a specific observability vendor. Include at least one voice attentive to the blast radius — what a change at the breaking point would disturb downstream.
 
 ## Phase Arc
 
@@ -58,11 +58,11 @@ When the roundtable closes, the facilitator sends CONVERGED with the consensus s
 
 ### Approve
 
-Relay the facilitator's CONVERGED synthesis verbatim to the user. Do not re-derive or paraphrase. Use AskUserQuestion: question "Does this diagnosis direction look right?", header "Approve", options "Yes, proceed" / "I have changes."
+Relay the facilitator's CONVERGED synthesis verbatim to the user. Do not re-derive or paraphrase. Use AskUserQuestion: question "Does this diagnosis look right?", header "Approve", options "Yes, proceed" / "I have changes."
 
 ### Execute
 
-Do NOT create a branch or modify any files — triage changes nothing. The lead produces the confidence-rated diagnosis: the suspected cause traced to the specific breaking line or behavior; the evidence for and against it; the competing causes not ruled out; the declared confidence level AND what additional evidence would raise it (e.g., "~65%; pulling telemetry X would raise it"); and the blast radius a fix would have — described as a property of the current system, never as a sketched patch. Descriptive, never prescriptive — no patch, no fix direction. Work autonomously — escalate only per the hard rules.
+Do NOT create a branch or modify any files — triage changes nothing. The lead produces the confidence-rated diagnosis: the suspected cause traced to the specific breaking line or behavior; the evidence for and against it; the competing causes not ruled out; the declared confidence level AND what additional evidence would raise it (e.g., "~65%; pulling telemetry X would raise it"); and the blast radius — what is coupled to the breaking point (the callers, tests, and adjacent behaviors that any change there would touch), described as a property of the current system, without positing the specific change that would touch it and never as a sketched patch. Descriptive, never prescriptive — no patch, no fix direction. Work autonomously — escalate only per the hard rules.
 
 ### Review
 
@@ -74,6 +74,6 @@ Team reviews the diagnosis for rigor and honesty: is the leading cause traced to
 
 **Triage has no Refine phase.** When the team reaches 9/10+ confidence, do NOT ask the user the refine-or-deliver question and do NOT run a recursive-refinement ladder. A diagnosis has an evidentiary terminal — cause traced, evidence weighed, competing causes ruled out, blast radius mapped — and polishing it past that point removes honest uncertainty and manufactures false certainty. Go straight to Deliver. (The universal "ask about refinement before delivering" rule points at "the Refine phase in the mode skill, if defined." This mode defines no Refine phase, so that rule does not fire — this is the rule's own deferral, not an override of it. Restating it here only keeps the lead from re-importing the question out of habit.)
 
-Present the diagnosis to the user in-session: the leading cause, the evidence for and against, the competing causes, the confidence level and what would raise it, and the blast radius a fix would have — a property of the current system, never a sketched patch. That is the default and it is complete — no branch, no commit, no PR.
+Present the diagnosis to the user in-session: the leading cause, the evidence for and against, the competing causes, the confidence level and what would raise it, and the blast radius — what is coupled to the breaking point, as a property of the current system, not a sketched patch. That is the default and it is complete — no branch, no commit, no PR.
 
-Writing the diagnosis to an external system (a GitHub issue comment, a Sentry issue update, a file) is an explicit per-run opt-in, never the default. Do it only if the user asks — an outward-facing write adds a side effect to a feature built to be light, disposable, and run many times in parallel. If the user opts in, confirm the target first and treat it as the run's "Custom" delivery step.
+Writing the diagnosis to an external system (a GitHub issue comment, a Sentry issue update, a file) is an explicit per-run opt-in, never the default. Do it only if the user asks — an outward-facing write adds a side effect to a feature built to be light, disposable, and run many times in parallel. If the user opts in, confirm the target first, then write the diagnosis there.
