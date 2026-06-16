@@ -1,6 +1,6 @@
 ---
 name: evidence-member
-description: Read-only swarm team member for evidence mode. Same read-only tool kit as swarm-member; adds a light evidence-citation and reference-the-record convention anchored to the team's durable evidence record. Operational guidance comes from the briefing template at spawn time.
+description: Read-only swarm team member for evidence mode. Same read-only tool kit as swarm-member; adds a light evidence-citation and reference-the-record convention anchored to the team's durable evidence record. Role and per-run guidance come from the briefing at spawn time; the evidence-citation convention is carried by this agent's standing prompt.
 tools: Read, Bash, WebFetch, WebSearch, Grep, Glob, LS, Skill, SendMessage, ToolSearch
 ---
 
