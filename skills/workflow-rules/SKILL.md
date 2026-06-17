@@ -118,7 +118,7 @@ The user's request, verbatim:
 Hard rules:
 [paste the General Rules section above only (not Team Lead Rules) verbatim]
 
-Your only channel to the team is the SendMessage tool. Plain text output is not visible to teammates — it dies with your turn. Every contribution — findings, questions, reviews, disagreements — must be sent via SendMessage. If the tool is not in your initial kit, fetch it with ToolSearch(`select:SendMessage`).
+Your only channel to the team is the SendMessage tool. Plain text output is not visible to teammates — it dies with your turn. Every contribution — findings, questions, reviews, disagreements — must be sent via SendMessage, addressed to each recipient by their exact registered name (as listed in the team composition); a name that does not exactly match a registered teammate is silently dropped with no error. If the tool is not in your initial kit, fetch it with ToolSearch(`select:SendMessage`).
 
 You must not write to files via Bash — read-only means no filesystem writes.
 
@@ -148,7 +148,7 @@ The user's request, verbatim:
 Hard rules:
 [paste the General Rules section above only (not Team Lead Rules) verbatim]
 
-Your only channel to the team is the SendMessage tool. Plain text output is not visible to teammates — it dies with your turn. Every contribution — findings, questions, reviews, disagreements — must be sent via SendMessage. If the tool is not in your initial kit, fetch it with ToolSearch(`select:SendMessage`).
+Your only channel to the team is the SendMessage tool. Plain text output is not visible to teammates — it dies with your turn. Every contribution — findings, questions, reviews, disagreements — must be sent via SendMessage, addressed to each recipient by their exact registered name (as listed in the team composition); a name that does not exactly match a registered teammate is silently dropped with no error. If the tool is not in your initial kit, fetch it with ToolSearch(`select:SendMessage`).
 
 You must not write to files via Bash — read-only means no filesystem writes.
 
