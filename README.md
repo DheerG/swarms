@@ -404,6 +404,8 @@ Pass outcomes inline to skip the opening question:
 /swarm:update            # Check for and install the latest version
 ```
 
+Swarm checks for updates on session start. When an update is available, the assistant is notified and mentions it in its first reply — run `/swarm:update` to upgrade. On the Claude Code CLI the notice may also appear directly as a startup line; in the VS Code, JetBrains, and web clients, Claude Code does not render startup hook messages ([claude-code#15344](https://github.com/anthropics/claude-code/issues/15344)), so the assistant's reply is the only place it appears there. Set `SWARM_SKIP_UPDATE_CHECK=1` to silence the check.
+
 ---
 
 ## Custom workflows
