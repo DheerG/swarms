@@ -19,7 +19,11 @@
 #
 # Two disjoint single-writer state files (race-free, no locking):
 #   .swarms-update-cache  {version, fetched_at}  — written ONLY by the Phase 1 fetcher
-#   .swarms-notified      {notified_version}     — written ONLY by the Phase 2 display
+#   .swarms-notified      newline-delimited SET of "installed->latest" keys shown loudly —
+#                          written ONLY by the Phase 2 display. One line per pair, so the
+#                          once-per-version dedup survives switching between projects on
+#                          different versions (a single scalar would clobber and re-nag on
+#                          every switch); bounded to the last 20 lines.
 #
 # Opt-out: set SWARM_SKIP_UPDATE_CHECK=1
 
@@ -120,10 +124,19 @@ HIGHER=$(printf '%s\n%s' "$INSTALLED" "$LATEST" | sort -V | tail -1)
 # user-visible line (systemMessage) only once per newly-detected version, then stamp it.
 ADDITIONAL_CONTEXT="A swarm plugin update is available: v${LATEST} (installed v${INSTALLED}). If you have not already told the user this session, let them know they can upgrade by running /swarm:update."
 
-NOTIFIED=$(read_field "$NOTIFIED_FILE" notified_version)
-if [[ "$LATEST" != "$NOTIFIED" ]]; then
-  emit_json "$ADDITIONAL_CONTEXT" "Swarm v${LATEST} is available (you have v${INSTALLED}). Run /swarm:update to upgrade."
-  printf '{"notified_version":"%s"}\n' "$LATEST" > "$NOTIFIED_FILE"
-else
+# Gate the loud channel on the (installed -> latest) PAIR, recorded as a SET so it survives
+# multi-project use. The notified file is shared across every project on this machine:
+# keying on latest alone would let one project suppress the loud line for others on an older
+# version, and a single scalar key would clobber and re-nag on every project switch. So the
+# file holds a newline-delimited set of keys; emit loud only when this pair is NOT yet in
+# it, then append. Both halves are charset-gated above, so the key line is safe. A pre-set
+# scalar/JSON file won't line-match, so it re-alerts once and migrates to this format.
+NOTIFY_KEY="${INSTALLED}->${LATEST}"
+if grep -qxF "$NOTIFY_KEY" "$NOTIFIED_FILE" 2>/dev/null; then
   emit_json "$ADDITIONAL_CONTEXT"
+else
+  emit_json "$ADDITIONAL_CONTEXT" "Swarm v${LATEST} is available (you have v${INSTALLED}). Run /swarm:update to upgrade."
+  # Append the key, keep the last 20 (bounded — a machine has finitely many installed
+  # versions). temp+mv = atomic replace, no torn file under concurrent session starts.
+  { cat "$NOTIFIED_FILE" 2>/dev/null; printf '%s\n' "$NOTIFY_KEY"; } | tail -n 20 > "${NOTIFIED_FILE}.tmp" && mv "${NOTIFIED_FILE}.tmp" "$NOTIFIED_FILE"
 fi
