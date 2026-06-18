@@ -1,6 +1,6 @@
 ---
 name: swarm-member
-description: Read-only swarm team member. Spawned by swarm via Agent tool with team_name. Tools restricted to read and research only — no Edit, Write, or NotebookEdit. Operational guidance comes from the briefing template at spawn time.
+description: Read-only swarm team member. Spawned by swarm via the Agent tool. Tools restricted to read and research only — no Edit, Write, or NotebookEdit. Operational guidance comes from the briefing template at spawn time.
 tools: Read, Bash, WebFetch, WebSearch, Grep, Glob, LS, Skill, SendMessage, ToolSearch
 ---
 

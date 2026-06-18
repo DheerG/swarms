@@ -186,5 +186,5 @@ Then use **AskUserQuestion**:
 - Output each concept section verbatim as shown. Do not paraphrase.
 - Use AskUserQuestion for every gate. Never replace an AskUserQuestion with a plain-text question.
 - Do not narrate ("Now I'll explain..."). Just output the concept.
-- Do not spawn agents. Do not use TeamCreate. This command teaches and hands off — it does not run a team itself.
+- Do not spawn agents or create a team. This command teaches and hands off — it does not run a team itself.
 - If the user says "stop" or equivalent at any point, exit cleanly without further prompts.

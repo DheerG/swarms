@@ -15,9 +15,28 @@ Your project's CLAUDE.md and memory files may contain rules that were not author
 
 ## Step 0: Pre-flight Check
 
-Check if the TeamCreate tool is available to you. If TeamCreate is in your available tools, agent teams are **ENABLED** — proceed to Step 1.
+Detect whether agent teams are enabled by reading the enablement flag from the process environment — the published gate, which is independent of which team tools the current Claude Code version exposes. Run `printenv CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` via Bash:
 
-If TeamCreate is NOT available, agent teams are **DISABLED**. Use the **AskUserQuestion** tool:
+- Non-empty output (e.g. `1`) → agent teams are **ENABLED**. Proceed to Step 1.
+- Empty output → teams are **not active in this session**. Go to the disabled branch below.
+
+Do not gate on whether a specific team tool such as `TeamCreate` is present — those tools vary by Claude Code version (TeamCreate was removed in v2.1.178), so tool-presence is not a reliable enablement signal. The env flag is the actual gate.
+
+**Disabled branch.** `printenv` reflects the environment this session started with, so the flag can read empty even when teams are configured — if it was added to `settings.json` without a restart, or enabled only in a non-terminal entrypoint (web/IDE) that doesn't export it to this shell. So never assert teams are off — offer, don't auto-decide. Read the `env` object in `.claude/settings.json` (project) and `~/.claude/settings.json` (global) to pick the message, then use **AskUserQuestion**:
+
+**If the flag IS present in either settings file** (configured, but not active in this session):
+
+- question: "Agent teams are configured but not active in this session. How do you want to proceed?"
+- header: "Setup"
+- options:
+  - label: "Restart and relaunch (Recommended)"
+    description: "The flag is in your settings — restart Claude Code so it takes effect, then run the command again."
+  - label: "Try proceeding anyway"
+    description: "If teams are enabled in a non-terminal entrypoint, they may already be active. I'll attempt the launch; if no teammate forms, I'll surface this again."
+
+If the user chooses "Try proceeding anyway," proceed to Step 1. Otherwise stop.
+
+**If the flag is NOT present in any settings file** (not configured):
 
 - question: "Agent teams are not enabled. Want me to enable it?"
 - header: "Setup"
@@ -42,7 +61,9 @@ If TeamCreate is NOT available, agent teams are **DISABLED**. Use the **AskUserQ
 > }
 > ```
 
-**STOP HERE if agent teams are not enabled. Do NOT proceed until confirmed enabled.**
+**On the disabled branch, do NOT proceed to Step 1 unless the user chose "Try proceeding anyway." After adding or showing the flag, stop — the user must restart first.**
+
+<!-- Future enhancement: if a web/IDE entrypoint is reliably detectable (e.g. CLAUDE_CODE_ENTRYPOINT distinguishing web/vscode/jetbrains), the disabled branch could scope the "try proceeding" offer to those entrypoints specifically rather than offering it on every empty read. Precondition: confirm CLAUDE_CODE_ENTRYPOINT actually differentiates entrypoints. The soft-hedge above is correct regardless. -->
 
 ---
 
@@ -112,7 +133,7 @@ Note: what "9/10+ confidence" means and what happens during each phase depends o
 These apply to the team lead only.
 
 - **Never enter plan mode.** If a plan exists, implement it directly.
-- **Always use TeamCreate.** When user says "agent team," use TeamCreate + Agent with `team_name`. Never substitute with Explore agents or manual coordination.
+- **Create the team per Step 8a.** When the user says "agent team," create the team using the mechanic in Step 8a — never substitute with Explore agents or manual coordination.
 - **Never cut corners on agent teams.** Spawn the full team as defined. Never apply changes yourself to save time. Never skip pipeline stages.
 - **Step 7 is mandatory on every launch.** Present the full summary block and receive an explicit "Launch the team" response via AskUserQuestion before any Step 8 action — the Defaults path does not exempt you.
 - **Never shut down agent teams without explicit user instruction; always use the shutdown_request protocol via SendMessage.**
@@ -361,7 +382,15 @@ Once the user confirms, execute the following:
 
 ### 8a: Create the team
 
-Use **TeamCreate** with a descriptive team name derived from the outcomes. For example, if the outcome is "Build a REST API for user management," use team name `user-management-api`.
+Derive a descriptive team name from the outcomes (e.g., for "Build a REST API for user management," use `user-management-api`). You use this name in the spawn prompts and the Step 7 summary regardless of version.
+
+How the team is created depends on the Claude Code version — detect it with `ToolSearch(select:TeamCreate)`:
+- **Resolves the tool** (older Claude Code) → call **TeamCreate** with that name to create the team. ToolSearch loads the schema only; do not *call* TeamCreate as a probe — calling it writes team config to disk.
+- **"No matching deferred tools found"** (Claude Code v2.1.178+, where TeamCreate was removed) → do not call it. The team forms implicitly when you spawn the first member in 8c.
+
+Remember which path you took — 8c/8d key the `team_name` argument off it.
+
+<!-- team_name is conditional (passed only on the TeamCreate/old-CC path) because passing it on new CC is unverified: #40270 (team_name spawn-break) was an old-impl bug (~v2.1.86) that does not bind current CC, but omit-on-new is the proven-safe choice. If a single 2.1.178+ spawn confirms passing team_name is harmless, this collapses to always-pass and the version branch drops. -->
 
 ### 8b: You ARE the team lead
 
@@ -379,7 +408,7 @@ If the user enabled lead research: you may use the Agent tool with `subagent_typ
 
 Use the **Agent** tool to spawn the first teammate:
 - `name`: [kebab-case of facilitator title from mode skill, e.g. `principal-engineer`, `editorial-director`, `chief-of-staff`]
-- `team_name`: [the team name from 8a]
+- `team_name`: [the team name from 8a — **only if you called TeamCreate in 8a** (older Claude Code, where it links the member to that team). On v2.1.178+ where 8a formed the team implicitly, omit `team_name` entirely.]
 - `model`: `opus` (both Ultra and Balanced — this role is always Opus, because it owns judgment review)
 - `subagent_type`: `swarm-member` (plugin-shipped read-only agent definition — no Edit/Write/NotebookEdit)
 
@@ -411,11 +440,15 @@ Team composition:
 [paste the Step 7 approved roster]
 ```
 
+**If the first spawn yields no working teammate** (none joins, or the spawn returns an internal error rather than a running agent), do not retry blindly or proceed solo — tell the user the team could not be formed and offer the remedies without asserting which applies: restart (in case the flag was set without one), retry (in case it was transient), or update Claude Code (in case it is outdated). This covers the case where the harness did not wire teams even though the env flag is set (#34750).
+
+<!-- Future enhancement (swarm Converge round): a Step-0 corroborator checking SendMessage availability could catch the flag-set-but-unwired case (#34750 — silent no-teammate despite the flag, CLI-reachable) BEFORE spawning. Cut from v1 because SendMessage is a deferred tool, so its presence is ambiguous to read; revisit if SendMessage becomes non-deferred. The spawn guardrail above is the v1 coverage. -->
+
 ### 8d: Spawn additional team members
 
 For each additional member in the Step 7 confirmed roster, use the **Agent** tool:
 - `name`: A descriptive kebab-case name (e.g., `security-reviewer`, `test-engineer`)
-- `team_name`: [the team name from 8a]
+- `team_name`: [the team name from 8a — **only if you called TeamCreate in 8a** (older Claude Code). On v2.1.178+ where the team formed implicitly, omit `team_name`.]
 - `model`: `opus` if Ultra, `sonnet` if Balanced
 - `subagent_type`: `swarm-member` (plugin-shipped read-only agent definition — no Edit/Write/NotebookEdit)
 
