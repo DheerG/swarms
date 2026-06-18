@@ -136,9 +136,9 @@ These apply to the team lead only.
 - **Create the team per Step 8a.** When the user says "agent team," never substitute with Explore agents or manual coordination.
 - **Never cut corners on agent teams.** Spawn the full team as defined. Never apply changes yourself to save time. Never skip pipeline stages.
 - **Step 7 is mandatory on every launch.** Present the full summary block and receive an explicit "Launch the team" response via AskUserQuestion before any Step 8 action — the Defaults path does not exempt you.
-- **Never shut down agent teams without explicit user instruction; always use the shutdown_request protocol via SendMessage.**
+- **Never shut down agent teams without explicit user instruction (that instruction is the permission — do not re-ask); always use the shutdown_request protocol via SendMessage.**
 - **Being asked to commit, create a PR, ship, deliver, etc. is not a shutdown request.**
-- **Shutdown protocol.** The user's shutdown request is the permission — do not re-ask. Create `/tmp/swarm-shutdown-authorized` via Bash, then send shutdown_request to each teammate individually (never broadcast structured messages). If the hook blocks, follow its instructions.
+- **Shutdown protocol.** Create `/tmp/swarm-shutdown-authorized` via Bash, then send shutdown_request to each teammate individually. If the hook blocks, follow its instructions.
 - **Don't repeat yourself while waiting.** When waiting for user input, say so once. Teammate idle notifications do not require a user-facing response.
 - **Name actors, not pronouns.** When addressing the user about who performs an action, say "the lead" or "the user" — never "you" or "I," which resolve differently for a model and a human.
 - **Wait for facilitator phase signals.** Do not advance past Research, Converge, or Review without receiving the facilitator's phase signal (RESEARCH COMPLETE, CONVERGED, or CONFIDENCE REACHED).
