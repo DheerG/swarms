@@ -15,9 +15,28 @@ Your project's CLAUDE.md and memory files may contain rules that were not author
 
 ## Step 0: Pre-flight Check
 
-Check if the TeamCreate tool is available to you. If TeamCreate is in your available tools, agent teams are **ENABLED** — proceed to Step 1.
+Detect whether agent teams are enabled by reading the enablement flag from the process environment — the published gate, which is independent of which team tools the current Claude Code version exposes. Run `printenv CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` via Bash:
 
-If TeamCreate is NOT available, agent teams are **DISABLED**. Use the **AskUserQuestion** tool:
+- Non-empty output (e.g. `1`) → agent teams are **ENABLED**. Proceed to Step 1.
+- Empty output → teams are **not active in this session**. Go to the disabled branch below.
+
+Do not gate on whether a specific team tool such as `TeamCreate` is present — those tools vary by Claude Code version (TeamCreate was removed in v2.1.178), so tool-presence is not a reliable enablement signal. The env flag is the actual gate.
+
+**Disabled branch.** `printenv` reflects the environment this session started with, so the flag can read empty even when teams are configured — if it was added to `settings.json` without a restart, or enabled only in a non-terminal entrypoint (web/IDE) that doesn't export it to this shell. So never assert teams are off — offer, don't auto-decide. Read the `env` object in `.claude/settings.json` (project) and `~/.claude/settings.json` (global) to pick the message, then use **AskUserQuestion**:
+
+**If the flag IS present in either settings file** (configured, but not active in this session):
+
+- question: "Agent teams are configured but not active in this session. How do you want to proceed?"
+- header: "Setup"
+- options:
+  - label: "Restart and relaunch (Recommended)"
+    description: "The flag is in your settings — restart Claude Code so it takes effect, then run the command again."
+  - label: "Try proceeding anyway"
+    description: "If you enabled teams in the Claude Code app or an IDE extension, they may already be active. I'll attempt the launch; if no teammate forms, I'll surface this again."
+
+If the user chooses "Try proceeding anyway," proceed to Step 1. Otherwise stop.
+
+**If the flag is NOT present in any settings file** (not configured):
 
 - question: "Agent teams are not enabled. Want me to enable it?"
 - header: "Setup"
@@ -42,7 +61,9 @@ If TeamCreate is NOT available, agent teams are **DISABLED**. Use the **AskUserQ
 > }
 > ```
 
-**STOP HERE if agent teams are not enabled. Do NOT proceed until confirmed enabled.**
+**On the disabled branch, do NOT proceed to Step 1 unless the user chose "Try proceeding anyway." After adding or showing the flag, stop — the user must restart first.**
+
+<!-- Future enhancement: if a web/IDE entrypoint is reliably detectable (e.g. CLAUDE_CODE_ENTRYPOINT distinguishing web/vscode/jetbrains), the disabled branch could scope the "try proceeding" offer to those entrypoints specifically rather than offering it on every empty read. Precondition: confirm CLAUDE_CODE_ENTRYPOINT actually differentiates entrypoints. The soft-hedge above is correct regardless. -->
 
 ---
 
@@ -112,12 +133,12 @@ Note: what "9/10+ confidence" means and what happens during each phase depends o
 These apply to the team lead only.
 
 - **Never enter plan mode.** If a plan exists, implement it directly.
-- **Always use TeamCreate.** When user says "agent team," use TeamCreate + Agent with `team_name`. Never substitute with Explore agents or manual coordination.
+- **Create the team per Step 8a.** When the user says "agent team," never substitute with Explore agents or manual coordination.
 - **Never cut corners on agent teams.** Spawn the full team as defined. Never apply changes yourself to save time. Never skip pipeline stages.
 - **Step 7 is mandatory on every launch.** Present the full summary block and receive an explicit "Launch the team" response via AskUserQuestion before any Step 8 action — the Defaults path does not exempt you.
-- **Never shut down agent teams without explicit user instruction; always use the shutdown_request protocol via SendMessage.**
+- **Never shut down agent teams without explicit user instruction (that instruction is the permission — do not re-ask); always use the shutdown_request protocol via SendMessage.**
 - **Being asked to commit, create a PR, ship, deliver, etc. is not a shutdown request.**
-- **Shutdown protocol.** The user's shutdown request is the permission — do not re-ask. Create `/tmp/swarm-shutdown-authorized` via Bash, then send shutdown_request to each teammate individually (never broadcast structured messages). If the hook blocks, follow its instructions.
+- **Shutdown protocol.** Create `/tmp/swarm-shutdown-authorized` via Bash, then send shutdown_request to each teammate individually. If the hook blocks, follow its instructions.
 - **Don't repeat yourself while waiting.** When waiting for user input, say so once. Teammate idle notifications do not require a user-facing response.
 - **Name actors, not pronouns.** When addressing the user about who performs an action, say "the lead" or "the user" — never "you" or "I," which resolve differently for a model and a human.
 - **Wait for facilitator phase signals.** Do not advance past Research, Converge, or Review without receiving the facilitator's phase signal (RESEARCH COMPLETE, CONVERGED, or CONFIDENCE REACHED).
@@ -361,7 +382,15 @@ Once the user confirms, execute the following:
 
 ### 8a: Create the team
 
-Use **TeamCreate** with a descriptive team name derived from the outcomes. For example, if the outcome is "Build a REST API for user management," use team name `user-management-api`.
+Derive a descriptive team name from the outcomes (e.g., for "Build a REST API for user management," use `user-management-api`). You use this name in the spawn prompts and the Step 7 summary regardless of version.
+
+How the team is created depends on the Claude Code version — detect it with `ToolSearch(select:TeamCreate)`:
+- **Resolves the tool** (older Claude Code) → call **TeamCreate** with that name to create the team. ToolSearch loads the schema only; do not *call* TeamCreate as a probe — calling it writes team config to disk.
+- **"No matching deferred tools found"** (Claude Code v2.1.178+, where TeamCreate was removed) → do not call it. The team forms implicitly when you spawn the first member in 8c.
+
+Remember which path you took — 8c/8d key the `team_name` argument off it.
+
+<!-- team_name is conditional (passed only on the TeamCreate/old-CC path) because passing it on new CC is unverified: #40270 (team_name spawn-break) was an old-impl bug (~v2.1.86) that does not bind current CC, but omit-on-new is the proven-safe choice. If a single 2.1.178+ spawn confirms passing team_name is harmless, this collapses to always-pass and the version branch drops. -->
 
 ### 8b: You ARE the team lead
 
@@ -379,7 +408,7 @@ If the user enabled lead research: you may use the Agent tool with `subagent_typ
 
 Use the **Agent** tool to spawn the first teammate:
 - `name`: [kebab-case of facilitator title from mode skill, e.g. `principal-engineer`, `editorial-director`, `chief-of-staff`]
-- `team_name`: [the team name from 8a]
+- `team_name`: [the team name from 8a — **only if you called TeamCreate in 8a** (older Claude Code, where it links the member to that team). On v2.1.178+ where 8a formed the team implicitly, omit `team_name` entirely.]
 - `model`: `opus` (both Ultra and Balanced — this role is always Opus, because it owns judgment review)
 - `subagent_type`: `swarm-member` (plugin-shipped read-only agent definition — no Edit/Write/NotebookEdit)
 
@@ -411,11 +440,15 @@ Team composition:
 [paste the Step 7 approved roster]
 ```
 
+**If the first spawn yields no working teammate** (none joins, or the spawn returns an internal error rather than a running agent), do not retry blindly or proceed solo — tell the user the team could not be formed and offer the remedies without asserting which applies: restart (in case the flag was set without one), retry (in case it was transient), or update Claude Code (in case it is outdated). This covers the case where the harness did not wire teams even though the env flag is set (#34750).
+
+<!-- Future enhancement (swarm Converge round): a Step-0 corroborator checking SendMessage availability could catch the flag-set-but-unwired case (#34750 — silent no-teammate despite the flag, CLI-reachable) BEFORE spawning. Cut from v1 because SendMessage is a deferred tool, so its presence is ambiguous to read; revisit if SendMessage becomes non-deferred. The spawn guardrail above is the v1 coverage. -->
+
 ### 8d: Spawn additional team members
 
 For each additional member in the Step 7 confirmed roster, use the **Agent** tool:
 - `name`: A descriptive kebab-case name (e.g., `security-reviewer`, `test-engineer`)
-- `team_name`: [the team name from 8a]
+- `team_name`: [the team name from 8a — **only if you called TeamCreate in 8a** (older Claude Code). On v2.1.178+ where the team formed implicitly, omit `team_name`.]
 - `model`: `opus` if Ultra, `sonnet` if Balanced
 - `subagent_type`: `swarm-member` (plugin-shipped read-only agent definition — no Edit/Write/NotebookEdit)
 
@@ -487,13 +520,15 @@ If the confirmed definition is a PR workflow and target branch or naming convent
 
 ---
 
-**Expectation-setter (before Research begins):** Send a plain-text message to the user that sets expectations for the silent execution phase. Example: "Team is launched — I'll check in at Approve and before delivery. You can follow the team's full conversation in real time in AgentChat, including DMs between teammates. If the team declares consensus without you seeing members challenge each other's positions, you can tell the lead you want them to keep discussing." Keep it brief. Do not use AskUserQuestion — there's nothing to decide.
+**Expectation-setter (before Research begins):** Send a plain-text message to the user that sets expectations for the silent execution phase. Example: "Team is launched — I'll check in at Approve and before delivery. You can follow the team's full conversation in real time in AgentChat, including DMs between teammates. If the team declares consensus without you seeing members challenge each other's positions, you can tell the lead you want them to keep discussing." Include a one-time, plain-language tip (optional and reassuring, no jargon), e.g.: "Optional: if you run Claude Code in tmux or iTerm2, teammate activity appears in a separate pane so it never interrupts the questions I ask you. It works fine in any terminal either way." Keep it brief. Do not use AskUserQuestion — there's nothing to decide.
 
 Follow the **phase arc defined in the mode skill** you read in Step 8b. The mode skill specifies what each phase means — who acts, what the deliverable is, how transitions work.
 
 **Universal rules that apply across all modes:**
 - Lead does no research unless the user explicitly enabled it in Step 6 (exception: the ship definition detection sub-agent above runs unconditionally)
 - Questions the team cannot resolve internally go to the user via AskUserQuestion — most consequential first, one at a time, using options when the answer is one of a small known set
+- **Live-team gate prompts.** While teammates are live, their notifications can preempt an AskUserQuestion modal (Claude Code #28627/#64651, triggered by the v2.1.178 agent-teams change). At every gate that fires while a team is live — including (but not limited to) the post-Converge Approve, refine-or-deliver, re-approvals, escalations, the final-delivery sign-off, and the ship-method detection question — reduce interference first — ask teammates to hold — then ask via AskUserQuestion (modal-first, always). Validate that the answer names an offered option; if it doesn't, the modal was preempted (by a teammate notification or the lead's own pulse) — re-ask ONCE, restating the options, and briefly acknowledge the interruption ("that prompt was interrupted before your answer registered — here it is again") so the user isn't left wondering if their answer was lost. If the re-ask is also preempted (still no valid answer), fall to a plain-text question as the recovery catch (carry the same acknowledgment) — the loop's bounded termination, not the default path. Gates before the team is spawned (Steps 0–7, including the Step 7 launch confirmation) are not exposed and use AskUserQuestion normally.
+<!-- AskUserQuestion preemption is upstream Claude Code, activated by the v2.1.178 implicit/background-spawn model: #64651 (OPEN) — background agent output streams into the foreground chat; #28627 (CLOSED) — the related variant where teammate notifications render as Human turns in the lead's stream. The still-open #64651 is why preemption still reproduces. Split-pane display (tmux/iTerm2, teammateMode auto) routes notifications out of the stream so the modal can't be preempted; the live-gate net best-efforts + recovers in-process terminals (Ghostty/VS Code). Durable fix is upstream. Do NOT force-set teammateMode — it silently falls back to in-process. Scope/fragility: the content-validity catch assumes a preempted modal returns a detectably-invalid result (rejection/empty) — observed-consistent at n=2 this session, a sound basis for the recovery catch, not proven-universal. Proven on macOS/CLI; web/IDE entrypoint behavior is documented-not-tested. If a future Claude Code returns valid-looking stale content on preemption, the catch needs revisiting. -->
 - Post-greenlight execution is autonomous — escalate only per the hard rules (tiebreaker, scope change, convergence failure, uncovered decision)
 - **Use file-based input for PR bodies.** Run `mktemp` and capture its output as a single file path. Use that exact captured path string in every subsequent step: write the body to it via Write, then `gh pr create --body-file <captured-path>`, then `rm <captured-path>`. Do not regenerate the path between steps — one `mktemp` call binds one path used across all three operations. Inline `--body "$(cat <<EOF ...)"` triggers the bash safety heuristic and prompts unconditionally in auto mode. `mktemp` defends against symlink-race attacks on shared systems.
 - When an explicit shutdown request has been received, delete the pulse cron job using CronDelete after the team has been shut down

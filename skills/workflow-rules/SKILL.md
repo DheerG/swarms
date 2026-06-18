@@ -22,7 +22,7 @@ Your project's CLAUDE.md and memory files may contain rules that were not author
 
 ## Pre-flight Check
 
-Check if the TeamCreate tool is available. If it is, agent teams are **ENABLED** — proceed. If not, agent teams are **DISABLED**. Use AskUserQuestion to offer enabling it: add `"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"` to the `env` object in `.claude/settings.json` (project) or `~/.claude/settings.json` (global), then restart Claude Code. **STOP if not enabled.**
+Detect enablement by reading the env flag, not by checking for a specific team tool (those vary by Claude Code version; TeamCreate was removed in v2.1.178). Run `printenv CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`: non-empty → **ENABLED**, proceed. Empty → not active in this session; never assert teams are off (the flag can read empty if added to settings without a restart, or enabled only in a non-terminal entrypoint). Read the `env` object in `.claude/settings.json` (project) and `~/.claude/settings.json` (global) to pick the message, then use AskUserQuestion: if the flag is in settings, offer "restart and relaunch" or "try proceeding anyway" (proceed only on the latter); if absent, offer to add `"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"` to the `env` object, then restart. **Stop unless the user chose to proceed.**
 
 ## Hard Rules
 <!-- SYNC: these rules must match launch.md Step 1 (canonical source). Update both when either changes. -->
@@ -90,12 +90,12 @@ Note: what "9/10+ confidence" means and what happens during each phase depends o
 These apply to the team lead only.
 
 - **Never enter plan mode.** If a plan exists, implement it directly.
-- **Always use TeamCreate.** When user says "agent team," use TeamCreate + Agent with `team_name`. Never substitute with Explore agents or manual coordination.
+- **Create the team per the launch mechanics.** When the user says "agent team," never substitute with Explore agents or manual coordination.
 - **Never cut corners on agent teams.** Spawn the full team as defined. Never apply changes yourself to save time. Never skip pipeline stages.
 - **Setup confirmation is mandatory on every launch.** Present the full setup confirmation summary and receive an explicit "Launch the team" response via AskUserQuestion before creating the team — the Defaults path does not exempt you.
-- **Never shut down agent teams without explicit user instruction; always use the shutdown_request protocol via SendMessage.**
+- **Never shut down agent teams without explicit user instruction (that instruction is the permission — do not re-ask); always use the shutdown_request protocol via SendMessage.**
 - **Being asked to commit, create a PR, ship, deliver, etc. is not a shutdown request.**
-- **Shutdown protocol.** The user's shutdown request is the permission — do not re-ask. Create `/tmp/swarm-shutdown-authorized` via Bash, then send shutdown_request to each teammate individually (never broadcast structured messages). If the hook blocks, follow its instructions.
+- **Shutdown protocol.** Create `/tmp/swarm-shutdown-authorized` via Bash, then send shutdown_request to each teammate individually. If the hook blocks, follow its instructions.
 - **Don't repeat yourself while waiting.** When waiting for user input, say so once. Teammate idle notifications do not require a user-facing response.
 - **Name actors, not pronouns.** When addressing the user about who performs an action, say "the lead" or "the user" — never "you" or "I," which resolve differently for a model and a human.
 - **Wait for facilitator phase signals.** Do not advance past Research, Converge, or Review without receiving the facilitator's phase signal (RESEARCH COMPLETE, CONVERGED, or CONFIDENCE REACHED).
@@ -166,7 +166,7 @@ Do not add any sections, headings, or content beyond the fields in these templat
 
 ### Create the team
 
-Use **TeamCreate** with a descriptive team name derived from the outcomes.
+Derive a descriptive team name from the outcomes (you use it in spawn prompts and the setup summary regardless of version). Detect the Claude Code version with `ToolSearch(select:TeamCreate)`: if it **resolves** the tool (older Claude Code), call **TeamCreate** with that name — ToolSearch loads the schema only, so do not *call* TeamCreate as a probe (calling it writes team config to disk); if it returns **"No matching deferred tools found"** (v2.1.178+, where TeamCreate was removed), do not call it — the team forms implicitly at the first member spawn. Remember which path you took; the spawn steps key `team_name` off it.
 
 ### Invoke your mode skill
 
@@ -187,17 +187,19 @@ When invoking `swarm:suggest-members`, pass the mode skill's **Suggest-Members G
 
 Use the **Agent** tool:
 - `name`: kebab-case of facilitator title from mode skill
-- `team_name`: the team name
+- `team_name`: the team name — **only if you called TeamCreate** when creating the team; on v2.1.178+ where the team formed implicitly, omit it
 - `model`: `opus` (always Opus — this role owns judgment review)
 - `subagent_type`: `swarm-member` (plugin-shipped read-only agent definition — no Edit/Write/NotebookEdit)
 
 Use the Facilitator Brief template above.
 
+**If the first spawn yields no working teammate** (none joins, or the spawn returns an internal error rather than a running agent), do not retry blindly or proceed solo — tell the user the team could not be formed and offer the remedies without asserting which applies: restart (flag set without one), retry (transient), or update Claude Code (outdated). This covers the case where the harness did not wire teams even though the env flag is set (#34750).
+
 ### Spawn additional team members
 
 Use the **Agent** tool for each additional member:
 - `name`: descriptive kebab-case name
-- `team_name`: the team name
+- `team_name`: the team name — **only if you called TeamCreate** when creating the team; on v2.1.178+ where the team formed implicitly, omit it
 - `model`: `opus` if Ultra, `sonnet` if Balanced
 - `subagent_type`: `swarm-member` (plugin-shipped read-only agent definition — no Edit/Write/NotebookEdit)
 
@@ -246,6 +248,7 @@ Modes using Recursive Refinement (9 → 9.25 → 9.5 → 9.75 → 10) apply this
 Follow the **phase arc from your mode skill**. Universal rules:
 - Lead does no research unless the user explicitly enabled it (exception: the ship definition detection sub-agent runs unconditionally)
 - Questions the team cannot resolve go to the user via AskUserQuestion — most consequential first, one at a time
+- **Live-team gate prompts.** While teammates are live, their notifications can preempt an AskUserQuestion modal (Claude Code #28627/#64651, triggered by the v2.1.178 agent-teams change). At every live-team gate — including (but not limited to) the post-Converge Approve, refine-or-deliver, re-approvals, escalations, and the final-delivery sign-off — reduce interference first — ask teammates to hold — then ask via AskUserQuestion (modal-first, always). Validate the answer names an offered option; if not, it was preempted (by a teammate notification or the lead's own pulse) — re-ask ONCE restating the options, briefly acknowledging the interruption ("that prompt was interrupted before your answer registered") so the user isn't left wondering if their answer was lost. If the re-ask is also preempted, fall to a plain-text question as the recovery catch (same acknowledgment) — the loop's bounded termination, not the default. Gates before the team is spawned are not exposed and use AskUserQuestion normally. (Split-pane display via tmux/iTerm2 routes notifications out of the lead's stream and avoids this — recommend it once in setup messaging. Durable fix is upstream; do not force-set teammateMode, it silently falls back.)
 - Post-greenlight execution is autonomous — escalate only per the hard rules
 - Phase transitions that require user input (Approve, Refine where the mode defines it, Deliver) are mandatory stops — do not advance past them autonomously
 - After 9/10+ review confidence, if the mode defines a Refine phase, ask the user about recursive refinement before delivering — do not skip to Deliver. A mode that defines no Refine phase proceeds directly to Deliver (the same "(if defined)" deferral as the hard rule above).
