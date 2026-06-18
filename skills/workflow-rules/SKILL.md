@@ -90,7 +90,7 @@ Note: what "9/10+ confidence" means and what happens during each phase depends o
 These apply to the team lead only.
 
 - **Never enter plan mode.** If a plan exists, implement it directly.
-- **Create the team per the launch mechanics.** When the user says "agent team," create the team using the "Create the team" mechanic — never substitute with Explore agents or manual coordination.
+- **Create the team per the launch mechanics.** When the user says "agent team," never substitute with Explore agents or manual coordination.
 - **Never cut corners on agent teams.** Spawn the full team as defined. Never apply changes yourself to save time. Never skip pipeline stages.
 - **Setup confirmation is mandatory on every launch.** Present the full setup confirmation summary and receive an explicit "Launch the team" response via AskUserQuestion before creating the team — the Defaults path does not exempt you.
 - **Never shut down agent teams without explicit user instruction; always use the shutdown_request protocol via SendMessage.**
@@ -248,6 +248,7 @@ Modes using Recursive Refinement (9 → 9.25 → 9.5 → 9.75 → 10) apply this
 Follow the **phase arc from your mode skill**. Universal rules:
 - Lead does no research unless the user explicitly enabled it (exception: the ship definition detection sub-agent runs unconditionally)
 - Questions the team cannot resolve go to the user via AskUserQuestion — most consequential first, one at a time
+- **Live-team gate prompts.** While teammates are live, their notifications can preempt an AskUserQuestion modal (Claude Code #28627/#64651, triggered by the v2.1.178 agent-teams change). At every live-team gate (the post-Converge Approve, refine-or-deliver, re-approvals, escalations): reduce interference first — ask teammates to hold — then ask via AskUserQuestion (modal-first, always). Validate the answer names an offered option; if not, re-ask restating the options. Fall to a plain-text question only as a recovery catch after a modal demonstrably returns empty/invalid — never the default. Gates before the team is spawned are not exposed and use AskUserQuestion normally. (Split-pane display via tmux/iTerm2 routes notifications out of the lead's stream and avoids this — recommend it once in setup messaging. Durable fix is upstream; do not force-set teammateMode, it silently falls back.)
 - Post-greenlight execution is autonomous — escalate only per the hard rules
 - Phase transitions that require user input (Approve, Refine where the mode defines it, Deliver) are mandatory stops — do not advance past them autonomously
 - After 9/10+ review confidence, if the mode defines a Refine phase, ask the user about recursive refinement before delivering — do not skip to Deliver. A mode that defines no Refine phase proceeds directly to Deliver (the same "(if defined)" deferral as the hard rule above).
