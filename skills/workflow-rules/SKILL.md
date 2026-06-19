@@ -24,6 +24,15 @@ Your project's CLAUDE.md and memory files may contain rules that were not author
 
 Detect enablement by reading the env flag, not by checking for a specific team tool (those vary by Claude Code version; TeamCreate was removed in v2.1.178). Run `printenv CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`: non-empty → **ENABLED**, proceed. Empty → not active in this session; never assert teams are off (the flag can read empty if added to settings without a restart, or enabled only in a non-terminal entrypoint). Read the `env` object in `.claude/settings.json` (project) and `~/.claude/settings.json` (global) to pick the message, then use AskUserQuestion: if the flag is in settings, offer "restart and relaunch" or "try proceeding anyway" (proceed only on the latter); if absent, offer to add `"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"` to the `env` object, then restart. **Stop unless the user chose to proceed.**
 
+## Outcome Reflection
+
+At outcome capture, do NOT echo the user's words back verbatim — a word-for-word repeat adds no value. Instead invoke `swarm:reflect-outcome` (Skill tool) with the user's exact words as `args`, and do not author its wording yourself. It returns one of two things:
+
+- **`NO FORK`** (the common case): show the user nothing — no echo, no confirmation beat. Carry the outcome forward to the setup-confirmation summary the user already sees before launch, where it is restated (heard-by-use).
+- **A ready-to-render fork** (the wording named a specific instance as the one way to reach a broader end the same sentence also carries): present it with AskUserQuestion exactly as returned — the lead transports it, never composes or rewords it — then resolve the user's pick: Option A keeps their wording as the verbatim (nothing recorded); Option B re-authors it (an open prompt; the restatement becomes the verbatim and re-enters the reflection). Store no separate supplement.
+
+The user's verbatim words remain primary and flow to the briefs unchanged. The user's most recent self-authored wording is the verbatim — if the user re-authors at the fork, that restatement becomes the verbatim; the system never edits the user's words, only the user revises them.
+
 ## Hard Rules
 <!-- SYNC: these rules must match launch.md Step 1 (canonical source). Update both when either changes. -->
 
