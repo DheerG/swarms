@@ -36,7 +36,7 @@ $ARGUMENTS
    - `git diff <base>...HEAD` — capture. If empty (HEAD == base), abort with: `No changes detected between <branch> and <base>. Nothing to refine. If this is unexpected, verify the diff base is correct.` (substitute the actual branch and base names).
    - `git diff --stat <base>...HEAD | tail -1` — capture the one-line diff stat (e.g., `12 files changed, 340 insertions(+), 45 deletions(-)`) for the Step 3 confirmation summary. If the diff is empty this is moot — the empty-diff abort above fires first.
 
-2. **Outcomes.** If User-Provided Context is non-empty, use as outcomes. Otherwise ask the outcomes question (plain text, not AskUserQuestion). Do NOT echo the outcomes back verbatim — run the outcome reflection instead: You MUST use the **Skill** tool to invoke `swarm:reflect-outcome` with the user's exact words as `args`, and do not author its wording yourself. If it returns `NO FORK` (the common case), show nothing — no echo, no confirmation beat — and carry the outcome into the Step 3 plan-confirmation summary, which already displays the outcomes verbatim (that is where the user sees their words carried forward). If it returns a ready-to-render fork, present it with AskUserQuestion exactly as returned — do not reword the question or labels, and do not add a third option (the fork is sealed at exactly two) — then record the user's choice as a one-line supplement. The user's verbatim words are captured for the briefs (launch.md verbatim-capture rule). Framing-help (`swarm:refine-outcomes`) is offered as a third option on the Step 3 plan-confirm below — never here — so a reflection fork and the framing offer never stack in the same beat.
+2. **Outcomes.** If User-Provided Context is non-empty, use as outcomes. Otherwise ask the outcomes question (plain text, not AskUserQuestion). Do NOT echo the outcomes back verbatim — run the outcome reflection instead: You MUST use the **Skill** tool to invoke `swarm:reflect-outcome` with the user's exact words as `args`, and do not author its wording yourself. If it returns `NO FORK` (the common case), show nothing — no echo, no confirmation beat — and carry the outcome into the Step 3 plan-confirmation summary, which already displays the outcomes verbatim (that is where the user sees their words carried forward). If it returns a ready-to-render fork, present it with AskUserQuestion exactly as returned — transport it, do not reword the question or labels, and do not add a third option (the fork is sealed at exactly two) — then resolve the user's pick per the skill (Option A keeps the wording; Option B re-authors into a new verbatim, which loops back through this Step 2 reflection). Store no separate supplement. The user's verbatim words are captured for the briefs (launch.md verbatim-capture rule). Framing-help (`swarm:refine-outcomes`) is offered as a third option on the Step 3 plan-confirm below — never here — so a reflection fork and the framing offer never stack in the same beat.
 
 3. **Confirmation.** Present the team plan summary as a blockquote (matching launch.md Step 7's format):
 
@@ -46,6 +46,9 @@ $ARGUMENTS
    >
    > **Outcomes:**
    > [confirmed outcomes verbatim]
+   >
+   > **Scope:**
+   > [only if the outcome reflection fired a fork AND the user chose Option A (keep their wording) — show "\<their word> specifically". Omit entirely otherwise — every NO-FORK run and after an Option B re-author.]
    >
    > **Branch under review:** [current branch]
    >

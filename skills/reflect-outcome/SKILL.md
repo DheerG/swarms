@@ -5,12 +5,14 @@ description: |
   Detects when a stated outcome names a specific instance — a mechanism-as-means or a single named product — where a category was meant, and returns a neutral fork for the lead to show the user, or nothing. Invoked by launch commands at outcome capture, in place of the verbatim echo.
 ---
 
-The user stated an outcome in their own words. Read it for ONE structural pattern — **a specific instance named as the way to reach a broader end the same sentence also carries.** Fire ONLY when BOTH are present: (1) a named mechanism, product, or instance, AND (2) a wider goal — stated in the sentence, or, for a proper noun, the obvious class it instances — that the named thing is merely one way to serve. The named thing being *narrower than that wider goal* is the discriminator; with no wider end in view, do not fire.
+The user stated an outcome in their own words. Read it for ONE structural pattern — **a specific instance named as the way to reach a broader end the same sentence also carries.** Fire ONLY when BOTH are present: (1) a named mechanism, product, or instance, AND (2) a wider goal **stated in that same sentence** that the named thing is merely one way to serve. The named thing being *narrower than that stated wider goal* is the discriminator; if no wider end is stated, do not fire — a category you could infer from the name is not a stated end.
 
 - **Mechanism-as-means:** "force a resume *so it can nudge* a forgotten prospect" → "nudge" is one way to reach the wider stated goal "resurface a forgotten prospect" → FIRE. Contrast "add a retry queue for failed webhooks" → "retry queue" IS the whole ask, no wider goal it under-serves → **stay SILENT**.
-- **Proper-noun-specific-instance:** "integrate with Salesforce to sync deals" → "Salesforce" is one instance of the obvious class (a CRM) → FIRE ("Salesforce specifically, or any CRM?"). A named thing with no broader class it narrows stays SILENT.
+- **Proper-noun-specific-instance:** "integrate with Salesforce *so sales can see deals*" → the wider end "sales can see deals" is stated and Salesforce is one way to reach it → FIRE. Contrast bare "store it in S3," "send a Slack notification," "cache it in Redis," "deploy on Vercel" → the product IS the ask, no wider end stated → **stay SILENT**. Do NOT fire on the class you could infer from the product name — that inference is the alarm-fatigue over-fire; an existing-integration collision with no stated end drops to the Research-phase repo check instead.
 
-The shape is: the wording picks ONE point inside a wider target it also names (or a wider class it obviously instances), which can silently collapse the team onto that point and orphan the alternatives. You detect that *divergence within the sentence*, not predict that foreclosure will happen; the cheap, incumbent-first dismiss is what makes firing safe. A bare concrete noun with no wider end it under-serves does NOT fire — that over-firing is the alarm-fatigue failure this must avoid.
+The shape is: the wording picks ONE point inside a wider target it also **states**, which can silently collapse the team onto that point and orphan the alternatives. You detect that *divergence stated within the sentence* — you do not infer a wider goal the user didn't state, and you do not predict that foreclosure will happen; the cheap, incumbent-first dismiss is what makes firing safe. A bare concrete noun — mechanism or product — with no wider end stated does NOT fire; that over-firing is the alarm-fatigue failure this must avoid.
+
+Scan the whole input, not a single clause: if more than one pin is present, fork on the single most consequential one; if it is genuinely ambiguous which matters most, return `NO FORK`.
 
 Read the WORDING only. Do not read the codebase. Do not grade quality. Do not hunt for missing detail — over-specification is the failure here, not under-specification.
 
@@ -30,3 +32,7 @@ Shape (draft NO goal anywhere — not in the stem, not in either label; the open
   - *"I'm open to other ways to do this — \<their word> was just how I put it."* — \<their word> was one example, not the requirement
 
 **Neutrality bar — all four must hold, or return `NO FORK` instead:** (1) introduce no noun the user didn't write; (2) assert no quality grade; (3) the user's verbatim still briefs the team without your words leaking in; (4) the user keeps an unforced choice to leave the wording exactly as-is.
+
+**Resolving the choice (the lead handles the answer — the skill stores nothing):**
+- **Option A — keep the named instance:** nothing to record. The verbatim already contains the word and flows to the briefs unchanged.
+- **Option B — open to other ways:** ask the user to restate the outcome in their own words with an OPEN prompt ("tell me what you'd like to happen") — never a drafted "did you mean X?", which would re-introduce the assembled-goal the fork exists to avoid. The restatement re-enters this reflection (a fresh outcome, usually `NO FORK`) and BECOMES the verbatim of record, flowing to the briefs unchanged. Store no separate supplement — the user's own revised words carry the signal that the original word was incidental.

@@ -174,11 +174,11 @@ $ARGUMENTS
 **Outcome reflection (replaces the verbatim echo).** Once the outcome is captured — from `$ARGUMENTS` or the question above — You MUST use the **Skill** tool to invoke `swarm:reflect-outcome`, passing the user's exact words as the `args` parameter. Do NOT perform this step yourself, and do NOT author the reflection's wording — the skill returns it pre-formed so your own framing never enters the user's view. Apply its result:
 
 - **`NO FORK`** (the common case): show the user nothing — no echo, no "are these right?" beat, no confirmation gate. Carry the outcome forward so it is *visibly* the premise of the next question that has a natural slot for it: the Step 3 mode-inference line ("This looks like Code work — building \<the outcome\> — right?") on the configure path, or the Step 7 summary where a defaults path infers mode silently. The user is heard by seeing their own words steer that question, not by a confirmation beat. They can still adjust at Step 7.
-- **A ready-to-render fork question**: present it with **AskUserQuestion** exactly as returned — do not reword the question or the option labels. The user's choice clarifies which reading they meant; record it as a one-line supplement stored alongside the verbatim (the verbatim stays primary and flows to Step 8 unchanged — the supplement never replaces it). Do not stack any other question in the same turn.
+- **A ready-to-render fork question**: present it with **AskUserQuestion** exactly as returned — transport it, never reword the question or the option labels, and do not stack any other question in the same turn. Resolve the user's pick per the skill's fork-resolution rule: Option A keeps their wording as the verbatim (nothing recorded); Option B re-authors it — ask, with an open prompt, for a restatement in their own words, which re-enters the reflection and becomes the verbatim. Store no separate supplement. (Option A may optionally surface as a "Scope:" line in the Step 7 summary — see Step 7.)
 
 If the user later wants to reshape a vague description into outcome statements, the "Help me define outcomes" path (`swarm:refine-outcomes`) and Step 7's "I have changes" both remain open.
 
-**Verbatim capture rule (mandatory).** The user's original words are the PRIMARY reference for all downstream team briefings. Capture them verbatim and store as a literal string for Step 8c and 8d substitution. If the user invokes `swarm:refine-outcomes`, the skill MUST return both the refined outcomes AND preserve the user's verbatim original. The refined outcomes NEVER replace the verbatim; they supplement it. Both flow to Step 8 as separate blocks. Any deviation between the user's exact words and what appears in team briefs is a hard rules violation.
+**Verbatim capture rule (mandatory).** The user's original words are the PRIMARY reference for all downstream team briefings. Capture them verbatim and store as a literal string for Step 8c and 8d substitution. If the user invokes `swarm:refine-outcomes`, the skill MUST return both the refined outcomes AND preserve the user's verbatim original. The refined outcomes NEVER replace the verbatim; they supplement it. Both flow to Step 8 as separate blocks. Any deviation between the user's exact words and what appears in team briefs is a hard rules violation. The user's most recent self-authored wording is the verbatim: if the user re-authors at the reflection fork (Option B), that restatement becomes the verbatim and flows unchanged — the system never edits the user's words, only the user revises them.
 
 **After the outcome reflection** (the fork resolved, or `NO FORK` carried forward), use the **AskUserQuestion** tool:
 
@@ -339,6 +339,9 @@ Present a summary of the team plan:
 >
 > **User's original context:**
 > [if outcomes were refined via the refine-outcomes skill, include the user's original words here — otherwise omit this section]
+>
+> **Scope:**
+> [only if the outcome reflection fired a fork AND the user chose Option A (keep their wording) — show "\<their word> specifically", echoing the user's own selection so the kept-pin choice is visible. Omit this line entirely otherwise — including on every NO-FORK run and after an Option B re-author.]
 >
 > **Team:**
 > 1. Team lead — (main session) [research: yes/no]
