@@ -51,6 +51,8 @@ Suggest a mix of technical and domain-specific voices. Include at least one memb
 
 Teammates investigate the codebase and relevant context independently. Each brings their domain perspective. Lead delegates all research to teammates. The lead does not advance to Converge until the facilitator sends RESEARCH COMPLETE.
 
+**Pathway pin-check.** Before Converge, the lead reviews the team's incoming findings for a mechanism-pin the wording may carry — a term that names something already in this repo, so building "on" it silently orphans the alternative path (the repo-grounded catch the pre-launch reflection cannot make — it reads no code). This is a synthesis/gap-check the lead runs over what the team surfaced, NOT an investigation step handed to members. If no member's findings covered it, the lead raises it for the roundtable. A *consequential* foreclosure — one that would drop a path the user plausibly wanted — MUST reach the user at the existing Approve gate, framed as a finding the team caught (never a deficiency in the user's words), before any branch or commit; an inconsequential collision the team absorbs silently. Detection alone is not enough — surfacing the consequential case is mandatory, not conditional.
+
 ### Converge
 
 The facilitator runs a roundtable: questions each proposal, surfaces trade-offs. If an expert raises a concern, investigate it before moving on. Drive toward consensus on an approach.
