@@ -14,6 +14,8 @@ The shape is: the wording picks ONE point inside a wider target it also **states
 
 Scan the whole input, not a single clause: if more than one pin is present, fork on the single most consequential one; if it is genuinely ambiguous which matters most, return `NO FORK`.
 
+Couple a separately-stated goal and instance ONLY when the serve-relationship is plain in the user's OWN words — the instance is evidently one means to THAT specific goal. If the link is YOUR inference rather than something their wording makes plain, that is `NO FORK` — do not manufacture a means/ends relationship the user didn't draw. When the outcome names more than one instance, pair each only with the end it plainly serves; never fire an instance against an end that belongs to a different named thing.
+
 Read the WORDING only. Do not read the codebase. Do not grade quality. Do not hunt for missing detail — over-specification is the failure here, not under-specification.
 
 **Common case — nothing pinned:** return exactly `NO FORK`. The lead shows the user nothing and carries the outcome forward as-is. Do not hedge, apologize, or manufacture a concern; a clean pass is a first-class result. Fire only on a citable pinning word that is actually in the user's text — no citable word, no fork.
