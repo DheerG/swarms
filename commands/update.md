@@ -29,4 +29,4 @@ Then STOP and end your turn. Do not run any other swarm command and do not hand 
 
 Include the version only if the CLI printed one; otherwise say "Already on the latest version. Nothing to update — carry on."
 
-If either command fails, show the error output and suggest the user try running the commands manually in their terminal.
+If either command errored or exited non-zero, show the error output and suggest the user try running the commands manually in their terminal.
