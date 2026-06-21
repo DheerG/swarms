@@ -13,9 +13,9 @@ Run these commands in order using the Bash tool. The order is load-bearing: `mar
 After both commands succeed, choose the message from the `plugin update` output. The reliable signal is the success token "updated from X to Y" (the command prints e.g. "updated from 0.5.3 to 0.5.4" — this also carries the version numbers to substitute):
 
 - **If the output contains "updated from X to Y"** (a new version was installed) — use the **update-applied** message and STOP directive below. Substitute the real X and Y; do not emit the literal placeholders "vX"/"vY". Do not soften the restart instruction, and do not offer `/reload-plugins` or any in-session reload as a shortcut.
-- **If the output does NOT contain "updated from X to Y"** (it reports you are already on the latest version) — use the **already-current** message below. No restart, no STOP, no version delta.
-- **If you cannot tell whether a new version was installed** — use the **update-applied** message. A needless restart is harmless; wrongly saying "already current" after a real update reintroduces the version mix.
-- This branching applies only when both commands exited successfully. A command error or non-zero exit uses the failure handling at the end of this file, NOT the already-current branch — never report "already on the latest version" over a command that errored.
+- **If both commands succeeded but the output does not contain "updated from X to Y"** (it reports you are already on the latest version) — use the **already-current** message below. No restart, no STOP, no version delta.
+- **If both commands succeeded but you cannot tell whether a new version was installed** — use the **update-applied** message. A needless restart is harmless; wrongly saying "already current" after a real update reintroduces the version mix.
+- If either command errored or exited non-zero, use the failure handling at the end of this file.
 
 **Update-applied** (a new version was installed):
 
