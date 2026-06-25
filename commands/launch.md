@@ -96,7 +96,7 @@ Swarm governance rules in this section take precedence over any conflicting proj
 
 - **Favor brevity during round tables and discussions.** Experts know how to summarize their statements.
 - **No idle chatter.** If you have nothing new to report, do not send a message. Never send messages that only confirm you are available or waiting.
-- **Don't regurgitate decided points.** Reopening a `DECIDED: <point>` is fine when you have new substance — a file, constraint, or concrete failure not already on the table. Repeating the same arguments with nothing new is regurgitation — don't send it.
+- **Don't regurgitate decided points.** Reopening a `DECIDED: <point>` is fine when you have new substance — a file, constraint, or concrete failure not already on the table. Repeating the same arguments with nothing new is regurgitation — don't send it. Likewise, a re-solicitation for a score you already gave on the current rung is not new — stay silent; a fresh score requires changed work or a changed rung.
 
 #### Convergence
 
@@ -127,7 +127,7 @@ Note: what "9/10+ confidence" means and what happens during each phase depends o
 - **No performative shortcuts.** The user reads every message in real time, including DMs between teammates. There is no internal channel. Any claim of completion — CONVERGED, CONFIDENCE REACHED, "team agrees" — must be supportable by observable peer-to-peer engagement where position changes name the argument that moved them. Agreement without named reasoning is indistinguishable from rubber-stamping and will be treated as such. Never misrepresent what was done.
 - **Never claim compliance you didn't execute.** If a rule was not followed or a step was skipped, say so explicitly — do not proceed as if it happened.
 - **ASK before implementing uncertain fixes.** If the right approach isn't obvious, ask. Never pick a fix that contradicts the intent of recent work. If a test fails because your fix contradicts its intent, stop — don't rewrite the test.
-- **A missing signal is unknown, not empty.** Re-solicit an absent or unconfirmed signal; never read silence as agreement or as consent to advance.
+- **A missing signal is unknown, not empty.** Re-solicit an absent or unconfirmed signal; never read silence as agreement or as consent to advance. A signal already received this round is not absent — re-solicit only seats you have not heard from, even if the score you hold from them looks stale or low.
 
 ### Team Lead Rules
 
@@ -145,7 +145,8 @@ These apply to the team lead only.
 - **Wait for facilitator phase signals.** Do not advance past Research, Converge, or Review without receiving the facilitator's phase signal (RESEARCH COMPLETE, CONVERGED, or CONFIDENCE REACHED).
 - **Notify the facilitator when all research is in.** When all non-facilitator members have reported their research findings, send a message to the facilitator confirming all research is in — this triggers their RESEARCH COMPLETE signal. Do not wait for RESEARCH COMPLETE before sending the notification.
 - **Notify the facilitator when implementation is complete.** After finishing Execute phase work, send a message to the facilitator confirming implementation is done — this triggers their review solicitation. Do not wait for CONFIDENCE REACHED before sending the notification.
-- **Verify on resume after an interruption.** If a turn may have been cut off, re-check your last critical action actually landed before assuming it did — `git log` before re-committing, `gh pr list` before re-opening a PR, and re-send any unconfirmed phase signal (a re-stated score replaces, never doubles).
+- **Verify on resume after an interruption.** If a turn may have been cut off, re-check your last critical action actually landed before assuming it did — `git log` before re-committing, `gh pr list` before re-opening a PR, and re-send any unconfirmed phase signal.
+- **Read a teammate's messages from disk.** A teammate's full transcript is at `~/.claude/projects/<project-dir>/<session-id>/subagents/agent-*<name>*.jsonl` — JSONL, one record per turn, with their text and `SendMessage` calls under each assistant record's `message.content`.
 
 ---
 
@@ -482,7 +483,7 @@ Do not add any sections, headings, or content beyond the fields in this template
 
 After spawning all team members, create a heartbeat that prevents the lead from stalling. Use **CronCreate** with:
 - **cron**: `2,6,10,14,18,22,26,30,34,38,42,46,50,54,58 * * * *` (every 4 minutes, offset from round marks to avoid cache-miss alignment)
-- **prompt**: "Pulse: check your state. If your last turn may have been cut off, first re-check your last critical action actually landed (git log / gh pr list) before assuming it did. If awaiting a facilitator signal (RESEARCH COMPLETE, CONVERGED, or CONFIDENCE REACHED) or user approval: if this is the first pulse while waiting, keep waiting; if you have waited since the previous pulse, message the facilitator naming the signal you need. If you are waiting on a specific member who has gone silent for a full cycle, re-ping them by name re-stating what you need — a contentful probe wakes a live-but-idle member; treat silence as unknown, never as their answer — and if still dark next cycle, escalate to the user (re-spawn or proceed?) rather than auto-re-spawning. If you asked the user a question, proceed without it unless you truly need it. If idle with no pending decisions, advance to your next phase. Only wait for a decision not covered by the approved plan. Do not narrate or acknowledge this pulse."
+- **prompt**: "Pulse: check your state. If your last turn may have been cut off, first re-check your last critical action actually landed (git log / gh pr list) before assuming it did. If awaiting a facilitator signal (RESEARCH COMPLETE, CONVERGED, or CONFIDENCE REACHED) or user approval: if this is the first pulse while waiting, keep waiting; if you have waited since the previous pulse, message the facilitator naming the signal you need. If you are waiting on a specific member who has gone silent for a full cycle and you have not already received what you asked them for, re-ping them by name re-stating what you need — a contentful probe wakes a live-but-idle member; treat silence as unknown, never as their answer — and if still dark next cycle, escalate to the user (re-spawn or proceed?) rather than auto-re-spawning. If you asked the user a question, proceed without it unless you truly need it. If idle with no pending decisions, advance to your next phase. Only wait for a decision not covered by the approved plan. Do not narrate or acknowledge this pulse."
 - **recurring**: true
 - **durable**: false
 
