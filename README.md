@@ -123,7 +123,7 @@ The review gate is explicit and structural:
 
 Below the bar, the team cycles: lead fixes, team re-reviews. Above it, you get an optional refinement ladder (9.25 → 9.5 → 9.75 → 10) that drives the work to the full scope of your outcome. The critical mechanic: **the facilitator, not the lead, controls the gate.** The agent that did the work cannot declare its own work done. A model reviewing its own output reaches for the cheapest approving token it can find; a different agent with a different role pushes back with something worth reading.
 
-Before delivery, an independent reviewer that fails differently from the authors — a different model via Codex, or a fresh-context agent — reads the whole change against your outcome. The lead fixes what it surfaces, and the loop repeats until nothing in scope remains.
+You can also run the whole change past an independent reviewer that fails differently from the authors — a different model via Codex, or a fresh-context agent — before delivery. It reads the change against your outcome, the lead fixes what it surfaces, and the loop repeats until nothing in scope remains.
 
 ### Built to run anyway
 
