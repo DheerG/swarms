@@ -2,13 +2,13 @@
 
 **Describe what you want. Get a reviewed, ship-ready PR — without babysitting the agent.**
 
-Out-of-the-box, agent teams rubber-stamp their own work. Swarm's team argues with itself, and won't hand you the work until it's actually ready to ship.
+Out-of-the-box agent teams rubber-stamp their own work. Swarm's team argues with itself, and won't hand you the work until it's actually ready to ship.
 
 ```
 /swarm:code fix the flaky checkout test
 ```
 
-Swarm spins up a small team of Claude agents that research the problem, debate the approach, build it, and review each other until the work is ready — then hand you a PR. You approve the plan and the approach, then stay out of the build — with the final say before anything ships. Most of the quality work happens in the cycles you never see.
+Swarm spins up a small team of Claude agents that research the problem, debate the approach, build it, and review each other until the work is ready — then hand you a PR. You approve the plan and the approach, then stay out of the build. You have the final say before anything ships. Most of the quality work happens in the cycles you never see.
 
 *Swarm also runs triage, writing, and general-purpose teams — see [other ways to launch](#commands).*
 
@@ -88,7 +88,7 @@ Nothing runs until you pick "Launch the team."
 >
 > **Principal Engineer:** Then TTL risk is acceptable here. Team, any other concerns before I call CONVERGED?
 
-The facilitator doesn't decide — it surfaces the blocker, aims it at the right person, and waits for evidence. The lead answers a concrete question like anyone else. Synthesis comes only after the concern is resolved. A mixed team catches what one perspective misses. You see the synthesis; the debate stays in the team.
+The facilitator doesn't decide — it surfaces the blocker, aims it at the right person, and waits for evidence. The lead answers a concrete question like anyone else. A mixed team catches what one perspective misses. Synthesis comes only after the concern is resolved. You see the synthesis; the debate stays in the team.
 
 ---
 
@@ -123,9 +123,7 @@ The review gate is explicit and structural:
 
 Below the bar, the team cycles: lead fixes, team re-reviews. Above it, you get an optional refinement ladder (9.25 → 9.5 → 9.75 → 10) that drives the work to the full scope of your outcome. The critical mechanic: **the facilitator, not the lead, controls the gate.** The agent that did the work cannot declare its own work done. A model reviewing its own output reaches for the cheapest approving token it can find; a different agent with a different role pushes back with something worth reading.
 
-Before delivery, an independent reviewer — one that fails differently from the authors, a different model via Codex or a fresh-context agent — reads the whole change against your outcome. The lead fixes what it surfaces, and the loop repeats until nothing in scope remains.
-
-Swarm is built with swarm — its independent-review loop, serial cadence, and refinement ladder were each built by `/swarm:code` (PRs #67, #66, #48).
+Before delivery, an independent reviewer that fails differently from the authors — a different model via Codex, or a fresh-context agent — reads the whole change against your outcome. The lead fixes what it surfaces, and the loop repeats until nothing in scope remains.
 
 ### Built to run anyway
 
@@ -139,11 +137,13 @@ Every rule that governs a team is inline in the command file, and swarm governan
 
 That's why `/swarm:audit-context` exists — it flags ambient context (CLAUDE.md, memory, local skills, settings hooks) that could interfere before you launch. Run it before sharing a workflow with a teammate: if they get a different result, the cause is almost always their environment, not the prompt. The plugin is the contract that travels with the work.
 
+Swarm is built with swarm — its independent-review loop, serial cadence, and refinement ladder were each built by `/swarm:code` (PRs #67, #66, #48).
+
 ---
 
 ## Why I built this
 
-I'm a principal engineer, and across hundreds of sessions I refined the rules and corrections I gave it until the quality stopped varying — then kept going until it was writing better code than I do by hand. Once it was reliable, I shared it — and watched teammates get wildly different results from the same prompt. Their Claude had a different `CLAUDE.md`, different memories, different local skills. That ambient context quietly rewrote what they were trying to do. The prompt wasn't the problem; the environment around it was.
+I'm a principal engineer, and across hundreds of sessions I refined the rules and corrections I gave the team until the quality stopped varying — then kept going until it was writing better code than I do by hand. Once it was reliable, I shared it, and watched teammates get wildly different results from the same prompt. Their Claude had a different `CLAUDE.md`, different memories, different local skills. That ambient context quietly rewrote what they were trying to do. The prompt wasn't the problem; the environment around it was.
 
 Swarm is the fix: it bundles the rules and the phases into one plugin, so what you share is what actually runs — on your machine or anyone else's. It's now used daily by other principal engineers and CTOs on their own codebases.
 
@@ -153,7 +153,11 @@ Swarm is the fix: it bundles the rules and the phases into one plugin, so what y
 
 ## Who this is for
 
-Swarm is for you if the same prompt gives you a great result one day and a mediocre one the next, if you share prompts with people whose results never match yours, or if you want a second, third, and fourth opinion enforced on every piece of work before it reaches you.
+Swarm is for you if:
+
+- the same prompt gives you a great result one day and a mediocre one the next,
+- you share prompts with people whose results never match yours, or
+- you want a second, third, and fourth opinion enforced on every piece of work before it reaches you.
 
 It is **not** a task manager (no backlog, no tickets) or a workflow framework (no DAGs, no YAML, no runtime composition).
 
@@ -259,7 +263,7 @@ Swarm checks for updates on session start and mentions one in the assistant's fi
 
 ## Custom workflows
 
-When a workflow needs its own phases, review model, or stages, build a purpose-built mode. Run `/swarm:create-workflow` to scaffold one — a skill defining lead identity, facilitator title, mode-specific rules, and a phase arc — then launch it with `/swarm:workflow <name>`. The phase names stay; the semantics are yours.
+When a workflow needs its own phases, review model, or stages, build a purpose-built mode. Run `/swarm:create-workflow` to scaffold one (a skill defining lead identity, facilitator title, mode-specific rules, and a phase arc), then launch it with `/swarm:workflow <name>`. The phase names stay; the semantics are yours.
 
 ---
 
