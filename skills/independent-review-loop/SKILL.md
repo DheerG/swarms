@@ -31,7 +31,7 @@ If the user picks Codex while it is absent/unauthed, surface Codex's own message
 
 ## The loop (identical control flow on both engines)
 
-Resolve the diff base once. The review is simply the branch's **committed** diff against the branch it targets — `main`, or the repo's equivalent default/target branch. **A GitHub PR is not required**: Codex does a PR-style review of any branch, and the PR (when the ship definition uses one) is only the push target, not a precondition. Pick the base as the PR base if a PR exists (`gh pr view --json baseRefName` just names the target branch), otherwise the repo's default branch (`git symbolic-ref refs/remotes/origin/HEAD --short`, stripped of `origin/`); compare against the up-to-date base — the fetched remote-tracking ref (e.g. `origin/main`), not a possibly-stale local copy. If the base can't be resolved, ask the user or skip — never error. Then each round:
+Resolve the diff base once. The review is simply the branch's **committed** diff against the branch it targets — `main`, or the repo's equivalent default/target branch. **A GitHub PR is not required**: Codex does a PR-style review of any branch, and the PR (when the ship definition uses one) is only the push target, not a precondition. Pick the base as the PR base if a PR exists (`gh pr view --json baseRefName` just names the target branch), otherwise the repo's default branch (`git symbolic-ref refs/remotes/origin/HEAD --short`, stripped of `origin/`); compare against the up-to-date base — the fetched remote-tracking ref (e.g. `origin/main`), not a possibly-stale local copy. The base must be the point the work **diverged from**, so the diff covers this run's changes; if the work was committed directly onto the base branch (so `<base>` and `HEAD` coincide), use the pre-work commit instead. If the base can't be resolved, ask the user or skip — never error. And if the resolved `git diff <base>...HEAD` comes back **empty**, that is NOT a clean review — nothing was reviewed — so surface it to the user to correct the base rather than terminating clean. Then each round:
 
 1. **Review the WHOLE PR diff, every round** — the full `git diff <base>...HEAD`, never just the delta since the last fix. New findings hide behind old fixes; only a whole-PR pass surfaces them.
 2. **Collect findings** in Codex's native shape (see Output format).
@@ -64,6 +64,8 @@ The closing affirmative-clean instruction is load-bearing: it is what lets the t
 
 Telling the reviewer the outcome and asking only for functional findings is the steer that keeps the loop on-scope — the input-side guard, paired with the lead's triage on the output side.
 
+<!-- SYNC: the steer's "Format:" clause above and the "Output format" section below must stay identical. If either changes, update both — termination treats an off-format response as a FAILED review, and the oscillation key parses `title + file:line` from this exact shape, so drift breaks both. (Same convention as launch.md Step 1 ↔ workflow-rules.) -->
+
 ## Codex path
 
 Codex is the preferred reviewer because it is a genuinely different model and fails differently from the code's author. Run it via **Bash** (the lead can run shell; `/codex:*` slash commands are not model-callable, so do not rely on them):
@@ -88,6 +90,8 @@ Honest limit, worth stating to the user: a fresh Codex-style Claude reviewer is 
 
 ## Output format (both engines — Codex's native shape)
 
+<!-- SYNC: this format must stay identical to the steer's "Format:" clause in "The steer" section above — keep both in step (see that SYNC note). -->
+
 Findings are rendered as:
 
 ```
@@ -106,7 +110,7 @@ Full review comments:
 
 ## What this skill reuses (do not rebuild)
 
-The round structure, batch-fix-then-re-review discipline ("wait for all of a round's findings before fixing"), escalation, `swarm:resolve-dispute`, and the serial-default/parallel-opt-out cadence are all existing swarm machinery — this skill only adds the independent reviewer, the outcome steer, the triage gate, the termination/backstop, and the output contract. No new phase, no new hard rules, no changes to the team-member briefing templates.
+The round structure, batch-fix-then-re-review discipline ("wait for all of a round's findings before fixing"), escalation, and the serial-default/parallel-opt-out cadence are all existing swarm machinery — this skill only adds the independent reviewer, the outcome steer, the triage gate, the termination/backstop, and the output contract. (Oscillation routes to the user, not `swarm:resolve-dispute` — that skill messages a teammate reviewer, and this loop's reviewer is Codex or an ephemeral one-shot.) No new phase, no new hard rules, no changes to the team-member briefing templates.
 
 ---
 
