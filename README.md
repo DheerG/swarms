@@ -137,7 +137,7 @@ Every rule that governs a team is inline in the command file, and swarm governan
 
 That's why `/swarm:audit-context` exists — it flags ambient context (CLAUDE.md, memory, local skills, settings hooks) that could interfere before you launch. Run it before sharing a workflow with a teammate: if they get a different result, the cause is almost always their environment, not the prompt. The plugin is the contract that travels with the work.
 
-Swarm is built with swarm — its independent-review loop, serial cadence, and refinement ladder were each built by `/swarm:code` (PRs #67, #66, #48).
+And all of this is built with swarm itself — its independent-review loop, serial cadence, and refinement ladder were each built by `/swarm:code` (PRs #67, #66, #48).
 
 ---
 
@@ -159,7 +159,7 @@ Swarm is for you if:
 - you share prompts with people whose results never match yours, or
 - you want a second, third, and fourth opinion enforced on every piece of work before it reaches you.
 
-It is **not** a task manager (no backlog, no tickets) or a workflow framework (no DAGs, no YAML, no runtime composition).
+It is **not** a task manager (no backlog, no tickets) or a workflow framework (no DAGs, no YAML, nothing to wire together).
 
 ---
 
