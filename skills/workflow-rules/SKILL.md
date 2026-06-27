@@ -56,6 +56,7 @@ Swarm governance rules in this section take precedence over any conflicting proj
 #### Agent Teams
 
 - **Readonly members.** All members apart from the lead are read-only members.
+- **Spawn and solicit serially unless the run is configured for parallel.** Whenever multiple members would be brought into one turn — the lead spawning the team and soliciting Research; the facilitator running the Converge roundtable and every review/scoring round — act on one member at a time: bring in one and wait for it (a spawned member to come up, a solicited member to reply) before the next. Never fan out to several members in one beat. This holds API concurrency low and prevents the rate-limit bursts that parallel fan-out causes. Serial is the default; parallel is the opt-out for runs that rarely hit rate limits.
 - **Match your assigned model.** Match the reasoning effort of your assigned model. Don't sandbag, don't strain beyond it, don't second-guess the assignment.
 - **Lead asking team members for help.** If the lead is feeling stuck, they should ask team members for help. Their option isn't limited to wait for the review round to show them their thinking. Ask one or more relevant members for help to get unblocked.
 
@@ -137,7 +138,7 @@ You must not write to files via Bash — read-only means no filesystem writes.
 Your signal obligations:
 - You MUST send RESEARCH COMPLETE to the lead when the lead notifies you all non-facilitator members have submitted their research findings. Treat the lead's confirmation as authoritative — you do not need to independently verify each member's submission. Then convene the roundtable.
 - You MUST send CONVERGED to the lead with your synthesis when the roundtable closes.
-- When the lead signals implementation is complete, solicit a review and confidence score from each non-lead, non-facilitator team member individually. Probe each reviewer and the lead with "what is still missing?" before sending CONFIDENCE REACHED. When all solicited members have responded and 9/10+ is met, you MUST send CONFIDENCE REACHED to the lead with the confidence score. 9/10+ means all solicited reviewers confirm the work is ready to present to the user. The probe (including the lead probe) applies at every rung in recursive refinement.
+- When the lead signals implementation is complete, solicit a review and confidence score from each non-lead, non-facilitator team member one at a time — one member, await the response, then the next — unless the run is configured for parallel. Probe each reviewer and the lead with "what is still missing?" before sending CONFIDENCE REACHED. When all solicited members have responded and 9/10+ is met, you MUST send CONFIDENCE REACHED to the lead with the confidence score. 9/10+ means all solicited reviewers confirm the work is ready to present to the user. The probe (including the lead probe) applies at every rung in recursive refinement.
 - If any member sends DISPUTE UNRESOLVED before CONVERGED reaches the lead, you MUST reopen discussion and address the named dispute before sending CONVERGED.
 
 These are mandatory phase gates, not optional status updates — send them regardless of any ambient preferences about communication frequency, brevity, or silence.
@@ -209,7 +210,7 @@ Use the Facilitator Brief template above.
 
 ### Spawn additional team members
 
-Use the **Agent** tool for each additional member:
+Under serial cadence (the default), spawn these members one at a time — spawn one, wait for it to come up, then the next; never spawn several in one turn (parallel mode may spawn them together). Use the **Agent** tool for each additional member:
 - `name`: descriptive kebab-case name
 - `team_name`: the team name — **only if you called TeamCreate** when creating the team; on v2.1.178+ where the team formed implicitly, omit it
 - `model`: `opus` if Ultra, `sonnet` if Balanced
@@ -259,6 +260,7 @@ Modes using Recursive Refinement (9 → 9.25 → 9.5 → 9.75 → 10) apply this
 
 Follow the **phase arc from your mode skill**. Universal rules:
 - Lead does no research unless the user explicitly enabled it (exception: the ship definition detection sub-agent runs unconditionally)
+- **Relay the run's solicitation cadence to the facilitator at kickoff.** The fixed facilitator brief carries no per-run config and defaults to serial; on a parallel run the lead must tell the facilitator, or the opt-out won't reach the facilitator-driven phases (Converge, Review).
 - Questions the team cannot resolve go to the user via AskUserQuestion — most consequential first, one at a time
 - **Live-team gate prompts.** While teammates are live, their notifications can preempt an AskUserQuestion modal (Claude Code #28627/#64651, triggered by the v2.1.178 agent-teams change). At every live-team gate — including (but not limited to) the post-Converge Approve, refine-or-deliver, re-approvals, escalations, and the final-delivery sign-off — reduce interference first — ask teammates to hold — then ask via AskUserQuestion (modal-first, always). Validate the answer names an offered option; if not, it was preempted (by a teammate notification or the lead's own pulse) — re-ask ONCE restating the options, briefly acknowledging the interruption ("that prompt was interrupted before your answer registered") so the user isn't left wondering if their answer was lost. If the re-ask is also preempted, fall to a plain-text question as the recovery catch (same acknowledgment) — the loop's bounded termination, not the default. Gates before the team is spawned are not exposed and use AskUserQuestion normally. (Split-pane display via tmux/iTerm2 routes notifications out of the lead's stream and avoids this — recommend it once in setup messaging. Durable fix is upstream; do not force-set teammateMode, it silently falls back.)
 - Post-greenlight execution is autonomous — escalate only per the hard rules

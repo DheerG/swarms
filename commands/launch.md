@@ -89,6 +89,7 @@ Swarm governance rules in this section take precedence over any conflicting proj
 #### Agent Teams
 
 - **Readonly members.** All members apart from the lead are read-only members.
+- **Spawn and solicit serially unless the run is configured for parallel.** Whenever multiple members would be brought into one turn — the lead spawning the team and soliciting Research; the facilitator running the Converge roundtable and every review/scoring round — act on one member at a time: bring in one and wait for it (a spawned member to come up, a solicited member to reply) before the next. Never fan out to several members in one beat. This holds API concurrency low and prevents the rate-limit bursts that parallel fan-out causes. Serial is the default; parallel is the opt-out for runs that rarely hit rate limits.
 - **Match your assigned model.** Match the reasoning effort of your assigned model. Don't sandbag, don't strain beyond it, don't second-guess the assignment.
 - **Lead asking team members for help.** If the lead is feeling stuck, they should ask team members for help. Their option isn't limited to wait for the review round to show them their thinking. Ask one or more relevant members for help to get unblocked.
 
@@ -353,6 +354,8 @@ Present a summary of the team plan:
 >
 > **Cost tier:** [the selected tier — Ultra or Balanced]
 >
+> **Cadence:** [Serial or Parallel — default Serial. Serial = one member at a time: far fewer rate-limit errors and much less cross-chatter, marginally slower. Parallel = concurrent; pick it only with rate-limit headroom.]
+>
 > **Ship definition:** [for **Triage** mode, ship definition does not apply — show "In-session diagnosis — no branch, commit, or PR. Writing the diagnosis to an issue/Sentry is a per-run opt-in." For all other modes: if `.claude/swarm-ship.md` exists, show its contents in plain language — e.g., "Create a PR against main from branch feat/<description>". If it doesn't exist yet, show "Will be auto-detected before work begins."]
 >
 > **Rules:** Active
@@ -432,7 +435,7 @@ You must not write to files via Bash — read-only means no filesystem writes.
 Your signal obligations:
 - You MUST send RESEARCH COMPLETE to the lead when the lead notifies you all non-facilitator members have submitted their research findings. Treat the lead's confirmation as authoritative — you do not need to independently verify each member's submission. Then convene the roundtable.
 - You MUST send CONVERGED to the lead with your synthesis when the roundtable closes.
-- When the lead signals implementation is complete, solicit a review and confidence score from each non-lead, non-facilitator team member individually. Probe each reviewer and the lead with "what is still missing?" before sending CONFIDENCE REACHED. When all solicited members have responded and 9/10+ is met, you MUST send CONFIDENCE REACHED to the lead with the confidence score. 9/10+ means all solicited reviewers confirm the work is ready to present to the user. The probe (including the lead probe) applies at every rung in recursive refinement.
+- When the lead signals implementation is complete, solicit a review and confidence score from each non-lead, non-facilitator team member one at a time — one member, await the response, then the next — unless the run is configured for parallel. Probe each reviewer and the lead with "what is still missing?" before sending CONFIDENCE REACHED. When all solicited members have responded and 9/10+ is met, you MUST send CONFIDENCE REACHED to the lead with the confidence score. 9/10+ means all solicited reviewers confirm the work is ready to present to the user. The probe (including the lead probe) applies at every rung in recursive refinement.
 - If any member sends DISPUTE UNRESOLVED before CONVERGED reaches the lead, you MUST reopen discussion and address the named dispute before sending CONVERGED.
 
 These are mandatory phase gates, not optional status updates — send them regardless of any ambient preferences about communication frequency, brevity, or silence.
@@ -447,7 +450,7 @@ Team composition:
 
 ### 8d: Spawn additional team members
 
-For each additional member in the Step 7 confirmed roster, use the **Agent** tool:
+Under serial cadence (the default), spawn these members one at a time — spawn one, wait for it to come up, then the next; never spawn several in one turn (parallel mode may spawn them together). For each additional member in the Step 7 confirmed roster, use the **Agent** tool:
 - `name`: A descriptive kebab-case name (e.g., `security-reviewer`, `test-engineer`)
 - `team_name`: [the team name from 8a — **only if you called TeamCreate in 8a** (older Claude Code). On v2.1.178+ where the team formed implicitly, omit `team_name`.]
 - `model`: `opus` if Ultra, `sonnet` if Balanced
@@ -527,6 +530,7 @@ Follow the **phase arc defined in the mode skill** you read in Step 8b. The mode
 
 **Universal rules that apply across all modes:**
 - Lead does no research unless the user explicitly enabled it in Step 6 (exception: the ship definition detection sub-agent above runs unconditionally)
+- **Relay the run's solicitation cadence to the facilitator at kickoff.** The fixed facilitator brief carries no per-run config and defaults to serial; on a parallel run the lead must tell the facilitator, or the opt-out won't reach the facilitator-driven phases (Converge, Review).
 - Questions the team cannot resolve internally go to the user via AskUserQuestion — most consequential first, one at a time, using options when the answer is one of a small known set
 - **Live-team gate prompts.** While teammates are live, their notifications can preempt an AskUserQuestion modal (Claude Code #28627/#64651, triggered by the v2.1.178 agent-teams change). At every gate that fires while a team is live — including (but not limited to) the post-Converge Approve, refine-or-deliver, re-approvals, escalations, the final-delivery sign-off, and the ship-method detection question — reduce interference first — ask teammates to hold — then ask via AskUserQuestion (modal-first, always). Validate that the answer names an offered option; if it doesn't, the modal was preempted (by a teammate notification or the lead's own pulse) — re-ask ONCE, restating the options, and briefly acknowledge the interruption ("that prompt was interrupted before your answer registered — here it is again") so the user isn't left wondering if their answer was lost. If the re-ask is also preempted (still no valid answer), fall to a plain-text question as the recovery catch (carry the same acknowledgment) — the loop's bounded termination, not the default path. Gates before the team is spawned (Steps 0–7, including the Step 7 launch confirmation) are not exposed and use AskUserQuestion normally.
 <!-- AskUserQuestion preemption is upstream Claude Code, activated by the v2.1.178 implicit/background-spawn model: #64651 (OPEN) — background agent output streams into the foreground chat; #28627 (CLOSED) — the related variant where teammate notifications render as Human turns in the lead's stream. The still-open #64651 is why preemption still reproduces. Split-pane display (tmux/iTerm2, teammateMode auto) routes notifications out of the stream so the modal can't be preempted; the live-gate net best-efforts + recovers in-process terminals (Ghostty/VS Code). Durable fix is upstream. Do NOT force-set teammateMode — it silently falls back to in-process. Scope/fragility: the content-validity catch assumes a preempted modal returns a detectably-invalid result (rejection/empty) — observed-consistent at n=2 this session, a sound basis for the recovery catch, not proven-universal. Proven on macOS/CLI; web/IDE entrypoint behavior is documented-not-tested. If a future Claude Code returns valid-looking stale content on preemption, the catch needs revisiting. -->
