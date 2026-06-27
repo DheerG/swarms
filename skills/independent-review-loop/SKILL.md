@@ -8,15 +8,15 @@ keywords: independent review, codex review, review loop, pre-delivery review, bu
 
 Operational spec for the **team lead**. This skill runs an independent review pass at delivery: a reviewer that fails differently from the author reads the whole PR against the approved outcome, the lead fixes what is in scope, and the loop repeats until the reviewer finds no more in-scope functional issues. It is the automated form of "ship, then loop the PR through Codex until it stops finding edge cases" — with the lead acting as the operator who keeps findings on-scope.
 
-It is the **bug-surface** counterpart to recursive refinement: recursive refinement (the 9.25→10 rung ladder) drives the work to the full scope of the outcome (completeness); this loop drives out functional defects via an *independent* reviewer (correctness). They are distinct passes; this never replaces the ladder.
+What distinguishes this from the team's own review and the recursive-refinement ladder is **independence and exhaustiveness**: the reviewer is a different model (Codex) or a fresh-context agent that fails differently from the authors, and it runs to exhaustion — until no in-scope functional finding remains — rather than the bounded rung ladder. (The ladder hunts bugs too, as it drives the work to the full scope of the outcome; the new axis here is the *independent eye run to clean*, not bug-hunting per se.) It is a distinct pass; it never replaces the ladder.
 
 Only the lead runs this. Reviewers (Codex, or fresh subagents) are read-only; the lead is the sole writer, same as every other phase.
 
 ## When this runs
 
-Invoked from the **unified pre-ship gate** in code-mode's Refine/Deliver (and `/swarm:refine`) — the gate the lead presents once the team reaches 9/10+, offering: *recursive review + independent review* / *independent review loop only* / *ship as is*. This skill runs for the first two options (after the recursive ladder completes, when both were chosen; or on its own when only the independent loop was chosen).
+Invoked from the **unified pre-ship gate** in code-mode's Refine/Deliver (and `/swarm:refine`) — the gate the lead presents once the team reaches 9/10+, offering: *recursive refinement + independent review* / *independent review loop only* / *ship as is*. This skill runs for the first two options (after the recursive ladder completes, when both were chosen; or on its own when only the independent loop was chosen).
 
-It runs **after the PR has been created** (PR-then-loop): the loop reviews the existing PR's diff and pushes each round's fixes to that PR. Because the PR exists, the diff base is always resolvable from it.
+It runs **after the ship steps complete** (PR-then-loop on the common path): when a PR was created, the loop reviews the PR's diff and pushes each round's fixes to it; on a commit-only / push-only ship with no PR, it reviews the pushed branch against its base. The diff base is resolvable from the PR when one exists (see the loop's base resolution below for the no-PR fallback).
 
 ## Engine choice (Codex or Swarm fallback)
 
