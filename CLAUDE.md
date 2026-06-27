@@ -36,6 +36,7 @@ skills/suggest-members/     # Recommends team composition based on outcomes and 
 skills/writing-style/       # Structural pattern analysis (trope detection) for writing-mode review
 skills/resolve-dispute/     # Resolves stuck review findings via put-up-or-concede exchange
 skills/define-rubric/       # Available skill for teams that genuinely need formal validation criteria
+skills/independent-review-loop/  # Independent pre-delivery review loop — Codex or a swarm-native Codex-style reviewer; runs at the unified Refine/Deliver gate in code-mode and /swarm:refine
 .claude-plugin/plugin.json  # Plugin manifest
 .claude-plugin/marketplace.json  # Marketplace registry entry
 .claude/swarm-ship.md       # Per-project ship definition (created at first launch, user-owned)
@@ -54,6 +55,10 @@ After outcomes are confirmed, Step 2 asks how to set up the team. The two Defaul
 ### Team Execution Phase Arc
 
 The phase arc skeleton is universal: Research → Converge → Approve → Execute → Review → Refine → Deliver. The mode skill (invoked at Step 8b) defines what each phase means — who acts, what the deliverable is, how review works. Code mode and Writing mode have meaningfully different phase semantics. A full mode may also omit a phase: Triage mode drops Refine (and the recursive-refinement ladder), because a diagnosis has an evidentiary terminal and polishing past it manufactures false certainty. By defining no Refine phase, the universal "ask refine-or-deliver" rule (which keys to "the Refine phase in the mode skill, if defined") does not fire — its Deliver phase restates this so the lead does not re-import the question by habit.
+
+### Independent Review Loop
+
+`skills/independent-review-loop/` adds an optional **independent review loop** whose differentiator is **independence + exhaustiveness** — a reviewer that fails differently from the authors (a different model via Codex, or a fresh-context agent), run until no in-scope functional finding remains. (The recursive-refinement ladder also hunts bugs as it drives completeness to the full outcome scope; the new axis here is the independent eye run to clean.) At 9/10+, code-mode's Refine presents a **unified pre-ship gate**: *recursive refinement + independent review* / *independent review loop only* / *ship as is*. For the review options, the loop runs at Deliver **after the ship steps** (PR-then-loop on the common path), reviewing the whole branch diff against the approved outcome each round (base = `main` or the repo's equivalent target — no GitHub PR required; the PR is only a push target); the lead triages findings in/out-of-scope (the codified "operator once in a while"), fixes the in-scope functional ones (committing each round, pushing per the ship definition), and re-reviews until none remain (backstop: 15 rounds → escalate to user; oscillation matched by title+`file:line` → surfaced to the user, since this loop's reviewer isn't an addressable teammate). The engine is an in-skill sub-choice: **Codex** (independent model, preferred when present — `command -v codex` sets order/default, both always offered) or a **swarm-native fallback** (fresh ephemeral Codex-style reviewer subagents). Codex runs read-only via stdin (`codex exec review -`); the loop depends only on the `codex` binary. Reviewer rubric and prose-only finding format adapted from OpenAI Codex (`codex-rs`, Apache-2.0). It adds no new phase, no new hard rules, and no changes to the briefing templates.
 
 ### Mode Skills
 

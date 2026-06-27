@@ -200,7 +200,15 @@ The refinement ladder is optional. Each rung is autonomous once you opt in. Each
 
 ### 8. Deliver
 
-The lead ships according to `.claude/swarm-ship.md` (usually a PR against main) and waits for your sign-off. You get the completed work with the team's confidence score attached.
+In Code work, once the team reaches 9/10 you choose how to finish at a single gate:
+
+> **9/10+ confidence reached. How should the team finish?**
+>
+> - Recursive refinement + independent review — *Run the refinement ladder (9.25→10), then an independent review loop*
+> - Independent review loop only — *Skip the ladder; just the independent review loop*
+> - Ship as is — *No further review*
+
+**Recursive refinement** drives the work to the full scope of your outcome (completeness). The **independent review loop** adds independence and exhaustiveness: after the PR is created, a *different* reviewer — one that fails differently from the authors — reads the whole PR against your outcome, the lead fixes only what's in scope, and the loop repeats — pushing each round's fixes to the PR — until no in-scope functional issues remain. If you pick a review option, you then choose the reviewer engine: **Codex** (an independent model that fails differently from the author; preferred when its CLI is present) or a **swarm-native fallback** (a fresh Codex-style Claude reviewer; always available). The loop keeps findings on-scope by anchoring on your stated outcome and surfaces anything out-of-scope to you rather than silently applying it. The lead ships according to `.claude/swarm-ship.md` (usually a PR against main) and waits for your sign-off. You get the completed work with the team's confidence score attached.
 
 ---
 
