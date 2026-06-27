@@ -25,6 +25,8 @@ Swarm spins up a small team of Claude agents that research the problem, debate t
 
 ## Quick start
 
+Swarm is a [Claude Code](https://code.claude.com) plugin — you'll need the Claude Code CLI installed first.
+
 ```bash
 claude plugin marketplace add DheerG/swarms
 claude plugin install swarm@swarms --scope project
@@ -122,6 +124,10 @@ The review gate is explicit and structural:
 Below the bar, the team cycles: lead fixes, team re-reviews. Above it, you get an optional refinement ladder (9.25 → 9.5 → 9.75 → 10) that drives the work to the full scope of your outcome. The critical mechanic: **the facilitator, not the lead, controls the gate.** The agent that did the work cannot declare its own work done. A model reviewing its own output reaches for the cheapest approving token it can find; a different agent with a different role pushes back with something worth reading.
 
 And before delivery, an independent reviewer that fails differently from the authors — a different model via Codex, or a fresh-context agent — reads the whole change against your outcome; the team fixes what it finds and re-reviews until nothing in scope remains.
+
+### Built to run unattended
+
+A heartbeat keeps the run alive and self-recovering across long sessions; spawning members serially, not in parallel, is what makes it cost a fraction of a parallel team.
 
 ### Portable quality across environments
 
