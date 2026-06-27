@@ -42,7 +42,7 @@ Agent teams must be enabled in Claude Code. Add this to `~/.claude/settings.json
 }
 ```
 
-Then run `/swarm:code` and describe what you want. Changes take effect in the next session.
+Restart Claude Code so the plugin and the flag take effect, then run `/swarm:code` and describe what you want.
 
 ---
 
