@@ -2,13 +2,13 @@
 
 **Describe what you want. Get a reviewed, ship-ready PR — without babysitting the agent.**
 
-Out-of-the-box agent teams tend to rubber-stamp their own work. Swarm's team argues with itself, and won't hand you the work until it's actually ready to ship.
+Out-of-the-box, agent teams rubber-stamp their own work. Swarm's team argues with itself, and won't hand you the work until it's actually ready to ship.
 
 ```
 /swarm:code fix the flaky checkout test
 ```
 
-Swarm spins up a small team of Claude agents that research the problem, debate the approach, build it, and review each other until the work is ready — then hand you a PR. You approve the plan, approve the approach, then stay out of the build — and you get the final say before anything ships. Most of the quality work happens in the cycles you never see.
+Swarm spins up a small team of Claude agents that research the problem, debate the approach, build it, and review each other until the work is ready — then hand you a PR. You approve the plan and the approach, then stay out of the build — with the final say before anything ships. Most of the quality work happens in the cycles you never see.
 
 *Swarm also runs triage, writing, and general-purpose teams — see [other ways to launch](#commands).*
 
@@ -18,14 +18,14 @@ Swarm spins up a small team of Claude agents that research the problem, debate t
 
 - **Ships code that holds up** — reviewed by a different agent, not rubber-stamped by its author.
 - **Runs unattended for hours — even across days.**
-- **Recovers from API blips on its own.**
-- **Costs a fraction of parallel agents.**
+- **Survives interrupted turns without stalling.**
+- **Avoids the rate-limit errors parallel teams hit — at a fraction of the tokens.**
 
 ---
 
 ## Quick start
 
-Swarm is a [Claude Code](https://code.claude.com) plugin — you'll need the Claude Code CLI installed first.
+Swarm is a [Claude Code](https://code.claude.com) plugin, so you'll need the CLI installed first.
 
 ```bash
 claude plugin marketplace add DheerG/swarms
@@ -60,7 +60,7 @@ You see the whole plan before a single agent runs:
 >
 > **Mode:** Code
 > **Outcomes:** (your words, verbatim)
-> **Team:** lead (you) + Principal Engineer facilitator + specialists for the work
+> **Team:** lead (your Claude session) + Principal Engineer facilitator + specialists for the work
 > **Cost tier:** Ultra
 > **Ship definition:** Create a feature branch from main, commit, push, open PR
 >
@@ -88,7 +88,7 @@ Nothing runs until you pick "Launch the team."
 >
 > **Principal Engineer:** Then TTL risk is acceptable here. Team, any other concerns before I call CONVERGED?
 
-The facilitator doesn't decide — it surfaces the blocker, aims it at the right person, and waits for evidence. The lead answers a concrete question like anyone else. Synthesis comes only after the concern is resolved. You see the synthesis; the debate stays in the team.
+The facilitator doesn't decide — it surfaces the blocker, aims it at the right person, and waits for evidence. The lead answers a concrete question like anyone else. Synthesis comes only after the concern is resolved. A mixed team catches what one perspective misses. You see the synthesis; the debate stays in the team.
 
 ---
 
@@ -105,7 +105,7 @@ Implementation framing has the team comparing Redis and Memcached. Outcome frami
 
 ### Prompts, not frameworks
 
-The consumer of every command is a language model, not a compiler — and a self-contained prompt read in one pass beats a framework that assembles itself from parts. The entire coordination system, from pre-flight through delivery, lives in one readable markdown file:
+Most agent frameworks bury what's actually running behind config and abstraction, so changing how the agents behave means digging through someone else's machinery. Swarm has none of that. The entire coordination system, from pre-flight through delivery, lives in one readable markdown file:
 
 ```markdown
 # /swarm:launch
@@ -113,7 +113,7 @@ The consumer of every command is a language model, not a compiler — and a self
 You are launching an agent team using the Swarm plugin. Follow every step below in exact order...
 ```
 
-No imports, no DSL, no runtime composition. When you extend swarm, you write another markdown file. Read the whole thing: [commands/launch.md](commands/launch.md).
+No imports, no runtime composition — to change how a team works, you edit the prompt. Read the whole thing: [commands/launch.md](commands/launch.md).
 
 ### Recursive review until it's ready
 
@@ -123,11 +123,13 @@ The review gate is explicit and structural:
 
 Below the bar, the team cycles: lead fixes, team re-reviews. Above it, you get an optional refinement ladder (9.25 → 9.5 → 9.75 → 10) that drives the work to the full scope of your outcome. The critical mechanic: **the facilitator, not the lead, controls the gate.** The agent that did the work cannot declare its own work done. A model reviewing its own output reaches for the cheapest approving token it can find; a different agent with a different role pushes back with something worth reading.
 
-And before delivery, an independent reviewer that fails differently from the authors — a different model via Codex, or a fresh-context agent — reads the whole change against your outcome; the team fixes what it finds and re-reviews until nothing in scope remains.
+Before delivery, an independent reviewer — one that fails differently from the authors, a different model via Codex or a fresh-context agent — reads the whole change against your outcome. The lead fixes what it surfaces, and the loop repeats until nothing in scope remains.
 
-### Built to run unattended
+Swarm is built with swarm — its independent-review loop, serial cadence, and refinement ladder were each built by `/swarm:code` (PRs #67, #66, #48).
 
-A heartbeat keeps the run alive and self-recovering across long sessions; spawning members serially, not in parallel, is what makes it cost a fraction of a parallel team.
+### Built to run anyway
+
+Long agent-team runs hit a wall that has nothing to do with the work: rate limits. A parallel team hammers the API, trips them, and stalls out mid-run — often silently. Swarm pushes through. It spawns members one at a time to stay under the limits, which also costs a fraction of a parallel team's tokens. A heartbeat keeps the lead moving, and if a turn is interrupted, the team re-checks its last action and picks up where it left off.
 
 ### Portable quality across environments
 
@@ -141,9 +143,9 @@ That's why `/swarm:audit-context` exists — it flags ambient context (CLAUDE.md
 
 ## Why I built this
 
-I built this across hundreds of sessions, pruning rules, memories, and skills until the quality stopped varying. Once it was reliable, I shared it — and watched teammates get wildly different results from the same prompt. Their Claude had a different `CLAUDE.md`, different memories, different local skills. That ambient context quietly rewrote what they were trying to do. The prompt wasn't the problem; the environment around it was.
+I'm a principal engineer, and across hundreds of sessions I refined the rules and corrections I gave it until the quality stopped varying — then kept going until it was writing better code than I do by hand. Once it was reliable, I shared it — and watched teammates get wildly different results from the same prompt. Their Claude had a different `CLAUDE.md`, different memories, different local skills. That ambient context quietly rewrote what they were trying to do. The prompt wasn't the problem; the environment around it was.
 
-Swarm is the fix: it bundles the rules and the phases into one plugin, so what you share is what actually runs — on your machine or anyone else's. Portable quality, not just personal repeatability.
+Swarm is the fix: it bundles the rules and the phases into one plugin, so what you share is what actually runs — on your machine or anyone else's. It's now used daily by other principal engineers and CTOs on their own codebases.
 
 — Dheer ([dheer.co](https://dheer.co))
 
