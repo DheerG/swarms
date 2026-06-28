@@ -50,7 +50,7 @@ Restart Claude Code so the plugin and the flag take effect, then run `/swarm:cod
 
 Three moments need you. The rest runs itself.
 
-1. **Tell it what you want** — one sentence describing the outcome.
+1. **Tell it what you want** — 1-2 sentences describing the outcome. It has the ability to refine the outcome with you and work around prompting gotchas that would normally result in poor code.
 2. **Approve the plan** — and, mid-run, the approach the team converged on. Nothing irreversible happens without your sign-off.
 3. **Decide how to finish** — when the team hits the bar, you choose to refine further or ship; you see the result, not the debate.
 
@@ -76,7 +76,7 @@ Nothing runs until you pick "Launch the team."
 
 ## A real Converge, in excerpt
 
-"The facilitator runs a roundtable" doesn't land until you've seen one. A representative excerpt from a caching-strategy Converge:
+Here is an excerpt from a real caching-strategy Converge:
 
 > **Principal Engineer:** Two approaches on the table — cache-aside with a TTL, or read-through with invalidation on write. Security Reviewer, you flagged the TTL approach earlier. What's the actual risk you see?
 >
@@ -88,24 +88,24 @@ Nothing runs until you pick "Launch the team."
 >
 > **Principal Engineer:** Then TTL risk is acceptable here. Team, any other concerns before I call CONVERGED?
 
-The facilitator doesn't decide — it surfaces the blocker, aims it at the right person, and waits for evidence. The lead answers a concrete question like anyone else. A mixed team catches what one perspective misses. Synthesis comes only after the concern is resolved. You see the synthesis; the debate stays in the team.
+Notice that the facilitator never settles the question itself. It hands the blocker to whoever can answer it and waits for evidence, and the lead fields that question like any other member. The security risk only surfaced because someone other than the implementer was looking. On their own, they'd have shipped the stale-data window. What reaches you is the conclusion; the argument stays inside the team.
 
 ---
 
 ## Why it works
 
-### Outcomes, not implementations
+### Outcomes over implementations
 
-You describe what the world looks like when the work is done — not what to build. That changes what the team debates.
+You describe what the world looks like when the work is done, rather than the steps to build it. That changes what the team debates.
 
 - **Implementation framing:** "Add a Redis cache in front of the user service."
 - **Outcome framing:** "User profile reads return in under 50ms and don't hit the DB when cached."
 
-Implementation framing has the team comparing Redis and Memcached. Outcome framing has them comparing caching against query optimization — the wider, more useful argument.
+Implementation framing has the team comparing Redis and Memcached. Outcome framing has them weigh caching against query optimization, the wider and more useful argument.
 
-### Prompts, not frameworks
+### Everything is a prompt
 
-Most agent frameworks bury what's actually running behind config and abstraction, so changing how the agents behave means digging through someone else's machinery. Swarm has none of that. The entire coordination system, from pre-flight through delivery, lives in one readable markdown file:
+Most agent frameworks bury what's actually running behind config and abstraction, so changing how the agents behave means digging through someone else's machinery. Swarm keeps the whole coordination system, from pre-flight through delivery, in one readable markdown file you can open:
 
 ```markdown
 # /swarm:launch
@@ -113,7 +113,7 @@ Most agent frameworks bury what's actually running behind config and abstraction
 You are launching an agent team using the Swarm plugin. Follow every step below in exact order...
 ```
 
-No imports, no runtime composition — to change how a team works, you edit the prompt. Read the whole thing: [commands/launch.md](commands/launch.md).
+No imports, no runtime composition. To change how a team works, you edit the prompt. Read the whole thing: [commands/launch.md](commands/launch.md).
 
 ### Recursive review until it's ready
 
@@ -121,13 +121,13 @@ The review gate is explicit and structural:
 
 > 9/10+ means: logic is correct, tests pass where applicable, no regressions introduced, no known defects left unaddressed, reviewers would ship this.
 
-Below the bar, the team cycles: lead fixes, team re-reviews. Above it, you get an optional refinement ladder (9.25 → 9.5 → 9.75 → 10) that drives the work to the full scope of your outcome. The critical mechanic: **the facilitator, not the lead, controls the gate.** The agent that did the work cannot declare its own work done. A model reviewing its own output reaches for the cheapest approving token it can find; a different agent with a different role pushes back with something worth reading.
+Below the bar, the team cycles: lead fixes, team re-reviews. Above it, you get an optional refinement ladder (9.25 → 9.5 → 9.75 → 10) that drives the work to the full scope of your outcome. The critical mechanic: **the facilitator, not the lead, controls the gate.** The agent that did the work cannot declare its own work done. A model grading its own output usually waves it through. A reviewer with a different job, coming in fresh, actually pushes back.
 
-You can also run the whole change past an independent reviewer that fails differently from the authors — a different model via Codex, or a fresh-context agent — before delivery. It reads the change against your outcome, the lead fixes what it surfaces, and the loop repeats until nothing in scope remains.
+You can also run the whole change past an independent reviewer, one that fails differently from the authors: a different model via Codex, or a fresh-context agent. It reads the change against your outcome before delivery, the lead fixes what it surfaces, and the loop repeats until nothing in scope remains.
 
 ### Built to run anyway
 
-Long agent-team runs hit a wall that has nothing to do with the work: rate limits. A parallel team hammers the API, trips them, and stalls out mid-run — often silently. Swarm pushes through. It spawns members one at a time to stay under the limits, which also costs a fraction of a parallel team's tokens. A heartbeat keeps the lead moving, and if a turn is interrupted, the team re-checks its last action and picks up where it left off.
+Long agent-team runs hit a wall that has nothing to do with the work: rate limits. Run the members in parallel and they hammer the API hard enough to trip those limits, and the whole run can stall out partway through, often without a word. Swarm avoids that by spawning members one at a time, which keeps it under the limits and, as a side effect, costs a fraction of a parallel team's tokens. A heartbeat keeps the lead moving, and if a turn gets cut off, the team re-checks its last action and picks up where it left off.
 
 ### Portable quality across environments
 
