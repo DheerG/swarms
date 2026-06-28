@@ -2,13 +2,13 @@
 
 **Describe what you want. Get a reviewed, ship-ready PR — without babysitting the agent.**
 
-Out-of-the-box agent teams rubber-stamp their own work. Swarm's team argues with itself, and won't hand you the work until it's actually ready to ship.
+Out-of-the-box agent teams can be excellent, but getting there takes time and effort — the right specialists, each with a point of view, and a bias applied where it sharpens the team and held back where it would box the agents in. Swarm puts in that effort for you, so the team converges instead of chattering and the work holds up.
 
 ```
-/swarm:code fix the flaky checkout test
+/swarm:code add SSO so enterprise customers can log in with their own identity provider
 ```
 
-Swarm spins up a small team of Claude agents that research the problem, debate the approach, build it, and review each other until the work is ready — then hand you a PR. You approve the plan and the approach, then stay out of the build. You have the final say before anything ships.
+Swarm assembles a team of five to eight for the task: experienced engineers, plus the customer and business voices a lone coder usually works without. They research the problem, debate the approach, build it, and review each other's work until it's ready, then hand you a PR. You approve the plan and the approach, then stay out of the build. You have the final say before anything ships.
 
 *Swarm also runs triage, writing, and general-purpose teams — see [other ways to launch](#commands).*
 
@@ -52,7 +52,7 @@ Three moments need you. The rest runs itself.
 
 1. **Tell it what you want** — 1-2 sentences describing the outcome. It has the ability to refine the outcome with you and work around prompting gotchas that would normally result in poor code.
 2. **Approve the plan** — and, mid-run, the approach the team converged on. Nothing irreversible happens without your sign-off.
-3. **Decide how to finish** — when the team hits the bar, you choose to refine further or ship; you see the result, not the debate.
+3. **Decide how to finish** — when the team hits the bar, you choose to refine further or ship; you see the result, not the debate, though you can follow it live in [AgentChat](https://github.com/DheerG/agent-chat) if you want to.
 
 You see the whole plan before a single agent runs:
 
@@ -117,13 +117,15 @@ No imports, no runtime composition. To change how a team works, you edit the pro
 
 ### Recursive review until it's ready
 
-The review gate is explicit and structural:
+Picture how a high-value change lands at a real company. A group of senior engineers picks it apart over weeks, not satisfied until it has clearly solved the problem, its blast radius is understood, and every edge case has been either fixed or deliberately accepted. Each concern is another round of back-and-forth, which is why a PR like that can sit in review for a month or two before anyone trusts it to merge.
+
+Swarm runs that same gauntlet in a single session. The gate is explicit:
 
 > 9/10+ means: logic is correct, tests pass where applicable, no regressions introduced, no known defects left unaddressed, reviewers would ship this.
 
-Below the bar, the team cycles: lead fixes, team re-reviews. Above it, you get an optional refinement ladder (9.25 → 9.5 → 9.75 → 10) that drives the work to the full scope of your outcome. The critical mechanic: **the facilitator, not the lead, controls the gate.** The agent that did the work cannot declare its own work done. A model grading its own output usually waves it through. A reviewer with a different job, coming in fresh, actually pushes back.
+A build often starts around 6/10. The team grinds it up, fixing and re-reviewing, and once it clears the bar an optional ladder (9.25 → 9.5 → 9.75 → 10) pushes it to the full scope of your outcome, re-earning any rung a later fix knocks loose. That is routinely 15+ rounds you never have to sit through. The mechanic that keeps it honest: the facilitator, not the lead, controls the gate. The agent that did the work never signs off on it; that call goes to a reviewer coming at it fresh, who has every reason to push back.
 
-You can also run the whole change past an independent reviewer, one that fails differently from the authors: a different model via Codex, or a fresh-context agent. It reads the change against your outcome before delivery, the lead fixes what it surfaces, and the loop repeats until nothing in scope remains.
+Before delivery you can add an independent pass: a reviewer that fails differently from the authors, a different model via Codex or a fresh-context agent, reads the whole change against your outcome. The lead fixes what it finds and the loop repeats until nothing in scope remains, often eight or more rounds on a large PR. What you get back is a PR that carries the kind of scrutiny a strong team would normally spend months assembling.
 
 ### Built to run anyway
 
@@ -143,11 +145,15 @@ And all of this is built with swarm itself — its independent-review loop, seri
 
 ## Why I built this
 
-I'm a principal engineer, and across hundreds of sessions I refined the rules and corrections I gave the team until the quality stopped varying — then kept going until it was writing better code than I do by hand. Once it was reliable, I shared it, and watched teammates get wildly different results from the same prompt. Their Claude had a different `CLAUDE.md`, different memories, different local skills. That ambient context quietly rewrote what they were trying to do. The prompt wasn't the problem; the environment around it was.
+I built this across hundreds of sessions, pruning rules, memories, and skills until the quality stopped varying. When model quality shifted, small targeted changes kept it working, even on smaller models. Once the results were consistent enough to rely on, I started sharing with teammates and friends.
 
-Swarm is the fix: it bundles the rules and the phases into one plugin, so what you share is what actually runs — on your machine or anyone else's. It's now used daily by other principal engineers and CTOs on their own codebases.
+That's when the real problem showed up. I'd send a prompt to someone I work with and watch them get wildly different results. Their Claude had a different `CLAUDE.md`, different memories, different local skills, different settings hooks. All of that ambient context quietly rewrote what they were trying to do, not just their prompts. The prompt alone wasn't the problem. The environment around it was.
 
-— Dheer ([dheer.co](https://dheer.co))
+Swarm is the fix. It bundles the rules and the phases into one plugin you install and invoke, so what you share is what actually runs, on your machine or anyone else's. Portable quality, not just personal repeatability.
+
+— Dheer
+
+More on how I think about agents: [dheer.co](https://dheer.co)
 
 ---
 
@@ -234,7 +240,7 @@ This isn't about chasing the token limit — team runs rarely fill the window �
 Pass outcomes inline to skip the opening question:
 
 ```
-/swarm:code fix the flaky checkout test
+/swarm:code add SSO so enterprise customers can log in with their own identity provider
 /swarm:write Help me write a blog article on healing trauma
 ```
 
