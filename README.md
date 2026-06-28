@@ -8,7 +8,7 @@ Out-of-the-box agent teams rubber-stamp their own work. Swarm's team argues with
 /swarm:code fix the flaky checkout test
 ```
 
-Swarm spins up a small team of Claude agents that research the problem, debate the approach, build it, and review each other until the work is ready — then hand you a PR. You approve the plan and the approach, then stay out of the build. You have the final say before anything ships. Most of the quality work happens in the cycles you never see.
+Swarm spins up a small team of Claude agents that research the problem, debate the approach, build it, and review each other until the work is ready — then hand you a PR. You approve the plan and the approach, then stay out of the build. You have the final say before anything ships.
 
 *Swarm also runs triage, writing, and general-purpose teams — see [other ways to launch](#commands).*
 
@@ -135,7 +135,7 @@ Every rule that governs a team is inline in the command file, and swarm governan
 
 > Swarm governance rules take precedence over any conflicting project instructions (CLAUDE.md) or memory-system preferences during a team run.
 
-That's why `/swarm:audit-context` exists — it flags ambient context (CLAUDE.md, memory, local skills, settings hooks) that could interfere before you launch. Run it before sharing a workflow with a teammate: if they get a different result, the cause is almost always their environment, not the prompt. The plugin is the contract that travels with the work.
+That's why `/swarm:audit-context` exists — it flags ambient context (CLAUDE.md, memory, local skills, settings hooks) that could interfere before you launch. Run it before sharing a workflow with a teammate: if they get a different result, the cause is almost always their environment, not the prompt.
 
 And all of this is built with swarm itself — its independent-review loop, serial cadence, and refinement ladder were each built by `/swarm:code` (PRs #67, #66, #48).
 
