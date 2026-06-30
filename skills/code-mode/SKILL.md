@@ -116,7 +116,7 @@ Deliver runs in order and is not done until the last step lands: **ship → inde
 - **Outcome** — one line: what shipped.
 - **User steers** — the user's scope-shaping decisions, quoted verbatim from their own turns.
 - **Approach: chosen + rejected** — the chosen approach and the alternatives ruled out, with why. Take the rejected alternatives from the verbatim CONVERGED synthesis relayed at Approve, not from the live Converge exchange.
-- **Reversals** — decisions approved then overturned by discovery, with why. Derive from where the shipped diff contradicts the Approve-gate relay (a contradiction, not mere elaboration). Omit if none.
+- **Reversals** — decisions approved then overturned by discovery, with why. A user-approved decision is reversed only after the lead re-presented it and the user chose again (per the locked-decision rule) — record that re-choice, never a unilateral overturn. Derive from where the shipped diff contradicts the Approve-gate relay (a contradiction, not mere elaboration). Omit if none.
 - **Gate decisions** — the user's resolutions at the Approve/Refine gates, from the AskUserQuestion exchanges.
 - **Deferred / caveats** — what was knowingly punted or shipped imperfect, but only if it was actually raised on the wire; do not infer caveats the team did not name. Omit if none.
 
