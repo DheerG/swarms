@@ -204,7 +204,7 @@ The facilitator is always Opus — it owns judgment review. Model names resolve 
 }
 ```
 
-Third-party providers typically wire credentials through `apiKeyHelper` rather than `ANTHROPIC_API_KEY`. If your provider's best model is meaningfully weaker than Opus, expect the review gate to take more iterations. (Installed before this worked? Run `/swarm:update`.)
+Third-party providers typically wire credentials through `apiKeyHelper` rather than `ANTHROPIC_API_KEY`. If your provider's best model is meaningfully weaker than Opus, expect the review gate to take more iterations. On Anthropic's API the `opus` and `sonnet` aliases resolve to the latest model by default; on managed providers (Bedrock, Vertex, Foundry, and others) they can lag behind it, so pin `ANTHROPIC_DEFAULT_OPUS_MODEL` / `ANTHROPIC_DEFAULT_SONNET_MODEL` to a specific model id when you need an exact version. (Installed before this worked? Run `/swarm:update`.)
 
 **1M context for the facilitator (Anthropic API).** Opus 4.8 has a native 1M context window. On Max, Team, and Enterprise plans the `opus` alias is upgraded to 1M automatically; on Pro it needs extra usage; on API pay-as-you-go it's included. Pin it explicitly:
 
