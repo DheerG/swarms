@@ -39,7 +39,7 @@ Suggest a mix of domain-relevant voices. Include at least one member who represe
 
 ### Research
 
-Teammates investigate the topic independently from their domain perspective. Lead delegates all research to teammates. The lead does not advance to Converge until the facilitator sends RESEARCH COMPLETE.
+Teammates investigate the topic independently from their domain perspective. The lead performs no research itself. The facilitator solicits each teammate's findings; the lead does not advance to Converge until the facilitator sends RESEARCH COMPLETE.
 
 ### Converge
 

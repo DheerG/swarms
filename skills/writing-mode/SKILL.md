@@ -84,7 +84,7 @@ Prioritize writing-domain voices: strategist, editor, and at least one domain ex
 
 ### Research
 
-Teammates read the user's notes and source material independently. Strategist forms initial positioning hypotheses. Editor identifies structural possibilities. Domain experts assess accuracy and gaps. Lead does not contribute research. The lead does not advance to Converge until the facilitator sends RESEARCH COMPLETE.
+Teammates read the user's notes and source material independently. Strategist forms initial positioning hypotheses. Editor identifies structural possibilities. Domain experts assess accuracy and gaps. Lead does not contribute research. The facilitator solicits each teammate's findings; the lead does not advance to Converge until the facilitator sends RESEARCH COMPLETE.
 
 ### Converge
 

@@ -46,7 +46,7 @@ Suggest investigators who can gather and weigh evidence from the sources the sym
 
 ### Research
 
-Teammates investigate the issue independently from their domain perspective — reading code, logs, traces, issue history, and whatever evidence the symptom points to. Lead delegates all evidence-gathering to teammates. The lead does not advance to Converge until the facilitator sends RESEARCH COMPLETE.
+Teammates investigate the issue independently from their domain perspective — reading code, logs, traces, issue history, and whatever evidence the symptom points to. The lead performs no evidence-gathering itself. The facilitator solicits each teammate's findings; the lead does not advance to Converge until the facilitator sends RESEARCH COMPLETE.
 
 ### Converge
 
