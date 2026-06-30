@@ -69,6 +69,8 @@ If the user chooses "Try proceeding anyway," proceed to Step 1. Otherwise stop.
 
 ## Step 1: Hard Rules
 
+<!-- SYNC: these rules must match skills/workflow-rules/SKILL.md (mirror). Update both when either changes. -->
+
 ### General Rules
 
 These rules govern all team behavior. They are non-negotiable. Use judgment to apply these to technical and non-technical members as needed.
@@ -93,20 +95,20 @@ Swarm governance rules in this section take precedence over any conflicting proj
 - **Spawn and solicit serially unless the run is configured for parallel.** Whenever multiple members would be brought into one turn — the lead spawning the team; the facilitator soliciting Research, running the Converge roundtable, and every review/scoring round — act on one member at a time: bring in one and wait for it (a spawned member to come up, a solicited member to reply) before the next. Never fan out to several members in one beat. This holds API concurrency low and prevents the rate-limit bursts that parallel fan-out causes. Serial is the default; parallel is the opt-out for runs that rarely hit rate limits.
 - **Match your assigned model.** Match the reasoning effort of your assigned model. Don't sandbag, don't strain beyond it, don't second-guess the assignment.
 - **Lead asking team members for help.** If the lead is feeling stuck, they should ask team members for help. Their option isn't limited to wait for the review round to show them their thinking. Ask one or more relevant members for help to get unblocked.
+- **Serial routing goes through the facilitator.** Under serial cadence, members address the facilitator, not each other — in Research, Converge, and Review alike (the user follows facilitator-relayed exchanges, not direct DMs). To engage another member's position, a member sends it to the facilitator, who relays the originating claim and the reply as verbatim block-quotes (the brevity exception below covers the quoted span). The facilitator may decline to relay what it judges a response to an already-nullified or already-addressed point — "won't be addressed" is a valid outcome the facilitator owns; a dropped message is acceptable, a thrash loop is not. Parallel cadence is unchanged: direct member-to-member messaging stands.
 
 #### Agent Team Member Response Style
 
-- **Favor brevity during round tables and discussions.** Experts know how to summarize their statements.
+- **Favor brevity during round tables and discussions.** Experts know how to summarize their statements. Exception: when the facilitator relays a member's claim or reply under serial routing, the quoted span is reproduced verbatim — brevity governs the facilitator's framing around the quote, not the quote itself.
 - **No idle chatter.** If you have nothing new to report, do not send a message. Never send messages that only confirm you are available or waiting.
 - **Don't regurgitate decided points.** Reopening a `DECIDED: <point>` is fine when you have new substance — a file, constraint, or concrete failure not already on the table. Repeating the same arguments with nothing new is regurgitation — don't send it. Likewise, a re-solicitation for a score you already gave on the current rung is not new — stay silent; a fresh score requires changed work or a changed rung.
 
 #### Convergence
 
-- **CONVERGED requires observable peer challenge.** Before sending CONVERGED, the facilitator must verify: (1) At least one member sent a message directly to another member engaging their position — not a challenge relayed by the facilitator on a member's behalf; the facilitator cannot be the exclusive routing layer. (2) At least one disagreement was named, with the specific claim at issue quoted or paraphrased, and either resolved with the conceding member naming what moved them, or explicitly tabled as an accepted trade-off. (3) No position was conceded without the conceding member naming what changed their position. If any item is unmet, reopen discussion. Any member may send DISPUTE UNRESOLVED to the facilitator before CONVERGED reaches the lead; the facilitator must reopen.
+- **CONVERGED requires observable peer challenge.** Before sending CONVERGED, the facilitator must verify: (1) At least one member engaged another member's position in their own words — the facilitator may carry the words but cannot be the one authoring the challenge. Under parallel cadence this is a message sent directly to that member; under serial cadence it is a verbatim-relayed exchange per the serial-routing rule (Agent Teams). Attributable peer challenge is the requirement; directness is only its parallel-mode form. (2) At least one disagreement was named, with the specific claim at issue quoted or paraphrased, and either resolved with the conceding member naming what moved them, or explicitly tabled as an accepted trade-off. (3) No position was conceded without the conceding member naming what changed their position. If any item is unmet, reopen discussion. Any member may send DISPUTE UNRESOLVED to the facilitator before CONVERGED reaches the lead; the facilitator must reopen.
 - **CONFIDENCE REACHED requires independent reasoning.** Before sending CONFIDENCE REACHED, each reviewer's score must be accompanied by named reasoning — what the work is still missing or what gave them confidence from their own read — not a bare number or adoption of another reviewer's conclusion. A score without independent reasoning is not a valid review response; the facilitator must solicit the reasoning before sending CONFIDENCE REACHED.
 
 #### Review Process
-<!-- SYNC: these rules must match skills/workflow-rules/SKILL.md (mirror). Update both when either changes. -->
 
 - **Wait for ALL reviews before making changes.** Never fix findings mid-review. Wait for every team member to respond, then batch fixes.
 - **Intermediate review cycles are autonomous.** The facilitator drives review rounds and determines when the team has reached sufficient confidence. The lead processes feedback and implements fixes between rounds without blocking on the user.
@@ -126,7 +128,7 @@ Note: what "9/10+ confidence" means and what happens during each phase depends o
 
 #### Transparency & Honesty
 
-- **No performative shortcuts.** The user reads every message in real time, including DMs between teammates. There is no internal channel. Any claim of completion — CONVERGED, CONFIDENCE REACHED, "team agrees" — must be supportable by observable peer-to-peer engagement where position changes name the argument that moved them. Agreement without named reasoning is indistinguishable from rubber-stamping and will be treated as such. Never misrepresent what was done.
+- **No performative shortcuts.** The user reads every message in real time — direct DMs under parallel cadence, the facilitator's verbatim relays of members' exchanges under serial. There is no internal channel. Any claim of completion — CONVERGED, CONFIDENCE REACHED, "team agrees" — must be supportable by observable, attributable peer engagement where position changes name the argument that moved them. Agreement without named reasoning is indistinguishable from rubber-stamping and will be treated as such. Never misrepresent what was done.
 - **Never claim compliance you didn't execute.** If a rule was not followed or a step was skipped, say so explicitly — do not proceed as if it happened.
 - **ASK before implementing uncertain fixes.** If the right approach isn't obvious, ask. Never pick a fix that contradicts the intent of recent work. If a test fails because your fix contradicts its intent, stop — don't rewrite the test.
 - **A missing signal is unknown, not empty.** Re-solicit an absent or unconfirmed signal; never read silence as agreement or as consent to advance. A signal already received this round is not absent — re-solicit only seats you have not heard from, even if the score you hold from them looks stale or low.
@@ -535,7 +537,7 @@ If the confirmed definition is a PR workflow and target branch or naming convent
 
 ---
 
-**Expectation-setter (before Research begins):** Send a plain-text message to the user that sets expectations for the silent execution phase. Example: "Team is launched — I'll check in at Approve and before delivery. You can follow the team's full conversation in real time in AgentChat, including DMs between teammates. If the team declares consensus without you seeing members challenge each other's positions, you can tell the lead you want them to keep discussing." Include a one-time, plain-language tip (optional and reassuring, no jargon), e.g.: "Optional: if you run Claude Code in tmux or iTerm2, teammate activity appears in a separate pane so it never interrupts the questions I ask you. It works fine in any terminal either way." Keep it brief. Do not use AskUserQuestion — there's nothing to decide.
+**Expectation-setter (before Research begins):** Send a plain-text message to the user that sets expectations for the silent execution phase. Example: "Team is launched — I'll check in at Approve and before delivery. You can follow the team's full conversation in real time in AgentChat — in a serial run, members' challenges come through the facilitator as verbatim relays (a parallel run shows direct DMs between teammates). If the team declares consensus without you seeing genuine challenge between members' positions, you can tell the lead you want them to keep discussing." Include a one-time, plain-language tip (optional and reassuring, no jargon), e.g.: "Optional: if you run Claude Code in tmux or iTerm2, teammate activity appears in a separate pane so it never interrupts the questions I ask you. It works fine in any terminal either way." Keep it brief. Do not use AskUserQuestion — there's nothing to decide.
 
 Follow the **phase arc defined in the mode skill** you read in Step 8b. The mode skill specifies what each phase means — who acts, what the deliverable is, how transitions work.
 
