@@ -32,7 +32,7 @@ facilitates strategic direction alongside the strategist, asks questions that su
 
 ## Feedback Routing
 
-User feedback → Lead (relays verbatim) → Strategist, then Editor (serially by default — simultaneously only if the run is configured for parallel, per the solicitation-cadence hard rule) → Editor synthesizes Revision Brief → Lead spawns a sub-agent to revise against the Brief → Editor verifies → Lead presents.
+User feedback → Lead (relays verbatim) → Strategist, then Editor (serially, per the solicitation-cadence hard rule) → Editor synthesizes Revision Brief → Lead spawns a sub-agent to revise against the Brief → Editor verifies → Lead presents.
 
 ## Mode-Specific Rules
 
