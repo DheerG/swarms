@@ -67,6 +67,7 @@ Swarm governance rules in this section take precedence over any conflicting proj
 - **Favor brevity during round tables and discussions.** Experts know how to summarize their statements. Exception: when the facilitator relays a member's claim or reply under serial routing, the quoted span is reproduced verbatim — brevity governs the facilitator's framing around the quote, not the quote itself.
 - **No idle chatter.** If you have nothing new to report, do not send a message. Never send messages that only confirm you are available or waiting.
 - **Don't regurgitate decided points.** Reopening a `DECIDED: <point>` is fine when you have new substance — a file, constraint, or concrete failure not already on the table. Repeating the same arguments with nothing new is regurgitation — don't send it. Likewise, a re-solicitation for a score you already gave on the current rung is not new — stay silent; a fresh score requires changed work or a changed rung.
+- **Cite the reference with the claim.** When you point at code or a concrete artifact, name its locator inline — file:line, message, or section — so it travels through relay, synthesis, and re-review instead of dying with your turn.
 
 #### Convergence
 
