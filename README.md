@@ -51,7 +51,7 @@ Restart Claude Code so the plugin and the flag take effect, then run `/swarm:cod
 Three moments need you. The rest runs itself.
 
 1. **Tell it what you want** — 1-2 sentences describing the outcome. It has the ability to refine the outcome with you and work around prompting gotchas that would normally result in poor code.
-2. **Approve the plan** — and, mid-run, the approach the team converged on. Nothing irreversible happens without your sign-off.
+2. **Approve the team and the plan** — the suggested specialists (swap or add members by pointing at them), the plan, and, mid-run, the approach the team converged on. Nothing irreversible happens without your sign-off.
 3. **Decide how to finish** — when the team hits the bar, you choose to refine further or ship; you see the result, not the debate, though you can follow it live in [AgentChat](https://github.com/DheerG/agent-chat) if you want to.
 
 You see the whole plan before a single agent runs:
@@ -61,17 +61,16 @@ You see the whole plan before a single agent runs:
 > **Mode:** Code
 > **Outcomes:** (your words, verbatim)
 > **Team:** lead (your Claude session) + Principal Engineer facilitator + specialists for the work
-> **Cost tier:** picked at the Launch buttons below
+> **Cost tier:** Ultra
 > **Ship definition:** Create a feature branch from main, commit, push, open PR
 >
 > ---
 > **Is this plan final, or do you have remaining inputs?**
 >
-> - Launch — Ultra (Recommended) — *Plan is final — full team on the stronger model*
-> - Launch — Balanced — *Plan is final — cheaper model for members*
+> - Launch the team — *Plan is final — start creating the team now*
 > - I have changes — *Let me adjust outcomes, members, or settings first*
 
-Nothing runs until you pick a Launch option.
+Nothing runs until you pick "Launch the team" — and before this plan you've already picked the cost tier and approved the team member by member.
 
 ---
 

@@ -44,9 +44,9 @@ skills/independent-review-loop/  # Independent pre-delivery review loop — Code
 
 ### How launch.md Works
 
-Step 0 (pre-flight) → Step 1 (invoke `swarm:workflow-rules` — the governance spec) → Step 2 (outcomes + silent auto-config: mode inference, suggest-members, no lead research) → Step 7 (confirmation — the single gate; the Launch options carry the cost tier: "Launch — Ultra (Recommended)" / "Launch — Balanced" / "I have changes") → Step 8 (spawn and execute).
+Step 0 (pre-flight) → Step 1 (invoke `swarm:workflow-rules` — the governance spec) → Step 2 (outcomes → explicit tier pick "Defaults — Ultra" / "Defaults — Balanced" → silent mode inference + suggest-members → team approval "Does this team look right?") → Step 7 (confirmation — "Launch the team" / "I have changes") → Step 8 (spawn and execute).
 
-Steps 3–6 are not interactive steps: they survive as the Adjustments Reference — compact definitions of mode, team, tier, and lead research used by Step 2's inference, the ambiguous-mode ask, and "I have changes" at Step 7. The numbering gap is deliberate — Step 7 and Step 8 labels are load-bearing cross-references throughout the plugin, so they keep their names.
+Steps 3–6 are definitions, not a walked sequence: Step 2 drives the two user-answered questions (tier, team); mode and lead research default silently; "I have changes" at Step 7 reuses the same definitions. Three gates stand between outcomes and spawn — tier, team, launch — and inline `$ARGUMENTS` outcomes exempt none of them (that skip caused a real regression: a team spun up without the tier ever being asked). Step 7 and Step 8 labels are load-bearing cross-references throughout the plugin, so they keep their names.
 
 `$ARGUMENTS` is substituted by Claude Code before the model sees the prompt. If the user passes args to `/swarm:launch`, they appear in the `## User-Provided Context` section and the outcomes question is skipped. Mode is inferred from the outcomes when unambiguous. Shortcut commands read launch.md via `${CLAUDE_PLUGIN_ROOT}` and execute it with mode pre-set and a streamlined outcomes flow.
 
