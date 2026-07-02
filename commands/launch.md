@@ -114,7 +114,7 @@ Once the user picks, configure silently and bring the team forward for approval 
 1. **Mode**: Infer from the outcomes per the Step 3 reference. If genuinely ambiguous, ask just the Step 3 mode question — one question — then continue in the same response.
 2. **Cost tier**: the one the user selected — Ultra or Balanced.
 3. **Lead research**: No.
-4. **Team**: You MUST use the **Skill** tool to invoke `swarm:suggest-members`, passing the inferred mode and the outcomes as the `args` parameter (e.g., "Mode: Writing\n\n[outcomes]"). Do NOT compose the team yourself. Then present the skill's suggestion and ask the Step 4 team question ("Does this team look right?") — invoke the skill, present the suggestion, and call AskUserQuestion in the same response, with no intervening prose or pause.
+4. **Team**: You MUST use the **Skill** tool to invoke `swarm:suggest-members`, passing the inferred mode and the outcomes as the `args` parameter (e.g., "Mode: Writing\n\n[outcomes]"). Do NOT compose the team yourself. Then present the skill's suggestion and ask the Step 4 team question ("Does this team look right?") — invoke the skill, present the suggestion, and call AskUserQuestion in the same response, with no intervening prose or pause. Presenting means carrying the full roster — every member named, each with its identity line — inside the AskUserQuestion's own question text; a bare count, a prose-only roster, or a roster left in an earlier turn does not satisfy the gate.
 
 **STOP HERE. Wait for the team to be confirmed.** When the user confirms the team ("Yes, looks good" — or confirms it after adjustments), proceed in the same response to **Step 7 (Confirmation)** and present the full summary with AskUserQuestion.
 
@@ -153,7 +153,7 @@ Store the selected mode ("None of these" maps to General, the general-purpose fa
 
 ### Step 4: Team members
 
-The lead and the facilitator are always included. Present the `swarm:suggest-members` suggestion (per Step 2), then use **AskUserQuestion**:
+The lead and the facilitator are always included. Present the `swarm:suggest-members` suggestion (per Step 2) by carrying the full roster — every member named, with its identity line — inside the question text of the **AskUserQuestion** below, ahead of the question phrase: the user reads the modal, not the prose around it — a focus-capturing modal renders over same-turn prose, which can go unread, so prose is fallback/overflow only. A bare count, a prose-only roster, or an earlier-turn roster does not satisfy this gate.
 
 - question: "Does this team look right?"
 - header: "Team"
@@ -163,7 +163,7 @@ The lead and the facilitator are always included. Present the `swarm:suggest-mem
   - label: "I want to adjust"
     description: "Swap a member, add more members, or remove some"
 
-**If "I want to adjust"**: ask what to change (free text) — the user can point at a member to swap, name additional members by role (e.g., "security reviewer, test engineer") or focus area, or trim the roster. Apply the changes, then confirm again with the same question. Advisory: 3-5 total members is the sweet spot; up to 8 is viable. The same adjust flow serves a team change requested via "I have changes" at Step 7.
+**If "I want to adjust"**: ask what to change (free text) — the user can point at a member to swap, name additional members by role (e.g., "security reviewer, test engineer") or focus area, or trim the roster. Apply the changes, re-render the updated roster the same way, then confirm again with the same question. Advisory: 3-5 total members is the sweet spot; up to 8 is viable. The same adjust flow serves a team change requested via "I have changes" at Step 7.
 
 ### Step 5: Cost tier
 
@@ -204,7 +204,7 @@ Present a summary of the team plan:
 >
 > **Rules:** Active
 
-Then use the **AskUserQuestion** tool:
+Then use the **AskUserQuestion** tool, carrying the full Team Plan verbatim inside the question text itself — decision-critical lines (Team, Cost tier) front-loaded, never split into the option descriptions (length-limited): the user reads the modal, not the prose around it, so the summary block above is fallback/overflow only. An elided, summarized, or prose-only plan does not satisfy the gate:
 
 - question: "Is this plan final, or do you have remaining inputs?"
 - header: "Confirm"
@@ -226,7 +226,7 @@ Then use the **AskUserQuestion** tool:
 
 Once the user confirms, execute the following:
 
-**Before proceeding: did you render the Step 7 summary block (the full Team Plan with Mode, Outcomes, Team, Cost tier, Ship definition, and Rules) AND receive an explicit "Launch the team" selection — via AskUserQuestion, or the user's explicit typed answer to its durable plain-text restatement if that modal AFK-timed-out? If no to either, go back and do it now. Outcomes passed inline as `$ARGUMENTS` do not exempt any gate — the Step 2 setup pick, the Step 4 team confirmation, and this Step 7 launch confirmation all still happen.**
+**Before proceeding: did you carry the Step 7 summary block (the full Team Plan with Mode, Outcomes, Team, Cost tier, Ship definition, and Rules) inside the Launch ask's own question text AND receive an explicit "Launch the team" selection — via AskUserQuestion, or the user's explicit typed answer to its durable plain-text restatement if that modal AFK-timed-out? If no to either, go back and do it now. Outcomes passed inline as `$ARGUMENTS` do not exempt any gate — the Step 2 setup pick, the Step 4 team confirmation, and this Step 7 launch confirmation all still happen.**
 
 ### 8a: Create the team
 
