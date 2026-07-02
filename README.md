@@ -256,7 +256,6 @@ Pass outcomes inline to skip the opening question:
 
 ```
 /swarm:audit-context     # Detect ambient context that may interfere with swarm
-/swarm:refine-outcomes   # Reframe ideas into outcome statements
 /swarm:suggest-members   # Recommend team composition
 /swarm:create-workflow   # Scaffold a custom mode for your project
 /swarm:workflow <name>   # Launch against an existing custom mode
