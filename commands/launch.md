@@ -141,7 +141,7 @@ These apply to the team lead only.
 - **Never enter plan mode.** If a plan exists, implement it directly.
 - **Create the team per Step 8a.** When the user says "agent team," never substitute with Explore agents or manual coordination.
 - **Never cut corners on agent teams.** Spawn the full team as defined. Never apply changes yourself to save time. Never skip pipeline stages.
-- **Step 7 is mandatory on every launch.** Present the full summary block and receive an explicit "Launch the team" response — via AskUserQuestion, or (if that modal AFK-timed-out) the user's explicit typed answer to its durable plain-text restatement — before any Step 8 action; the Defaults path does not exempt you.
+- **Step 7 is mandatory on every launch.** Present the full summary block and receive an explicit Launch selection (either tier) — via AskUserQuestion, or (if that modal AFK-timed-out) the user's explicit typed answer to its durable plain-text restatement — before any Step 8 action; no path exempts you.
 - **Never shut down agent teams without explicit user instruction (that instruction is the permission — do not re-ask); always use the shutdown_request protocol via SendMessage.**
 - **Being asked to commit, create a PR, ship, deliver, etc. is not a shutdown request.**
 - **Shutdown protocol.** Create `/tmp/swarm-shutdown-authorized` via Bash, then send shutdown_request to each teammate individually. If the hook blocks, follow its instructions.
@@ -171,40 +171,27 @@ $ARGUMENTS
 
 **Outcome reflection (replaces the verbatim echo).** Once the outcome is captured — from `$ARGUMENTS` or the question above — You MUST use the **Skill** tool to invoke `swarm:reflect-outcome`, passing the user's exact words as the `args` parameter. Do NOT perform this step yourself, and do NOT author the reflection's wording — the skill returns it pre-formed so your own framing never enters the user's view. Apply its result:
 
-- **`NO FORK`** (the common case): show the user nothing — no echo, no "are these right?" beat, no confirmation gate. Carry the outcome forward so it is *visibly* the premise of the next question that has a natural slot for it: the Step 3 mode-inference line ("This looks like Code work — building \<the outcome\> — right?") on the configure path, or the Step 7 summary where a defaults path infers mode silently. The user is heard by seeing their own words steer that question, not by a confirmation beat. They can still adjust at Step 7.
+- **`NO FORK`** (the common case): show the user nothing — no echo, no "are these right?" beat, no confirmation gate. Carry the outcome forward so it is *visibly* the premise of the Step 7 summary, which restates it verbatim. The user is heard by seeing their own words steer the plan, not by a confirmation beat. They can still adjust at Step 7.
 - **A ready-to-render fork question**: present it with **AskUserQuestion** exactly as returned — transport it, never reword the question or the option labels, and do not stack any other question in the same turn. Resolve the user's pick per the skill's fork-resolution rule: Option A keeps their wording as the verbatim (nothing recorded); Option B re-authors it — ask, with an open prompt, for a restatement in their own words, which re-enters the reflection and becomes the verbatim. Store no separate supplement. (Option A surfaces as a "Scope:" line in the Step 7 summary — see Step 7.)
 
 **Verbatim capture rule (mandatory).** The user's original words are the PRIMARY reference for all downstream team briefings. Capture them verbatim and store as a literal string for Step 8c and 8d substitution. Any deviation between the user's exact words and what appears in team briefs is a hard rules violation. The user's most recent self-authored wording is the verbatim: if the user re-authors at the reflection fork (Option B), that restatement becomes the verbatim and flows unchanged — the system never edits the user's words, only the user revises them.
 
-**After the outcome reflection** (the fork resolved, or `NO FORK` carried forward), use the **AskUserQuestion** tool:
+**After the outcome reflection** (the fork resolved, or `NO FORK` carried forward), configure the team silently — do NOT ask a question per setting:
 
-- question: "How would you like to set up the team?"
-- header: "Setup"
-- options:
-  - label: "Defaults — Ultra (Recommended)"
-    description: "Auto-configure mode, team, and research. Full team on the stronger model — reliable rule-following."
-  - label: "Defaults — Balanced"
-    description: "Same auto-config, but members run a cheaper model — lower cost, less reliable rule-following."
-  - label: "Configure each step"
-    description: "Choose mode, team members, tier, and research individually."
+1. **Mode**: Infer from the outcomes per the Step 3 reference. If genuinely ambiguous, ask just the Step 3 mode question — one question — then continue in the same response.
+2. **Team**: You MUST use the **Skill** tool to invoke `swarm:suggest-members`, passing the inferred mode and the outcomes as the `args` parameter (e.g., "Mode: Writing\n\n[outcomes]"). Do NOT compose the team yourself.
+3. **Lead research**: No.
+4. **Cost tier**: picked by the user at the Step 7 gate — the Launch options carry the tier, so no one lands on a tier they didn't pick.
 
-The two Defaults options differ only in the cost tier they apply; both make the tier an explicit choice rather than a silent default, so no one lands on a tier they didn't pick.
-
-**If "Defaults — Ultra" or "Defaults — Balanced"**: Apply these defaults silently (do NOT ask each question):
-1. **Mode**: Infer from outcomes (Writing/Code/Triage/General per Step 3 rules). If genuinely ambiguous, ask just this one question using Step 3's AskUserQuestion. Once answered, immediately invoke suggest-members and proceed to Step 7 in the same response — do not pause again.
-2. **Team**: Invoke `swarm:suggest-members` with the inferred mode and outcomes.
-3. **Cost tier**: the one the user selected — Ultra or Balanced.
-4. **Lead research**: No.
-
-Then, in the same response — without pausing or waiting for user input — skip to **Step 7 (Confirmation)** and present the full summary with AskUserQuestion. The user reviews everything and can adjust before launch.
-
-**If "Configure each step"**: Proceed to Step 3 and follow Steps 3–6 in order, then Step 7.
-
-**STOP HERE. Wait for the user's selection.**
+Then, in the same response — without pausing or waiting for user input — proceed to **Step 7 (Confirmation)** and present the full summary with AskUserQuestion. The user reviews everything there and can adjust anything before launch.
 
 ---
 
-## Step 3: Select Mode
+## Steps 3–6: Adjustments Reference
+
+Steps 3–6 are not asked as individual questions — Step 2 configures them silently and Step 7 is the single gate. These definitions serve Step 2's mode inference, the ambiguous-mode ask, and "I have changes" at Step 7. (The numbering gap is deliberate: Step 7 and Step 8 labels are cross-referenced throughout the plugin.)
+
+### Step 3: Mode
 
 Infer the mode from the user's stated outcomes — whether they came from `$ARGUMENTS` or from the Step 2 Q&A:
 - Writing outcomes (articles, blog posts, essays, documentation, copy, narrative) → **Writing**
@@ -215,20 +202,7 @@ Infer the mode from the user's stated outcomes — whether they came from `$ARGU
 
 When an outcome could be Code or Triage, the deciding question is whether the user asked for a change: a request to fix, build, or refactor is **Code**; a request only to diagnose, explain, or assess is **Triage**.
 
-**If inference is clear**, use **AskUserQuestion** to confirm:
-
-- question: "This looks like [Writing / Code / Triage / General] work — building [restate the user's outcome in one short phrase, in their own terms] — is that right?" (the restated outcome is how the user sees their words carried forward; keep it to their wording, do not add scope)
-- header: "Mode"
-- options:
-  - label: "Yes, [inferred mode]"
-    description: "[one-line description of that mode]"
-  - label: "No, let me choose"
-    description: "Show me the mode options"
-
-<!-- Mode-confirm relocation to Step 7 was evaluated and DEFERRED: the as-built ordering already removes the fork-then-mode adjacency the relocation targeted — on Defaults paths mode is inferred silently (no modal here); on Configure the Step-2 setup-choice modal sits between the Step-2 outcome fork and this mode-confirm, breaking decision-momentum so a fork-resolution reflex-tap can't carry straight into mode. The Step-2 NO-FORK carry also routes its visible restatement through this line (the "building [outcome]" clause in the question above). The safeguard rides on that intervening beat: if a refactor reorders Step 2/3 or a shortcut command flattens this ordering, re-evaluate whether the relocation is needed. -->
-
-**If "Yes"**: store the inferred mode and proceed to Step 4.
-**If "No"** or **if ambiguous**: use **AskUserQuestion**:
+**Mode question** — only when inference is genuinely ambiguous, or the user asks to change the mode at Step 7 — use **AskUserQuestion**:
 
 - question: "What kind of work is this?"
 - header: "Mode"
@@ -242,83 +216,23 @@ When an outcome could be Code or Triage, the deciding question is whether the us
   - label: "None of these"
     description: "A general-purpose team for work that doesn't fit a specific mode"
 
-Store the selected mode ("None of these" maps to General, the general-purpose fallback). It informs: suggest-members guidance in Step 4, and the phase arc and team identity in Step 8.
+Store the selected mode ("None of these" maps to General, the general-purpose fallback). It informs suggest-members guidance and the Step 8 phase arc and team identity.
 
-**STOP HERE. Wait for the user's selection before proceeding to Step 4.**
+### Step 4: Team members
 
----
+The lead and the facilitator are always included. The team is the `swarm:suggest-members` suggestion from Step 2, shown in the Step 7 summary. If the user wants a different team ("I have changes"), ask them (as a regular text message) to describe the members they want — by role (e.g., "security reviewer, test engineer") or by focus area — apply the changes, and re-present the Step 7 summary. Advisory: 3-5 total members is the sweet spot; up to 8 is viable.
 
-## Step 4: Ask About Team Members
+### Step 5: Cost tier
 
-Use the **AskUserQuestion** tool:
+Picked by the user at the Step 7 gate — never a silent default:
+- **Ultra (Recommended)** — full team on the stronger model; reliable rule-following across the whole team.
+- **Balanced** — cheaper model for members; lower cost, less reliable rule-following. Good for well-scoped, lower-stakes work.
 
-- question: "How would you like to choose team members? (Lead and Principal Engineer are always included)"
-- header: "Team"
-- options:
-  - label: "Suggest a team for me (Recommended)"
-    description: "Use /swarm:suggest-members to recommend roles based on my outcomes"
-  - label: "I'll specify the team"
-    description: "I know which roles or focus areas I want"
+Step 8 uses the pick for the spawn-time `model` field.
 
-**If "I'll specify the team"**: Ask the user (as a regular text message) to describe the additional members they want — by role (e.g., "security reviewer, test engineer") or by focus area (e.g., "two agents focused on API design"). Advisory: 3-5 total members is the sweet spot, up to 8 is viable. Wait for their response. Present the team composition based on their input, then immediately use **AskUserQuestion**:
+### Step 6: Lead research
 
-- question: "Does this team look right?"
-- header: "Team"
-- options:
-  - label: "Yes, looks good"
-    description: "Proceed with this team composition"
-  - label: "I want to adjust"
-    description: "Let me add, remove, or change members"
-
-If adjusting, ask what they'd like to change (free text), apply changes, then confirm again with AskUserQuestion.
-
-**If "Suggest a team for me"**: You MUST use the **Skill** tool to invoke `swarm:suggest-members`, passing the confirmed outcomes from Step 2 AND the selected mode from Step 3 as the `args` parameter (e.g., "Mode: Writing\n\n[outcomes]"). Do NOT perform this step yourself. The required sequence: (1) invoke the skill, (2) present the skill's suggestion output to the user, (3) call AskUserQuestion — all in the same response, with no intervening plain-text summary, acknowledgment, or transitional prose between step 2 and step 3. Do NOT wait for user input before calling AskUserQuestion:
-
-- question: "Does this team look right?"
-- header: "Team"
-- options:
-  - label: "Yes, looks good"
-    description: "Proceed with this team composition"
-  - label: "I want to adjust"
-    description: "Let me add, remove, or change members"
-
-If adjusting, ask what they'd like to change (free text), apply changes, then confirm again with AskUserQuestion.
-
-**STOP HERE. Wait for the team composition to be confirmed before proceeding to Step 5.**
-
----
-
-## Step 5: Ask About Cost Tier
-
-Use the **AskUserQuestion** tool:
-
-- question: "Which cost tier?"
-- header: "Tier"
-- options:
-  - label: "Ultra (Recommended)"
-    description: "Full team on the stronger model — reliable rule-following across the whole team."
-  - label: "Balanced"
-    description: "Cheaper model for members — lower cost, less reliable rule-following. Good for well-scoped, lower-stakes work."
-
-Store the selection. Step 8 uses it for the spawn-time `model` field. Default: Ultra.
-
-**STOP HERE. Wait for the user's selection before proceeding to Step 6.**
-
----
-
-## Step 6: Ask About Lead Research
-
-Use the **AskUserQuestion** tool:
-
-- question: "Should the team lead be able to do research?"
-- header: "Research"
-- options:
-  - label: "No (Recommended)"
-    description: "Lead focuses on coordination — teammates handle research"
-  - label: "Yes"
-    description: "Lead can delegate research to Explore subagents in addition to teammates"
-
-**STOP HERE. Wait for the user's selection before proceeding to Step 7.**
+Default: **No** — the lead focuses on coordination; teammates handle research. **Yes** (only if the user asks for it) lets the lead delegate research to Explore subagents in addition to teammates.
 
 ---
 
@@ -341,7 +255,7 @@ Present a summary of the team plan:
 > 2. [facilitator title from mode skill] — Socratic facilitator, read-only
 > [3-N. Additional members — personality and behavioral identity, not task assignments or focus areas]
 >
-> **Cost tier:** [the selected tier — Ultra or Balanced]
+> **Cost tier:** [picked at the Launch gate below; if already picked on an earlier pass, show it]
 >
 > **Ship definition:** [for **Triage** mode, ship definition does not apply — show "In-session diagnosis — no branch, commit, or PR. Writing the diagnosis to an issue/Sentry is a per-run opt-in." For all other modes: if `.claude/swarm-ship.md` exists, show its contents in plain language — e.g., "Create a PR against main from branch feat/<description>". If it doesn't exist yet, show "Will be auto-detected before work begins."]
 >
@@ -352,14 +266,16 @@ Then use the **AskUserQuestion** tool:
 - question: "Is this plan final, or do you have remaining inputs?"
 - header: "Confirm"
 - options:
-  - label: "Launch the team"
-    description: "Plan is final — start creating the team now"
+  - label: "Launch — Ultra (Recommended)"
+    description: "Plan is final — full team on the stronger model; reliable rule-following."
+  - label: "Launch — Balanced"
+    description: "Plan is final — cheaper model for members; lower cost, less reliable rule-following."
   - label: "I have changes"
-    description: "Let me adjust outcomes, members, or settings first"
+    description: "Adjust outcomes, mode, members, tier, or research first."
 
-**If "Launch the team"**: Proceed to Step 8.
+**If "Launch — Ultra" or "Launch — Balanced"**: store the tier and proceed to Step 8.
 
-**If "I have changes"**: Ask what they'd like to change (free text). Apply the change using the relevant step definition (Steps 3–6), then re-present this confirmation summary. Repeat until the user launches.
+**If "I have changes"**: Ask what they'd like to change (free text). Apply the change using the relevant definition in the Steps 3–6 Adjustments Reference (a change to the outcomes re-enters Step 2's reflection), then re-present this confirmation summary. Repeat until the user launches.
 
 **STOP HERE. Do NOT proceed until the user explicitly confirms.**
 
@@ -369,7 +285,7 @@ Then use the **AskUserQuestion** tool:
 
 Once the user confirms, execute the following:
 
-**Before proceeding: did you render the Step 7 summary block (the full Team Plan with Mode, Outcomes, Team, Cost tier, Ship definition, and Rules) AND receive an explicit "Launch the team" selection — via AskUserQuestion, or the user's explicit typed answer to its durable plain-text restatement if that modal AFK-timed-out? If no to either, go back and do it now.**
+**Before proceeding: did you render the Step 7 summary block (the full Team Plan with Mode, Outcomes, Team, Cost tier, Ship definition, and Rules) AND receive an explicit Launch selection ("Launch — Ultra" or "Launch — Balanced") — via AskUserQuestion, or the user's explicit typed answer to its durable plain-text restatement if that modal AFK-timed-out? If no to either, go back and do it now.**
 
 ### 8a: Create the team
 

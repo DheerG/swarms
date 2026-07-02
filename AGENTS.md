@@ -44,9 +44,9 @@ skills/independent-review-loop/  # Independent pre-delivery review loop — Code
 
 ### How launch.md Works
 
-Step 0 (pre-flight) → Step 1 (universal hard rules) → Step 2 (outcomes + defaults/configure fork) → Step 3 (mode selection) → Step 4 (team members, mode-aware) → Step 5 (cost tier) → Step 6 (lead research toggle) → Step 7 (confirmation) → Step 8 (spawn and execute).
+Step 0 (pre-flight) → Step 1 (universal hard rules) → Step 2 (outcomes + silent auto-config: mode inference, suggest-members, no lead research) → Step 7 (confirmation — the single gate; the Launch options carry the cost tier: "Launch — Ultra (Recommended)" / "Launch — Balanced" / "I have changes") → Step 8 (spawn and execute).
 
-After outcomes are confirmed, Step 2 asks how to set up the team. The two Defaults options ("Defaults — Ultra (Recommended)" and "Defaults — Balanced") silently infer mode, suggest a team, and apply no lead research — making the cost tier an explicit pick rather than a silent default — then skip to Step 7 confirmation. The configure path walks through Steps 3–6 individually. Steps 3–6 also serve as reference definitions when the user says "I have changes" at Step 7.
+Steps 3–6 are not interactive steps: they survive as the Adjustments Reference — compact definitions of mode, team, tier, and lead research used by Step 2's inference, the ambiguous-mode ask, and "I have changes" at Step 7. The numbering gap is deliberate — Step 7 and Step 8 labels are load-bearing cross-references throughout the plugin, so they keep their names.
 
 `$ARGUMENTS` is substituted by Claude Code before the model sees the prompt. If the user passes args to `/swarm:launch`, they appear in the `## User-Provided Context` section and the outcomes question is skipped. Mode is inferred from the outcomes when unambiguous. Shortcut commands read launch.md via `${CLAUDE_PLUGIN_ROOT}` and execute it with mode pre-set and a streamlined outcomes flow.
 

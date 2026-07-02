@@ -61,16 +61,17 @@ You see the whole plan before a single agent runs:
 > **Mode:** Code
 > **Outcomes:** (your words, verbatim)
 > **Team:** lead (your Claude session) + Principal Engineer facilitator + specialists for the work
-> **Cost tier:** Ultra
+> **Cost tier:** picked at the Launch buttons below
 > **Ship definition:** Create a feature branch from main, commit, push, open PR
 >
 > ---
 > **Is this plan final, or do you have remaining inputs?**
 >
-> - Launch the team — *Plan is final — start creating the team now*
+> - Launch — Ultra (Recommended) — *Plan is final — full team on the stronger model*
+> - Launch — Balanced — *Plan is final — cheaper model for members*
 > - I have changes — *Let me adjust outcomes, members, or settings first*
 
-Nothing runs until you pick "Launch the team."
+Nothing runs until you pick a Launch option.
 
 ---
 
