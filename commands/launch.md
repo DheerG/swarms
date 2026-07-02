@@ -250,7 +250,7 @@ Follow **Spawn the facilitator** in the governance spec: Agent tool, `subagent_t
 
 ### 8d: Spawn additional team members
 
-Follow **Spawn additional team members** in the governance spec: one member at a time, `subagent_type: swarm-member`, `model` = `opus` if Ultra / `sonnet` if Balanced (the Step 7 tier pick). Brief each by pasting the spec's **Member Brief** template EXACTLY, filling [brackets]: the identity from the Step 7 approved roster, the user's request verbatim, the spec's General Rules section, and the roster. Do NOT add sections beyond the template.
+Follow **Spawn additional team members** in the governance spec: one member at a time, `subagent_type: swarm-member`, `model` = `opus` if Ultra / `sonnet` if Balanced (the tier the user picked at the Step 2 setup question, as shown in the Step 7 summary). Brief each by pasting the spec's **Member Brief** template EXACTLY, filling [brackets]: the identity from the Step 7 approved roster, the user's request verbatim, the spec's General Rules section, and the roster. Do NOT add sections beyond the template.
 
 ### 8e: Set up the run-state task list and pulse
 
