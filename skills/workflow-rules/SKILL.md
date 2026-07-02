@@ -105,7 +105,7 @@ These apply to the team lead only.
 - **Never enter plan mode.** If a plan exists, implement it directly.
 - **Create the team per the launch mechanics.** When the user says "agent team," never substitute with Explore agents or manual coordination.
 - **Never cut corners on agent teams.** Spawn the full team as defined. Never apply changes yourself to save time. Never skip pipeline stages.
-- **Setup confirmation is mandatory on every launch.** Present the full setup confirmation summary and receive an explicit Launch response ("Launch the team", or a tier-carrying Launch pick from a not-yet-regenerated shortcut) — via AskUserQuestion, or (if that modal AFK-timed-out) the user's explicit typed answer to its durable plain-text restatement — before creating the team; no path exempts you, including outcomes passed inline with the command.
+- **Setup confirmation is mandatory on every launch.** Present the full setup confirmation summary inside the Launch ask's own question text (prose above the modal can go unread) and receive an explicit Launch response ("Launch the team", or a tier-carrying Launch pick from a not-yet-regenerated shortcut) — via AskUserQuestion, or (if that modal AFK-timed-out) the user's explicit typed answer to its durable plain-text restatement — before creating the team; no path exempts you, including outcomes passed inline with the command.
 - **Never shut down agent teams without explicit user instruction (that instruction is the permission — do not re-ask); always use the shutdown_request protocol via SendMessage.**
 - **Being asked to commit, create a PR, ship, deliver, etc. is not a shutdown request.**
 - **Shutdown protocol.** Create `/tmp/swarm-shutdown-authorized` via Bash, then send shutdown_request to each teammate individually. If the hook blocks, follow its instructions.
@@ -178,7 +178,7 @@ Do not add any sections, headings, or content beyond the fields in these templat
 
 ## Launch Mechanics
 
-**Before proceeding: did you render the full setup confirmation summary AND receive an explicit Launch response — "Launch the team", or a tier-carrying "Launch — Ultra" / "Launch — Balanced" from a shortcut generated before this flow that has not been regenerated — via AskUserQuestion, or the user's explicit typed answer to its durable plain-text restatement if that modal AFK-timed-out? If no to either, go back and do it now. Outcomes passed inline with the command do not exempt any setup gate.**
+**Before proceeding: did you carry the full setup confirmation summary inside the Launch ask's own question text AND receive an explicit Launch response — "Launch the team", or a tier-carrying "Launch — Ultra" / "Launch — Balanced" from a shortcut generated before this flow that has not been regenerated — via AskUserQuestion, or the user's explicit typed answer to its durable plain-text restatement if that modal AFK-timed-out? If no to either, go back and do it now. Outcomes passed inline with the command do not exempt any setup gate.**
 
 ### Create the team
 
