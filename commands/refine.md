@@ -10,7 +10,7 @@ Recursive refinement on an existing branch and pull request. Skips Research/Conv
 
 Pass outcomes inline (`/swarm:refine <outcomes>`) or run without arguments to be prompted.
 
-Read `${CLAUDE_PLUGIN_ROOT}/commands/launch.md` for Step 0 (pre-flight), Step 1 (hard rules), Steps 8a–8e (team creation, member spawning, pulse setup), and the **Universal rules that apply across all modes** in Step 8f — especially the **Live-team gate prompts** rule (the AFK-timeout / durable plain-text-restatement recovery), which governs this command's decision gates (Finish, ship-approval) too. This command replaces Steps 2–7 and overrides Step 8f's phase arc — not those universal rules.
+Read `${CLAUDE_PLUGIN_ROOT}/commands/launch.md` for Step 0 (pre-flight), Step 1 (invoke `swarm:workflow-rules` — the governance spec), Steps 8a–8e (team creation, member spawning, pulse setup), and the **Universal rules that apply across all modes** in Step 8f — especially the governance spec's **Live-team gate prompts** rule (the AFK-timeout / durable plain-text-restatement recovery), which governs this command's decision gates (Finish, ship-approval) too. This command replaces Steps 2–7 and overrides Step 8f's phase arc — not those universal rules.
 
 **No lead research unless enabled.** The pre-flight reads below are housekeeping, not research — they run unconditionally (analogous to launch.md's ship-definition detection). All other research is delegated to teammates.
 
@@ -69,7 +69,7 @@ $ARGUMENTS
    >
    > **Phase arc:** Review → Refine → Deliver
    >
-   > **Ship definition:** [contents of `.claude/swarm-ship.md` if present, otherwise auto-detect per launch.md Step 8f rules]
+   > **Ship definition:** [contents of `.claude/swarm-ship.md` if present, otherwise auto-detect per the governance spec's ship definition check]
    >
    > **Rules:** Active
 
@@ -79,7 +79,7 @@ $ARGUMENTS
 
    If the user picks "I have changes," surface the recoverability scope before re-prompting: the diff base (`<base>`) is inferred from the open PR or falls back to the repo's default branch and cannot be changed from this prompt. To use a different base, open a PR with the correct base branch or check out a different branch. Outcomes can be re-stated by re-entering Step 2; roster and tier are fixed for `/swarm:refine` and not adjustable.
 
-4. **Launch.** Follow launch.md Step 8a (create the team — TeamCreate or implicit spawn per Claude Code version), Step 8b (invoke `swarm:code-mode`), Steps 8c–8d (spawn the four members named in the roster above), Step 8e (pulse). The `swarm:code-mode` skill returns the full Code-mode spec — for this command, **apply only the Refine and Deliver phase definitions from that spec; ignore the Research, Converge, Approve, Execute, and Review phase definitions, which are superseded by the inline arc in Step 5 below.** When pasting the user's input into briefings — the `[paste the user's original $ARGUMENTS or Step 2 input — full text, unmodified]` slot in the launch.md 8c/8d templates — substitute with: confirmed outcomes verbatim, then a `---` divider line, then `Branch under review: <branch>`, then raw `gh pr view` output (or `(no open PR detected)`), then a `---` divider line, then raw `git diff <base>...HEAD` output. **Paste raw output only — no lead-authored framing, commentary, or summary around the captures.** Do not add sections beyond the briefing template.
+4. **Launch.** Follow launch.md Step 8a (create the team — implicit at first spawn), Step 8b (invoke `swarm:code-mode`), Steps 8c–8d (spawn the four members named in the roster above), Step 8e (pulse). The `swarm:code-mode` skill returns the full Code-mode spec — for this command, **apply only the Refine and Deliver phase definitions from that spec; ignore the Research, Converge, Approve, Execute, and Review phase definitions, which are superseded by the inline arc in Step 5 below.** When pasting the user's input into briefings — the `[paste the user's original input — full text, unmodified]` slot in the governance spec's briefing templates (used at launch.md 8c/8d) — substitute with: confirmed outcomes verbatim, then a `---` divider line, then `Branch under review: <branch>`, then raw `gh pr view` output (or `(no open PR detected)`), then a `---` divider line, then raw `git diff <base>...HEAD` output. **Paste raw output only — no lead-authored framing, commentary, or summary around the captures.** Do not add sections beyond the briefing template.
 
    After spawning, send the user a plain-text expectation-setter so they aren't dropped into silence (mirrors launch.md Step 8f). Example: "Team is launched — reviewers will inspect the diff and PR against the outcomes, and I'll check in when the first review round is in." If you reference any optional companion tooling (e.g., AgentChat for live agent-to-agent conversation), hedge it as optional ("if you have it installed") so first-time users don't think they're missing something essential. Keep it brief, use plain language, and do not use AskUserQuestion. Avoid internal scoring vocabulary like "rung 9" — first-time users have not seen it before.
 
