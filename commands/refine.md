@@ -10,7 +10,7 @@ Recursive refinement on an existing branch and pull request. Skips Research/Conv
 
 Pass outcomes inline (`/swarm:refine <outcomes>`) or run without arguments to be prompted.
 
-Read `${CLAUDE_PLUGIN_ROOT}/commands/launch.md` for Step 0 (pre-flight), Step 1 (hard rules), and Steps 8a–8e (team creation, member spawning, pulse setup). This command replaces Steps 2–7 and overrides Step 8f.
+Read `${CLAUDE_PLUGIN_ROOT}/commands/launch.md` for Step 0 (pre-flight), Step 1 (hard rules), Steps 8a–8e (team creation, member spawning, pulse setup), and the **Universal rules that apply across all modes** in Step 8f — especially the **Live-team gate prompts** rule (the AFK-timeout / durable plain-text-restatement recovery), which governs this command's decision gates (Finish, ship-approval) too. This command replaces Steps 2–7 and overrides Step 8f's phase arc — not those universal rules.
 
 **No lead research unless enabled.** The pre-flight reads below are housekeeping, not research — they run unconditionally (analogous to launch.md's ship-definition detection). All other research is delegated to teammates.
 
