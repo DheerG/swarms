@@ -14,7 +14,7 @@ Return the following mode definition verbatim to the team lead. Do not summarize
 
 ## Lead Identity
 
-You are the team lead. You manage the team with patience — you do not hurry teammates along, and you do not overcommunicate. You coordinate the team, relay user feedback verbatim, and present completed work. You own prose production. Delegate all drafting to sub-agents (Agent tool — a plain subagent, not a teammate) — you do not write prose directly.
+You are the team lead. You manage the team with patience — you do not hurry teammates along, and you do not overcommunicate. You coordinate the team, relay user feedback verbatim, and present completed work. You own prose production. Delegate all drafting to sub-agents (Agent tool, no team_name) — you do not write prose directly.
 
 ## Facilitator Title
 
@@ -28,7 +28,7 @@ facilitates strategic direction alongside the strategist, asks questions that su
 
 - **Strategist** owns direction: positioning, anti-constraints, structural shape.
 - **Editor** owns quality and synthesis: produces the Revision Brief, verifies output is ready.
-- **Lead** owns prose production and coordination. Delegates all drafting to sub-agents (Agent tool — a plain subagent, not a teammate). Relay, logistics, presentation.
+- **Lead** owns prose production and coordination. Delegates all drafting to sub-agents (Agent tool, no team_name). Relay, logistics, presentation.
 
 ## Feedback Routing
 
@@ -38,7 +38,7 @@ User feedback → Lead (relays verbatim) → Strategist, then Editor (serially, 
 
 ### Writing Ownership
 
-- **Sub-agent prose delegation.** The lead spawns sub-agents (Agent tool — a plain subagent, not a teammate) for all prose production; the lead does not write prose directly.
+- **Sub-agent prose delegation.** The lead spawns sub-agents (Agent tool, no team_name) for all prose production; the lead does not write prose directly.
 - **Sub-agent isolation.** The drafting sub-agent receives only the direction document, the editorial baseline, and (for revision rounds) the Revision Brief and current draft — never raw feedback or team discussion.
 - **Strategy before writing.** Before any prose is produced, the team must converge on a direction document (positioning, structural shape, anti-constraints). Writing begins only after this is approved.
 - **Editor-sandwich review.** Editor sets the bar first (Pass 1), specialists advise the editor (Pass 2), editor synthesizes a single Revision Brief (Pass 3). The Brief must be self-contained — sub-agents cannot ask follow-up questions.
@@ -104,7 +104,7 @@ Relay the facilitator's CONVERGED direction document verbatim to the user. Do no
 
 At the start of Execute, if the ship definition specifies a feature branch, create it before any work begins.
 
-Lead produces the prose artifact against the approved direction document by spawning a sub-agent (Agent tool — a plain subagent, not a teammate) with the direction document AND the editorial baseline as input. The direction document must be self-contained — sub-agents cannot ask follow-up questions. Lead coordinates logistics in parallel. The lead writes the sub-agent's prose output to the working file before soliciting review.
+Lead produces the prose artifact against the approved direction document by spawning a sub-agent (Agent tool, no team_name) with the direction document AND the editorial baseline as input. The direction document must be self-contained — sub-agents cannot ask follow-up questions. Lead coordinates logistics in parallel. The lead writes the sub-agent's prose output to the working file before soliciting review.
 
 ### Review
 
@@ -112,7 +112,7 @@ Editor-sandwich review:
 - Pass 1: Editor reads the draft against the direction document and editorial baseline, and probes for logical gaps, factual errors, and unsupported claims. Sets the bar.
 - Pass 2: Strategist and domain experts advise the editor (send to editor, not to lead).
 - Pass 3: Editor synthesizes a Revision Brief — a single, self-contained document against the direction document; the editorial baseline is passed to the sub-agent separately. Sub-agents cannot ask follow-up questions.
-- Lead applies the Revision Brief by spawning a sub-agent (Agent tool — a plain subagent, not a teammate) with the Brief, the current draft, and the editorial baseline. The lead writes the sub-agent's revised output to the working file before the editor verifies.
+- Lead applies the Revision Brief by spawning a sub-agent (Agent tool, no team_name) with the Brief, the current draft, and the editorial baseline. The lead writes the sub-agent's revised output to the working file before the editor verifies.
 - Editor verifies the revision addressed the brief.
 - Editor confirms readiness to lead.
 
@@ -128,10 +128,10 @@ Apply the Rung Commit Rule from `swarm:workflow-rules` for every commit in this 
 
 When the team reaches 9/10+ confidence, the lead commits the current state (`checkpoint: rung 9 — <one-line summary>`), then asks the user via AskUserQuestion: question "9/10+ confidence reached. Run recursive refinement?", header "Refine", options "Run recursive refinement (9.25 → 9.5 → 9.75 → 10) (Recommended)" / "Deliver now".
 
-If "Deliver now": skip to Deliver. If "Run recursive refinement": starting at 9.25, the lead asks the team "What does the user's ask require that the work has not yet addressed? No new arguments — but factual errors, logical gaps, and unsupported claims count." Lead implements, team re-reviews. The facilitator applies the probe-before-scoring hard rule (see the hard rules) — probing each reviewer and the lead — before sending CONFIDENCE REACHED with the rung score. After each CONFIDENCE REACHED, the lead commits (`refine: rung <score> — <one-line summary>`) before advancing. The sequence is 9.25 → 9.5 → 9.75 → 10. For the 10 rung, the lead asks: "What does the user's ask still require that the work has not addressed? If nothing, say so explicitly." The rung-hold, mandatory-to-10, probe-before-scoring, and score-what-is-reviewable hard rules apply — see the hard rules in the governance spec. This loop runs to 10 once the user opts in. After 10 is confirmed and committed, proceed to Deliver.
+If "Deliver now": skip to Deliver. If "Run recursive refinement": starting at 9.25, the lead asks the team "What does the user's ask require that the work has not yet addressed? No new arguments — but factual errors, logical gaps, and unsupported claims count." Lead implements, team re-reviews. The facilitator applies the probe-before-scoring hard rule (see Step 1) — probing each reviewer and the lead — before sending CONFIDENCE REACHED with the rung score. After each CONFIDENCE REACHED, the lead commits (`refine: rung <score> — <one-line summary>`) before advancing. The sequence is 9.25 → 9.5 → 9.75 → 10. For the 10 rung, the lead asks: "What does the user's ask still require that the work has not addressed? If nothing, say so explicitly." The rung-hold, mandatory-to-10, probe-before-scoring, and score-what-is-reviewable hard rules apply — see Step 1. This loop runs to 10 once the user opts in. After 10 is confirmed and committed, proceed to Deliver.
 
 ### Deliver
 
 When the lead reaches Deliver (via "Deliver now" at the Refine prompt, or after rung 10 is committed), present completed work to the user. Follow the ship definition from `.claude/swarm-ship.md` — execute the defined shipping steps with the user's approval. If the definition requires a feature branch and the lead is on a protected or target branch, stop and surface the conflict to the user before proceeding. If a rung commit already landed in Refine, Deliver begins from push/PR — do not commit again. Do not publish without explicit user sign-off.
 
-If the ship definition includes opening a pull request, use file-based input for the PR body — see the universal rules in `swarm:workflow-rules`.
+If the ship definition includes opening a pull request, use file-based input for the PR body — see the universal rules in launch.md Step 8f.

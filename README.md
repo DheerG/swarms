@@ -25,7 +25,7 @@ Swarm assembles a team of five to eight for the task: experienced engineers, plu
 
 ## Quick start
 
-Swarm is a [Claude Code](https://code.claude.com) plugin, so you'll need the CLI installed first (v2.1.178 or newer).
+Swarm is a [Claude Code](https://code.claude.com) plugin, so you'll need the CLI installed first.
 
 ```bash
 claude plugin marketplace add DheerG/swarms
@@ -61,17 +61,16 @@ You see the whole plan before a single agent runs:
 > **Mode:** Code
 > **Outcomes:** (your words, verbatim)
 > **Team:** lead (your Claude session) + Principal Engineer facilitator + specialists for the work
-> **Cost tier:** picked at the Launch buttons below
+> **Cost tier:** Ultra
 > **Ship definition:** Create a feature branch from main, commit, push, open PR
 >
 > ---
 > **Is this plan final, or do you have remaining inputs?**
 >
-> - Launch — Ultra (Recommended) — *Plan is final — full team on the stronger model*
-> - Launch — Balanced — *Plan is final — cheaper model for members*
+> - Launch the team — *Plan is final — start creating the team now*
 > - I have changes — *Let me adjust outcomes, members, or settings first*
 
-Nothing runs until you pick a Launch option.
+Nothing runs until you pick "Launch the team."
 
 ---
 
@@ -106,7 +105,7 @@ Implementation framing has the team comparing Redis and Memcached. Outcome frami
 
 ### Everything is a prompt
 
-Most agent frameworks bury what's actually running behind config and abstraction, so changing how the agents behave means digging through someone else's machinery. Swarm keeps the whole coordination system, from pre-flight through delivery, in readable markdown you can open:
+Most agent frameworks bury what's actually running behind config and abstraction, so changing how the agents behave means digging through someone else's machinery. Swarm keeps the whole coordination system, from pre-flight through delivery, in one readable markdown file you can open:
 
 ```markdown
 # /swarm:launch
@@ -114,7 +113,7 @@ Most agent frameworks bury what's actually running behind config and abstraction
 You are launching an agent team using the Swarm plugin. Follow every step below in exact order...
 ```
 
-No imports, no build step. To change how a team works, you edit the prompt. Read it all: the launch flow in [commands/launch.md](commands/launch.md), the governance rules in [skills/workflow-rules/SKILL.md](skills/workflow-rules/SKILL.md).
+No imports, no runtime composition. To change how a team works, you edit the prompt. Read the whole thing: [commands/launch.md](commands/launch.md).
 
 ### Recursive review until it's ready
 
@@ -179,7 +178,7 @@ It is **not** a task manager (no backlog, no tickets) or a workflow framework (n
 | **Writing** | Coordinates (can write) | Editorial Director | Writer isolation, structural + line pass |
 | **General** | Produces deliverable | Chief of Staff | Tailored to the deliverable type |
 
-Shortcuts skip the mode question: `/swarm:code`, `/swarm:triage`, `/swarm:write`. General is the fallback for work that fits no specific mode — `/swarm:launch` infers it; there is no shortcut for it.
+Shortcuts skip the mode question: `/swarm:code`, `/swarm:triage`, `/swarm:write`, `/swarm:general`.
 
 | Tier | Members | Facilitator | When to use |
 |------|---------|-------------|-------------|
@@ -233,7 +232,8 @@ This isn't about chasing the token limit — team runs rarely fill the window �
 /swarm:code              # Code team — the primary use
 /swarm:triage            # Diagnose an issue without changing it
 /swarm:write             # Writing team
-/swarm:launch            # Interactive setup (any mode, including general-purpose teams)
+/swarm:general           # General team
+/swarm:launch            # Interactive setup (any mode)
 /swarm:onboard           # Walkthrough for new users
 ```
 

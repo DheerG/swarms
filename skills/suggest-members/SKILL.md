@@ -10,7 +10,7 @@ Suggest additional team members based on the user's outcomes and selected mode. 
 **Mode guidance:**
 - **Code mode** — suggest a mix of technical and domain-specific voices. Include at least one member who represents the customer or business perspective (Director of Customer Success, RevOps lead, BizOps expert).
 - **Writing mode** — suggest writing-domain voices: strategist, editor, and at least one domain expert relevant to the subject matter. Researcher as needed. Avoid engineering roles unless the subject requires them.
-- **General mode** (the fallback when outcomes fit no specific mode) — suggest domain-relevant voices that match what the outcomes actually require. Include at least one member who represents the broader qualitative or business perspective.
+- **General mode** — suggest domain-relevant voices that match what the outcomes actually require. Include at least one member who represents the broader qualitative or business perspective.
 - **Triage mode** — suggest investigators who can gather and weigh evidence from where the symptom points (code, logs, metrics, traces, issue history, user reports); keep roles tool-agnostic (no hardcoded observability vendor); include at least one voice attentive to blast radius — what a change at the breaking point would disturb downstream. Do not apply the Code-mode customer/business-perspective default unless the outcomes call for it.
 - **No mode provided** — default to Code mode guidance.
 

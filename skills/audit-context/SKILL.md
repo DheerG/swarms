@@ -14,8 +14,8 @@ Evaluate the user's ambient context artifacts for compatibility with swarm's gov
 
 1. **CLAUDE.md files.** Read the project's `CLAUDE.md` (working directory root). If `.claude/CLAUDE.md` exists, read that too. Also check `~/.claude/CLAUDE.md` (global config) — it loads into every session.
 2. **Memory files.** Find the project memory path by checking `~/.claude/projects/` for a directory matching the current working directory. Claude Code dash-encodes the project path (e.g., `/Users/foo/my-project` becomes `-Users-foo-my-project`). If a `memory/MEMORY.md` index exists, read it and follow links to individual memory files.
-3. **Local skills and commands.** List `.claude/skills/` and `.claude/commands/` in the project directory. Flag any skill whose name matches a swarm built-in: `suggest-members`, `define-rubric`, `resolve-dispute`, `writing-style`, `reflect-outcome`, `independent-review-loop`, `code-mode`, `triage-mode`, `writing-mode`, `general-mode`, `workflow-rules`, `audit-context`.
-4. **Settings hooks.** Check both `.claude/settings.json` (project) and `~/.claude/settings.json` (global) for a `hooks` section. Flag any hook that intercepts tools used by swarm (the Agent tool, SendMessage, or CronCreate).
+3. **Local skills and commands.** List `.claude/skills/` and `.claude/commands/` in the project directory. Flag any skill whose name matches a swarm built-in: `suggest-members`, `define-rubric`, `resolve-dispute`, `writing-style`, `code-mode`, `writing-mode`, `general-mode`, `workflow-rules`, `audit-context`.
+4. **Settings hooks.** Check both `.claude/settings.json` (project) and `~/.claude/settings.json` (global) for a `hooks` section. Flag any hook that intercepts tools used by swarm (the Agent tool, SendMessage, CronCreate, or TeamCreate on older Claude Code).
 
 ## How to classify
 
@@ -61,10 +61,10 @@ Flag these specific patterns when you encounter them:
 | Silence preferences | "Don't repeat yourself", "Stay silent while waiting" | Potentially Interfering | facilitator signal obligations |
 | Verbosity injection | "Explain your reasoning step by step" | Potentially Interfering | Favor brevity during roundtables |
 | Methodology injection | "Always use TDD", "Write tests first" | Potentially Interfering | Phase arc is defined by mode skill |
-| Tool restrictions | "Don't spawn agents", "Never spawn subagents" | Conflicting | Create the team per Step 8a |
+| Tool restrictions | "Don't spawn agents", "Never use TeamCreate" | Conflicting | Create the team per Step 8a |
 | Briefing expansion | "Add detailed context to all briefs" | Conflicting | Briefing templates are fixed |
 | Skill name collision | Local `suggest-members` skill | Conflicting | Shadows swarm built-in |
-| Hook tool interception | Hook that blocks the Agent tool or SendMessage | Conflicting | Team creation and communication require these tools |
+| Hook tool interception | Hook that blocks the Agent tool, TeamCreate, or SendMessage | Conflicting | Team creation and communication require these tools |
 
 ## Output format
 
