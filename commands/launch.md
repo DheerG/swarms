@@ -15,12 +15,12 @@ Your project's CLAUDE.md and memory files may contain rules that were not author
 
 ## Step 0: Pre-flight Check
 
-Detect whether agent teams are enabled by reading the enablement flag from the process environment — the published gate, which is independent of which team tools the current Claude Code version exposes. Run `printenv CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` via Bash:
+Detect whether agent teams are enabled by reading the enablement flag from the process environment — the published gate. Run `printenv CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` via Bash:
 
 - Non-empty output (e.g. `1`) → agent teams are **ENABLED**. Proceed to Step 1.
 - Empty output → teams are **not active in this session**. Go to the disabled branch below.
 
-Do not gate on whether a specific team tool such as `TeamCreate` is present — those tools vary by Claude Code version (TeamCreate was removed in v2.1.178), so tool-presence is not a reliable enablement signal. The env flag is the actual gate.
+Do not gate on whether a specific team tool is present — tool kits vary; the env flag is the actual gate.
 
 **Disabled branch.** `printenv` reflects the environment this session started with, so the flag can read empty even when teams are configured — if it was added to `settings.json` without a restart, or enabled only in a non-terminal entrypoint (web/IDE) that doesn't export it to this shell. So never assert teams are off — offer, don't auto-decide. Read the `env` object in `.claude/settings.json` (project) and `~/.claude/settings.json` (global) to pick the message, then use **AskUserQuestion**:
 
@@ -62,8 +62,6 @@ If the user chooses "Try proceeding anyway," proceed to Step 1. Otherwise stop.
 > ```
 
 **On the disabled branch, do NOT proceed to Step 1 unless the user chose "Try proceeding anyway." After adding or showing the flag, stop — the user must restart first.**
-
-<!-- Future enhancement: if a web/IDE entrypoint is reliably detectable (e.g. CLAUDE_CODE_ENTRYPOINT distinguishing web/vscode/jetbrains), the disabled branch could scope the "try proceeding" offer to those entrypoints specifically rather than offering it on every empty read. Precondition: confirm CLAUDE_CODE_ENTRYPOINT actually differentiates entrypoints. The soft-hedge above is correct regardless. -->
 
 ---
 
@@ -289,15 +287,7 @@ Once the user confirms, execute the following:
 
 ### 8a: Create the team
 
-Derive a descriptive team name from the outcomes (e.g., for "Build a REST API for user management," use `user-management-api`). You use this name in the spawn prompts and the Step 7 summary regardless of version.
-
-How the team is created depends on the Claude Code version — detect it with `ToolSearch(select:TeamCreate)`:
-- **Resolves the tool** (older Claude Code) → call **TeamCreate** with that name to create the team. ToolSearch loads the schema only; do not *call* TeamCreate as a probe — calling it writes team config to disk.
-- **"No matching deferred tools found"** (Claude Code v2.1.178+, where TeamCreate was removed) → do not call it. The team forms implicitly when you spawn the first member in 8c.
-
-Remember which path you took — 8c/8d key the `team_name` argument off it.
-
-<!-- team_name is conditional (passed only on the TeamCreate/old-CC path) because passing it on new CC is unverified: #40270 (team_name spawn-break) was an old-impl bug (~v2.1.86) that does not bind current CC, but omit-on-new is the proven-safe choice. If a single 2.1.178+ spawn confirms passing team_name is harmless, this collapses to always-pass and the version branch drops. -->
+Derive a descriptive team name from the outcomes (e.g., for "Build a REST API for user management," use `user-management-api`). Use it in the spawn prompts and the Step 7 summary. Do not call TeamCreate — the team forms implicitly when you spawn the first member in 8c (swarm requires Claude Code v2.1.178+, where TeamCreate no longer exists).
 
 ### 8b: You ARE the team lead
 
@@ -315,7 +305,6 @@ If the user enabled lead research: you may use the Agent tool with `subagent_typ
 
 Use the **Agent** tool to spawn the first teammate:
 - `name`: [kebab-case of facilitator title from mode skill, e.g. `principal-engineer`, `editorial-director`, `chief-of-staff`]
-- `team_name`: [the team name from 8a — **only if you called TeamCreate in 8a** (older Claude Code, where it links the member to that team). On v2.1.178+ where 8a formed the team implicitly, omit `team_name` entirely.]
 - `model`: `opus` (both Ultra and Balanced — this role is always Opus, because it owns judgment review)
 - `subagent_type`: `swarm-member` (plugin-shipped read-only agent definition — no Edit/Write/NotebookEdit)
 
@@ -348,13 +337,10 @@ Team composition:
 
 **If the first spawn yields no working teammate** (none joins, or the spawn returns an internal error rather than a running agent), do not retry blindly or proceed solo — tell the user the team could not be formed and offer the remedies without asserting which applies: restart (in case the flag was set without one), retry (in case it was transient), or update Claude Code (in case it is outdated). This covers the case where the harness did not wire teams even though the env flag is set (#34750).
 
-<!-- Future enhancement (swarm Converge round): a Step-0 corroborator checking SendMessage availability could catch the flag-set-but-unwired case (#34750 — silent no-teammate despite the flag, CLI-reachable) BEFORE spawning. Cut from v1 because SendMessage is a deferred tool, so its presence is ambiguous to read; revisit if SendMessage becomes non-deferred. The spawn guardrail above is the v1 coverage. -->
-
 ### 8d: Spawn additional team members
 
 Spawn these members one at a time — spawn one, wait for it to come up, then the next; never spawn several in one turn. For each additional member in the Step 7 confirmed roster, use the **Agent** tool:
 - `name`: A descriptive kebab-case name (e.g., `security-reviewer`, `test-engineer`)
-- `team_name`: [the team name from 8a — **only if you called TeamCreate in 8a** (older Claude Code). On v2.1.178+ where the team formed implicitly, omit `team_name`.]
 - `model`: `opus` if Ultra, `sonnet` if Balanced
 - `subagent_type`: `swarm-member` (plugin-shipped read-only agent definition — no Edit/Write/NotebookEdit)
 
@@ -440,7 +426,6 @@ Follow the **phase arc defined in the mode skill** you read in Step 8b. The mode
 - Lead does no research unless the user explicitly enabled it in Step 6 (exception: the ship definition detection sub-agent above runs unconditionally)
 - Questions the team cannot resolve internally go to the user via AskUserQuestion — most consequential first, one at a time, using options when the answer is one of a small known set
 - **Live-team gate prompts.** A gate answer can come back a non-answer two ways, needing different recoveries. **Preemption:** while teammates are live, their notifications (or the lead's own pulse) can preempt an AskUserQuestion modal, returning an invalid/empty result. **AFK-timeout:** with the user away, the modal auto-resolves after 60s to a prose sentinel ("No response after 60s — the user may be away from keyboard. Proceed using your best judgment…") in place of a chosen option — a non-answer per the missing-signal hard rule; never act on it at a decision-grade gate. At every gate that fires while a team is live — post-Converge Approve, refine-or-deliver, re-approvals, escalations, the final-delivery sign-off, ship-method detection, and any other — reduce interference first (ask teammates to hold), then ask via AskUserQuestion (modal-first, always), and validate the answer names an offered option. On **preemption** (invalid/empty), re-ask the modal ONCE, restating the options and acknowledging the interruption ("that prompt was interrupted before your answer registered — here it is again"); if the re-ask is also preempted, fall to a plain-text question as the bounded recovery catch. On **AFK-timeout** (the sentinel), do NOT proceed — restate the gate as durable plain-text: list every option clearly (label, consequence, order, and any Recommended flag), tell the user they can answer by naming the whole option OR a shorthand letter/label, and validate their typed reply maps to exactly one option (disambiguate once if ambiguous). This first restatement carries a "held on you — nothing proceeds until you choose" line; the pulse then re-emits the gate (options + input contract + elapsed, without repeating the "held on you" line) on each hold until the user answers (see 8e). **Carve-out:** pre-spawn gates (Steps 0–7, including the Step 7 launch confirmation) cannot be preempted — no live team — but they CAN AFK-timeout, so the plain-text restatement still applies there (there is simply no pulse yet to re-emit it, so the lead restates on its next turn).
-<!-- AskUserQuestion preemption is upstream Claude Code, activated by the v2.1.178 implicit/background-spawn model: #64651 (OPEN) — background agent output streams into the foreground chat; #28627 (CLOSED) — the related variant where teammate notifications render as Human turns in the lead's stream. The still-open #64651 is why preemption still reproduces. Split-pane display (tmux/iTerm2, teammateMode auto) routes notifications out of the stream so the modal can't be preempted; the live-gate net best-efforts + recovers in-process terminals (Ghostty/VS Code). Durable fix is upstream. Do NOT force-set teammateMode — it silently falls back to in-process. Scope/fragility: the content-validity catch assumes a preempted modal returns a detectably-invalid result (rejection/empty) — observed-consistent at n=2 this session, a sound basis for the recovery catch, not proven-universal. Proven on macOS/CLI; web/IDE entrypoint behavior is documented-not-tested. If a future Claude Code returns valid-looking stale content on preemption, the catch needs revisiting. -->
 - Post-greenlight execution is autonomous — escalate only per the hard rules (tiebreaker, scope change, convergence failure, uncovered decision)
 - **Use file-based input for PR bodies.** Run `mktemp` and capture its output as a single file path. Use that exact captured path string in every subsequent step: write the body to it via Write, then `gh pr create --body-file <captured-path>`, then `rm <captured-path>`. Do not regenerate the path between steps — one `mktemp` call binds one path used across all three operations. Inline `--body "$(cat <<EOF ...)"` triggers the bash safety heuristic and prompts unconditionally in auto mode. `mktemp` defends against symlink-race attacks on shared systems.
 - When an explicit shutdown request has been received, delete the pulse THIS run owns after the team has been shut down: find it by its 8e signature (CronList) and CronDelete a single owned match; delete nothing if this run owns no pulse (the "leave it" path) or none matches (the terminal step may have deleted it); on multiple matches surface, never delete on ambiguity or a pulse you don't own (8e delete-ownership guard)

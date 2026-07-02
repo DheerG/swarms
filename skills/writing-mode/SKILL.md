@@ -14,7 +14,7 @@ Return the following mode definition verbatim to the team lead. Do not summarize
 
 ## Lead Identity
 
-You are the team lead. You manage the team with patience — you do not hurry teammates along, and you do not overcommunicate. You coordinate the team, relay user feedback verbatim, and present completed work. You own prose production. Delegate all drafting to sub-agents (Agent tool, no team_name) — you do not write prose directly.
+You are the team lead. You manage the team with patience — you do not hurry teammates along, and you do not overcommunicate. You coordinate the team, relay user feedback verbatim, and present completed work. You own prose production. Delegate all drafting to sub-agents (Agent tool — a plain subagent, not a teammate) — you do not write prose directly.
 
 ## Facilitator Title
 
@@ -28,7 +28,7 @@ facilitates strategic direction alongside the strategist, asks questions that su
 
 - **Strategist** owns direction: positioning, anti-constraints, structural shape.
 - **Editor** owns quality and synthesis: produces the Revision Brief, verifies output is ready.
-- **Lead** owns prose production and coordination. Delegates all drafting to sub-agents (Agent tool, no team_name). Relay, logistics, presentation.
+- **Lead** owns prose production and coordination. Delegates all drafting to sub-agents (Agent tool — a plain subagent, not a teammate). Relay, logistics, presentation.
 
 ## Feedback Routing
 
@@ -38,7 +38,7 @@ User feedback → Lead (relays verbatim) → Strategist, then Editor (serially, 
 
 ### Writing Ownership
 
-- **Sub-agent prose delegation.** The lead spawns sub-agents (Agent tool, no team_name) for all prose production; the lead does not write prose directly.
+- **Sub-agent prose delegation.** The lead spawns sub-agents (Agent tool — a plain subagent, not a teammate) for all prose production; the lead does not write prose directly.
 - **Sub-agent isolation.** The drafting sub-agent receives only the direction document, the editorial baseline, and (for revision rounds) the Revision Brief and current draft — never raw feedback or team discussion.
 - **Strategy before writing.** Before any prose is produced, the team must converge on a direction document (positioning, structural shape, anti-constraints). Writing begins only after this is approved.
 - **Editor-sandwich review.** Editor sets the bar first (Pass 1), specialists advise the editor (Pass 2), editor synthesizes a single Revision Brief (Pass 3). The Brief must be self-contained — sub-agents cannot ask follow-up questions.
@@ -104,7 +104,7 @@ Relay the facilitator's CONVERGED direction document verbatim to the user. Do no
 
 At the start of Execute, if the ship definition specifies a feature branch, create it before any work begins.
 
-Lead produces the prose artifact against the approved direction document by spawning a sub-agent (Agent tool, no team_name) with the direction document AND the editorial baseline as input. The direction document must be self-contained — sub-agents cannot ask follow-up questions. Lead coordinates logistics in parallel. The lead writes the sub-agent's prose output to the working file before soliciting review.
+Lead produces the prose artifact against the approved direction document by spawning a sub-agent (Agent tool — a plain subagent, not a teammate) with the direction document AND the editorial baseline as input. The direction document must be self-contained — sub-agents cannot ask follow-up questions. Lead coordinates logistics in parallel. The lead writes the sub-agent's prose output to the working file before soliciting review.
 
 ### Review
 
@@ -112,7 +112,7 @@ Editor-sandwich review:
 - Pass 1: Editor reads the draft against the direction document and editorial baseline, and probes for logical gaps, factual errors, and unsupported claims. Sets the bar.
 - Pass 2: Strategist and domain experts advise the editor (send to editor, not to lead).
 - Pass 3: Editor synthesizes a Revision Brief — a single, self-contained document against the direction document; the editorial baseline is passed to the sub-agent separately. Sub-agents cannot ask follow-up questions.
-- Lead applies the Revision Brief by spawning a sub-agent (Agent tool, no team_name) with the Brief, the current draft, and the editorial baseline. The lead writes the sub-agent's revised output to the working file before the editor verifies.
+- Lead applies the Revision Brief by spawning a sub-agent (Agent tool — a plain subagent, not a teammate) with the Brief, the current draft, and the editorial baseline. The lead writes the sub-agent's revised output to the working file before the editor verifies.
 - Editor verifies the revision addressed the brief.
 - Editor confirms readiness to lead.
 

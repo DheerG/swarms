@@ -22,7 +22,7 @@ Your project's CLAUDE.md and memory files may contain rules that were not author
 
 ## Pre-flight Check
 
-Detect enablement by reading the env flag, not by checking for a specific team tool (those vary by Claude Code version; TeamCreate was removed in v2.1.178). Run `printenv CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`: non-empty → **ENABLED**, proceed. Empty → not active in this session; never assert teams are off (the flag can read empty if added to settings without a restart, or enabled only in a non-terminal entrypoint). Read the `env` object in `.claude/settings.json` (project) and `~/.claude/settings.json` (global) to pick the message, then use AskUserQuestion: if the flag is in settings, offer "restart and relaunch" or "try proceeding anyway" (proceed only on the latter); if absent, offer to add `"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"` to the `env` object, then restart. **Stop unless the user chose to proceed.**
+Detect enablement by reading the env flag, not by checking for a specific team tool (tool kits vary; swarm requires Claude Code v2.1.178+). Run `printenv CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`: non-empty → **ENABLED**, proceed. Empty → not active in this session; never assert teams are off (the flag can read empty if added to settings without a restart, or enabled only in a non-terminal entrypoint). Read the `env` object in `.claude/settings.json` (project) and `~/.claude/settings.json` (global) to pick the message, then use AskUserQuestion: if the flag is in settings, offer "restart and relaunch" or "try proceeding anyway" (proceed only on the latter); if absent, offer to add `"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"` to the `env` object, then restart. **Stop unless the user chose to proceed.**
 
 ## Outcome Reflection
 
@@ -183,7 +183,7 @@ Do not add any sections, headings, or content beyond the fields in these templat
 
 ### Create the team
 
-Derive a descriptive team name from the outcomes (you use it in spawn prompts and the setup summary regardless of version). Detect the Claude Code version with `ToolSearch(select:TeamCreate)`: if it **resolves** the tool (older Claude Code), call **TeamCreate** with that name — ToolSearch loads the schema only, so do not *call* TeamCreate as a probe (calling it writes team config to disk); if it returns **"No matching deferred tools found"** (v2.1.178+, where TeamCreate was removed), do not call it — the team forms implicitly at the first member spawn. Remember which path you took; the spawn steps key `team_name` off it.
+Derive a descriptive team name from the outcomes (use it in spawn prompts and the setup summary). Do not call TeamCreate — the team forms implicitly at the first member spawn (swarm requires Claude Code v2.1.178+, where TeamCreate no longer exists).
 
 ### Invoke your mode skill
 
@@ -204,7 +204,6 @@ When invoking `swarm:suggest-members`, pass the mode skill's **Suggest-Members G
 
 Use the **Agent** tool:
 - `name`: kebab-case of facilitator title from mode skill
-- `team_name`: the team name — **only if you called TeamCreate** when creating the team; on v2.1.178+ where the team formed implicitly, omit it
 - `model`: `opus` (always Opus — this role owns judgment review)
 - `subagent_type`: `swarm-member` (plugin-shipped read-only agent definition — no Edit/Write/NotebookEdit)
 
@@ -216,7 +215,6 @@ Use the Facilitator Brief template above.
 
 Spawn these members one at a time — spawn one, wait for it to come up, then the next; never spawn several in one turn. Use the **Agent** tool for each additional member:
 - `name`: descriptive kebab-case name
-- `team_name`: the team name — **only if you called TeamCreate** when creating the team; on v2.1.178+ where the team formed implicitly, omit it
 - `model`: `opus` if Ultra, `sonnet` if Balanced
 - `subagent_type`: `swarm-member` (plugin-shipped read-only agent definition — no Edit/Write/NotebookEdit)
 

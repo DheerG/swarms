@@ -25,7 +25,7 @@ Swarm assembles a team of five to eight for the task: experienced engineers, plu
 
 ## Quick start
 
-Swarm is a [Claude Code](https://code.claude.com) plugin, so you'll need the CLI installed first.
+Swarm is a [Claude Code](https://code.claude.com) plugin, so you'll need the CLI installed first (v2.1.178 or newer).
 
 ```bash
 claude plugin marketplace add DheerG/swarms
