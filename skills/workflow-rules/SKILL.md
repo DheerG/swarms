@@ -182,7 +182,7 @@ Do not add any sections, headings, or content beyond the fields in these templat
 
 ### Create the team
 
-Derive a descriptive team name from the outcomes (use it in spawn prompts and the setup summary). Do not call TeamCreate — the team forms implicitly at the first member spawn (swarm requires Claude Code v2.1.178+, where TeamCreate no longer exists).
+Derive a descriptive team name from the outcomes (use it in spawn prompts and the setup summary). Do not call TeamCreate — the team forms implicitly at the first member spawn. Swarm requires Claude Code v2.1.178+, where TeamCreate no longer exists; enforce the floor here: if `ToolSearch(select:TeamCreate)` resolves the tool, this Claude Code is older than the floor — do not spawn; tell the user swarm requires Claude Code v2.1.178 or newer and to update, then stop. (ToolSearch loads the schema only — never *call* TeamCreate as a probe; calling it writes team config to disk.)
 
 ### Invoke your mode skill
 
