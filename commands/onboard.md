@@ -58,10 +58,12 @@ Output this explanation, verbatim:
 > **Modes.** Swarm picks different phase semantics for different work. You don't pick a mode first — you describe your outcomes, and swarm infers it. Knowing what's on offer just helps you recognize what's happening.
 >
 > - **Code** — building or fixing software. The lead is the only person who writes code. Review is technical.
+> - **Triage** — diagnosing an issue without changing it. The team traces the cause and maps the blast radius; nothing is edited or committed.
 > - **Writing** — articles, essays, docs. The lead coordinates; production and editorial follow a specific rhythm.
-> - **General** — research, planning, analysis — anything that doesn't fit the above.
 >
-> `/swarm:launch` infers the mode from your outcomes. If you already know which one you want, `/swarm:code`, `/swarm:write`, and `/swarm:general` are direct entry points.
+> Work that fits none of these (research, planning, analysis) runs as a general-purpose team — inferred automatically.
+>
+> `/swarm:launch` infers the mode from your outcomes. If you already know which one you want, `/swarm:code`, `/swarm:triage`, and `/swarm:write` are direct entry points.
 
 Then use **AskUserQuestion**:
 
@@ -177,7 +179,7 @@ Then use **AskUserQuestion**:
 
 **If "Yes, launch now"**: hand off by reading `${CLAUDE_PLUGIN_ROOT}/commands/launch.md` and executing it from Step 0 onward. Let launch.md handle mode inference from the outcomes the user provides — do not pre-select a mode.
 
-**If "Not yet"**: output one sentence pointing to `/swarm:launch` and `/swarm:code` / `/swarm:write` / `/swarm:general` as entry points when ready, and stop.
+**If "Not yet"**: output one sentence pointing to `/swarm:launch` and `/swarm:code` / `/swarm:triage` / `/swarm:write` as entry points when ready, and stop.
 
 ---
 

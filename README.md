@@ -178,7 +178,7 @@ It is **not** a task manager (no backlog, no tickets) or a workflow framework (n
 | **Writing** | Coordinates (can write) | Editorial Director | Writer isolation, structural + line pass |
 | **General** | Produces deliverable | Chief of Staff | Tailored to the deliverable type |
 
-Shortcuts skip the mode question: `/swarm:code`, `/swarm:triage`, `/swarm:write`, `/swarm:general`.
+Shortcuts skip the mode question: `/swarm:code`, `/swarm:triage`, `/swarm:write`. General is the fallback for work that fits no specific mode — `/swarm:launch` infers it; there is no shortcut for it.
 
 | Tier | Members | Facilitator | When to use |
 |------|---------|-------------|-------------|
@@ -232,8 +232,7 @@ This isn't about chasing the token limit — team runs rarely fill the window �
 /swarm:code              # Code team — the primary use
 /swarm:triage            # Diagnose an issue without changing it
 /swarm:write             # Writing team
-/swarm:general           # General team
-/swarm:launch            # Interactive setup (any mode)
+/swarm:launch            # Interactive setup (any mode, including general-purpose teams)
 /swarm:onboard           # Walkthrough for new users
 ```
 

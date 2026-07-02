@@ -2,7 +2,7 @@
 name: general-mode
 user-invocable: false
 description: |
-  General mode operational spec for the team lead. Returns lead identity, facilitator identity, suggest-members guidance, and phase arc for general-purpose teams.
+  General mode operational spec for the team lead. Returns lead identity, facilitator identity, suggest-members guidance, and phase arc for general-purpose teams. The silent fallback when outcomes fit no specific mode, and a wrapper base for custom workflows — it has no shortcut command.
 keywords: general mode, team lead spec, phase arc, deliverable
 ---
 

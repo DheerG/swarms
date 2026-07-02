@@ -210,7 +210,7 @@ Infer the mode from the user's stated outcomes — whether they came from `$ARGU
 - Writing outcomes (articles, blog posts, essays, documentation, copy, narrative) → **Writing**
 - Engineering or code outcomes (building, fixing, refactoring, debugging software) → **Code**
 - Diagnosing a problem without changing it (triage an incident, find the root cause, assess what a fix would break — the user wants to know what's wrong, not to have it fixed) → **Triage**
-- Clearly neither (research synthesis, vendor evaluation, planning, analysis) → **General**
+- Clearly none of the above (research synthesis, vendor evaluation, planning, analysis) → **General** — a silent fallback, inferred only; it has no shortcut command and is not offered by name
 - Genuinely ambiguous → ask without pre-selecting
 
 When an outcome could be Code or Triage, the deciding question is whether the user asked for a change: a request to fix, build, or refactor is **Code**; a request only to diagnose, explain, or assess is **Triage**.
@@ -239,10 +239,10 @@ When an outcome could be Code or Triage, the deciding question is whether the us
     description: "Diagnose an issue — the likely cause and a fix's blast radius — without changing anything"
   - label: "Writing"
     description: "Articles, essays, documentation, or other prose"
-  - label: "General"
-    description: "Work that doesn't fit a specific mode"
+  - label: "None of these"
+    description: "A general-purpose team for work that doesn't fit a specific mode"
 
-Store the selected mode. It informs: suggest-members guidance in Step 4, and the phase arc and team identity in Step 8.
+Store the selected mode ("None of these" maps to General, the general-purpose fallback). It informs: suggest-members guidance in Step 4, and the phase arc and team identity in Step 8.
 
 **STOP HERE. Wait for the user's selection before proceeding to Step 4.**
 

@@ -14,7 +14,7 @@ Evaluate the user's ambient context artifacts for compatibility with swarm's gov
 
 1. **CLAUDE.md files.** Read the project's `CLAUDE.md` (working directory root). If `.claude/CLAUDE.md` exists, read that too. Also check `~/.claude/CLAUDE.md` (global config) — it loads into every session.
 2. **Memory files.** Find the project memory path by checking `~/.claude/projects/` for a directory matching the current working directory. Claude Code dash-encodes the project path (e.g., `/Users/foo/my-project` becomes `-Users-foo-my-project`). If a `memory/MEMORY.md` index exists, read it and follow links to individual memory files.
-3. **Local skills and commands.** List `.claude/skills/` and `.claude/commands/` in the project directory. Flag any skill whose name matches a swarm built-in: `suggest-members`, `define-rubric`, `resolve-dispute`, `writing-style`, `code-mode`, `writing-mode`, `general-mode`, `workflow-rules`, `audit-context`.
+3. **Local skills and commands.** List `.claude/skills/` and `.claude/commands/` in the project directory. Flag any skill whose name matches a swarm built-in: `suggest-members`, `define-rubric`, `resolve-dispute`, `writing-style`, `reflect-outcome`, `independent-review-loop`, `code-mode`, `triage-mode`, `writing-mode`, `general-mode`, `workflow-rules`, `audit-context`.
 4. **Settings hooks.** Check both `.claude/settings.json` (project) and `~/.claude/settings.json` (global) for a `hooks` section. Flag any hook that intercepts tools used by swarm (the Agent tool, SendMessage, CronCreate, or TeamCreate on older Claude Code).
 
 ## How to classify
