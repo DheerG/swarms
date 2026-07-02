@@ -71,7 +71,7 @@ Compose the new file by merging consumer-owned sections (Step 2) with regenerate
 
 1. Frontmatter (consumer-owned, preserved as-is — but if `generated-by` is missing from the frontmatter, add `generated-by: swarm@<current version>` by reading the version from `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json`; if present, update its value to the current version). If `${CLAUDE_PLUGIN_ROOT}` is unset or the plugin.json read fails, skip the stamp rather than aborting the update — provenance is informational, not load-bearing, and the update must still succeed.
 2. Plugin-owned preamble (from Step 3).
-3. `## Settings` section (consumer-owned, preserved as-is).
+3. `## Settings` section (consumer-owned, preserved as-is — with one mechanical migration: replace the stale phrase `tier picked at the launch gate` with `tier picked at setup`, since the regenerated Workflow asks the tier at its Setup step and the launch confirmation no longer carries a tier. This migration appears in the Step 5 diff like any other change, so the user confirms it).
 4. `## User-Provided Context` section (consumer-owned, preserved as-is).
 5. `## Pre-flight` section if present in the original (consumer-owned, preserved as-is).
 6. Plugin-owned `## Workflow` section (from Step 3).
