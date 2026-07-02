@@ -97,20 +97,32 @@ $ARGUMENTS
 
 **Verbatim capture rule (mandatory).** The user's original words are the PRIMARY reference for all downstream team briefings. Capture them verbatim and store as a literal string for Step 8c and 8d substitution. Any deviation between the user's exact words and what appears in team briefs is a hard rules violation. The user's most recent self-authored wording is the verbatim: if the user re-authors at the reflection fork (Option B), that restatement becomes the verbatim and flows unchanged — the system never edits the user's words, only the user revises them.
 
-**After the outcome reflection** (the fork resolved, or `NO FORK` carried forward), configure the team silently — do NOT ask a question per setting:
+**After the outcome reflection** (the fork resolved, or `NO FORK` carried forward), use the **AskUserQuestion** tool — the cost tier is an explicit pick, so no one lands on a tier they didn't choose. This gate applies on every path, including when the outcomes arrived inline as `$ARGUMENTS` — passing outcomes with the command is context, not consent to skip the setup gates:
+
+- question: "How would you like to set up the team?"
+- header: "Setup"
+- options:
+  - label: "Defaults — Ultra (Recommended)"
+    description: "Auto-configure mode, team, and research. Full team on the stronger model — reliable rule-following."
+  - label: "Defaults — Balanced"
+    description: "Same auto-config, but members run a cheaper model — lower cost, less reliable rule-following."
+
+**STOP HERE. Wait for the user's selection.**
+
+Once the user picks, configure silently and bring the team forward for approval — all in one response:
 
 1. **Mode**: Infer from the outcomes per the Step 3 reference. If genuinely ambiguous, ask just the Step 3 mode question — one question — then continue in the same response.
-2. **Team**: You MUST use the **Skill** tool to invoke `swarm:suggest-members`, passing the inferred mode and the outcomes as the `args` parameter (e.g., "Mode: Writing\n\n[outcomes]"). Do NOT compose the team yourself.
+2. **Cost tier**: the one the user selected — Ultra or Balanced.
 3. **Lead research**: No.
-4. **Cost tier**: picked by the user at the Step 7 gate — the Launch options carry the tier, so no one lands on a tier they didn't pick.
+4. **Team**: You MUST use the **Skill** tool to invoke `swarm:suggest-members`, passing the inferred mode and the outcomes as the `args` parameter (e.g., "Mode: Writing\n\n[outcomes]"). Do NOT compose the team yourself. Then present the skill's suggestion and ask the Step 4 team question ("Does this team look right?") — invoke the skill, present the suggestion, and call AskUserQuestion in the same response, with no intervening prose or pause.
 
-Then, in the same response — without pausing or waiting for user input — proceed to **Step 7 (Confirmation)** and present the full summary with AskUserQuestion. The user reviews everything there and can adjust anything before launch.
+**STOP HERE. Wait for the team to be confirmed.** When the user confirms the team ("Yes, looks good" — or confirms it after adjustments), proceed in the same response to **Step 7 (Confirmation)** and present the full summary with AskUserQuestion.
 
 ---
 
 ## Steps 3–6: Adjustments Reference
 
-Steps 3–6 are not asked as individual questions — Step 2 configures them silently and Step 7 is the single gate. These definitions serve Step 2's mode inference, the ambiguous-mode ask, and "I have changes" at Step 7. (The numbering gap is deliberate: Step 7 and Step 8 labels are cross-referenced throughout the plugin.)
+Steps 3–6 are not walked as a sequence — Step 2 drives them: the tier (Step 5) and the team (Step 4) are the two the user answers directly; mode (Step 3) and lead research (Step 6) default silently. These definitions serve Step 2, the ambiguous-mode ask, and "I have changes" at Step 7. (The numbering is deliberate: Step 7 and Step 8 labels are load-bearing cross-references throughout the plugin.)
 
 ### Step 3: Mode
 
@@ -141,15 +153,25 @@ Store the selected mode ("None of these" maps to General, the general-purpose fa
 
 ### Step 4: Team members
 
-The lead and the facilitator are always included. The team is the `swarm:suggest-members` suggestion from Step 2, shown in the Step 7 summary. If the user wants a different team ("I have changes"), ask them (as a regular text message) to describe the members they want — by role (e.g., "security reviewer, test engineer") or by focus area — apply the changes, and re-present the Step 7 summary. Advisory: 3-5 total members is the sweet spot; up to 8 is viable.
+The lead and the facilitator are always included. Present the `swarm:suggest-members` suggestion (per Step 2), then use **AskUserQuestion**:
+
+- question: "Does this team look right?"
+- header: "Team"
+- options:
+  - label: "Yes, looks good"
+    description: "Proceed with this team composition"
+  - label: "I want to adjust"
+    description: "Swap a member, add more members, or remove some"
+
+**If "I want to adjust"**: ask what to change (free text) — the user can point at a member to swap, name additional members by role (e.g., "security reviewer, test engineer") or focus area, or trim the roster. Apply the changes, then confirm again with the same question. Advisory: 3-5 total members is the sweet spot; up to 8 is viable. The same adjust flow serves a team change requested via "I have changes" at Step 7.
 
 ### Step 5: Cost tier
 
-Picked by the user at the Step 7 gate — never a silent default:
+Picked by the user at the Step 2 setup question ("Defaults — Ultra" / "Defaults — Balanced") — never a silent default:
 - **Ultra (Recommended)** — full team on the stronger model; reliable rule-following across the whole team.
 - **Balanced** — cheaper model for members; lower cost, less reliable rule-following. Good for well-scoped, lower-stakes work.
 
-Step 8 uses the pick for the spawn-time `model` field.
+Step 8 uses the pick for the spawn-time `model` field. Changeable via "I have changes" at Step 7.
 
 ### Step 6: Lead research
 
@@ -176,7 +198,7 @@ Present a summary of the team plan:
 > 2. [facilitator title from mode skill] — Socratic facilitator, read-only
 > [3-N. Additional members — personality and behavioral identity, not task assignments or focus areas]
 >
-> **Cost tier:** [picked at the Launch gate below; if already picked on an earlier pass, show it]
+> **Cost tier:** [the selected tier — Ultra or Balanced]
 >
 > **Ship definition:** [for **Triage** mode, ship definition does not apply — show "In-session diagnosis — no branch, commit, or PR. Writing the diagnosis to an issue/Sentry is a per-run opt-in." For all other modes: if `.claude/swarm-ship.md` exists, show its contents in plain language — e.g., "Create a PR against main from branch feat/<description>". If it doesn't exist yet, show "Will be auto-detected before work begins."]
 >
@@ -187,14 +209,12 @@ Then use the **AskUserQuestion** tool:
 - question: "Is this plan final, or do you have remaining inputs?"
 - header: "Confirm"
 - options:
-  - label: "Launch — Ultra (Recommended)"
-    description: "Plan is final — full team on the stronger model; reliable rule-following."
-  - label: "Launch — Balanced"
-    description: "Plan is final — cheaper model for members; lower cost, less reliable rule-following."
+  - label: "Launch the team"
+    description: "Plan is final — start creating the team now"
   - label: "I have changes"
     description: "Adjust outcomes, mode, members, tier, or research first."
 
-**If "Launch — Ultra" or "Launch — Balanced"**: store the tier and proceed to Step 8.
+**If "Launch the team"**: Proceed to Step 8.
 
 **If "I have changes"**: Ask what they'd like to change (free text). Apply the change using the relevant definition in the Steps 3–6 Adjustments Reference (a change to the outcomes re-enters Step 2's reflection), then re-present this confirmation summary. Repeat until the user launches.
 
@@ -206,7 +226,7 @@ Then use the **AskUserQuestion** tool:
 
 Once the user confirms, execute the following:
 
-**Before proceeding: did you render the Step 7 summary block (the full Team Plan with Mode, Outcomes, Team, Cost tier, Ship definition, and Rules) AND receive an explicit Launch selection — "Launch — Ultra" / "Launch — Balanced", or "Launch the team" for a command whose tier is fixed (e.g., `/swarm:refine`) — via AskUserQuestion, or the user's explicit typed answer to its durable plain-text restatement if that modal AFK-timed-out? If no to either, go back and do it now.**
+**Before proceeding: did you render the Step 7 summary block (the full Team Plan with Mode, Outcomes, Team, Cost tier, Ship definition, and Rules) AND receive an explicit "Launch the team" selection — via AskUserQuestion, or the user's explicit typed answer to its durable plain-text restatement if that modal AFK-timed-out? If no to either, go back and do it now. Outcomes passed inline as `$ARGUMENTS` do not exempt any gate — the Step 2 setup pick, the Step 4 team confirmation, and this Step 7 launch confirmation all still happen.**
 
 ### 8a: Create the team
 
