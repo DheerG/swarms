@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Read `${CLAUDE_PLUGIN_ROOT}/commands/launch.md` and execute it in full — every step, in order — with these overrides:
 
-- **Mode:** the custom mode skill parsed below, fixed. Skip mode inference and mode selection entirely; never ask about mode.
+- **Mode:** the custom mode skill parsed below, fixed. Skip mode inference and mode selection entirely; never ask about mode. If the user asks to change the mode at the Step 7 gate, say the mode is fixed for this command and point them to `/swarm:launch` — do not switch modes mid-command.
 - **Mode skill invocation:** invoke the mode skill here, before the outcomes flow (see "Mode Skill Invocation" below). At launch.md Step 8b it is already invoked — apply its spec directly, do not re-invoke.
 - **Outcomes question (Step 2):** the mode skill's Outcomes Question (or its base's, for extensions) if it defines one; otherwise "What outcomes do you want the team to achieve? (Describe what should be different or better when the work is done.)"
 - **Suggest-members:** when invoking `swarm:suggest-members`, pass the mode skill's Suggest-Members Guidance (for extensions: the base's guidance plus the supplement) along with the confirmed outcomes.

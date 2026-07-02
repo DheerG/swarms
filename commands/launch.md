@@ -137,7 +137,7 @@ When an outcome could be Code or Triage, the deciding question is whether the us
   - label: "None of these"
     description: "A general-purpose team for work that doesn't fit a specific mode"
 
-Store the selected mode ("None of these" maps to General, the general-purpose fallback). It informs suggest-members guidance and the Step 8 phase arc and team identity.
+Store the selected mode ("None of these" maps to General, the general-purpose fallback). It informs suggest-members guidance and the Step 8 phase arc and team identity. On a mode change at Step 7, re-invoke `swarm:suggest-members` with the new mode and the outcomes — the old mode's roster does not carry over — and present the refreshed team in the re-presented summary.
 
 ### Step 4: Team members
 
@@ -206,7 +206,7 @@ Then use the **AskUserQuestion** tool:
 
 Once the user confirms, execute the following:
 
-**Before proceeding: did you render the Step 7 summary block (the full Team Plan with Mode, Outcomes, Team, Cost tier, Ship definition, and Rules) AND receive an explicit Launch selection ("Launch — Ultra" or "Launch — Balanced") — via AskUserQuestion, or the user's explicit typed answer to its durable plain-text restatement if that modal AFK-timed-out? If no to either, go back and do it now.**
+**Before proceeding: did you render the Step 7 summary block (the full Team Plan with Mode, Outcomes, Team, Cost tier, Ship definition, and Rules) AND receive an explicit Launch selection — "Launch — Ultra" / "Launch — Balanced", or "Launch the team" for a command whose tier is fixed (e.g., `/swarm:refine`) — via AskUserQuestion, or the user's explicit typed answer to its durable plain-text restatement if that modal AFK-timed-out? If no to either, go back and do it now.**
 
 ### 8a: Create the team
 
