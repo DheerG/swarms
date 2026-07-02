@@ -31,7 +31,6 @@ skills/triage-mode/         # Triage mode: diagnose an issue (cause + blast radi
 skills/writing-mode/        # Writing mode: lead identity, facilitator title, ownership boundaries, editorial baseline, phase arc
 skills/general-mode/        # General mode: lead identity, facilitator title, lightweight default
 skills/workflow-rules/      # Governance spec for custom workflows — hard rules, briefing templates, launch mechanics
-skills/refine-outcomes/     # Converts implementation descriptions into outcome statements
 skills/suggest-members/     # Recommends team composition based on outcomes and mode
 skills/writing-style/       # Structural pattern analysis (trope detection) for writing-mode review
 skills/resolve-dispute/     # Resolves stuck review findings via put-up-or-concede exchange

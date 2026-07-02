@@ -23,6 +23,9 @@
 - **Pulse kept reviving the lead after a run was done.** The heartbeat cron was deleted only on explicit shutdown, and its idle branch ("advance to your next phase") had no concept of "run over," so it pinged the idle lead every 4 minutes indefinitely post-delivery. Deliver now deletes the pulse at the true terminal (after any independent loop) before asking keep-open/shutdown, and the pulse gained a terminal-aware backstop (self-delete only on a confirmed push/PR observable, never a commit-only run) plus an existence-check so it is never doubled. Governed by two new Team Lead rules (terminal-state, pulse-existence) kept out of the briefing templates. The pulse prompt also notes that the cron fires on a fixed wall-clock schedule (only when idle), so pulses can bunch under 4 minutes apart after a long busy turn — the lead gauges "silent"/"waited" by real elapsed time, not by a pulse firing, avoiding premature re-pings of teammates.
 - README model-config section refreshed: the `opus` alias and 1M-context examples now reference Opus 4.8 (was 4.7), and the facilitator effort note no longer pins a specific default value.
 
+### Removed
+- **`swarm:refine-outcomes` retired.** The no-arg `/swarm:launch` flow now opens straight to the outcomes prompt (dropping the "provide outcomes vs. help me build them" fork), and `/swarm:refine`'s plan-confirm drops its "Help me frame these as outcomes" option. The reframe-help path went unused; it is no longer offered.
+
 ## [0.4.0] - 2026-05-01
 
 ### Added
