@@ -149,7 +149,7 @@ When an outcome could be Code or Triage, the deciding question is whether the us
   - label: "None of these"
     description: "A general-purpose team for work that doesn't fit a specific mode"
 
-Store the selected mode ("None of these" maps to General, the general-purpose fallback). It informs suggest-members guidance and the Step 8 phase arc and team identity. On a mode change at Step 7, re-invoke `swarm:suggest-members` with the new mode and the outcomes — the old mode's roster does not carry over — and present the refreshed team in the re-presented summary.
+Store the selected mode ("None of these" maps to General, the general-purpose fallback). It informs suggest-members guidance and the Step 8 phase arc and team identity. On a mode change at Step 7, re-invoke `swarm:suggest-members` with the new mode and the outcomes — the old mode's roster does not carry over — and run the refreshed suggestion through the Step 4 team question ("Does this team look right?") before re-presenting the Step 7 summary; a regenerated roster is never launched unapproved.
 
 ### Step 4: Team members
 
