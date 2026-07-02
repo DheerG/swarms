@@ -28,13 +28,6 @@ Invoke the mode skill by its **unqualified name** via the Skill tool (e.g., `blo
 
 If the Skill tool cannot find the mode skill, tell the user: "Mode skill '[name]' not found. Verify that `.claude/skills/[name]/SKILL.md` exists in your project." Stop and wait.
 
-**Extension modes.** If the invoked mode skill's frontmatter declares `extends:` naming a base (e.g., `extends: swarm:code-mode`, `extends: swarm:writing-mode`, or `extends: swarm:general-mode`), it is an extension mode. Read the frontmatter directly from the file at `.claude/skills/<name>/SKILL.md` to detect this — do not infer from body prose. Invoke the named base mode skill via the Skill tool **immediately after** the extension. The base provides Lead Identity, Facilitator Title, Facilitator Identity, base Mode-Specific Rules, base Lead Allowlist, base Suggest-Members Guidance, and the Phase Arc. The extension supplies **additive** Mode-Specific Rules, **additive** Lead Allowlist entries (Permitted additions and Forbidden additions), and a Suggest-Members Guidance supplement — treat them all as supplementary, not replacing.
-
-Hard contract for extension modes:
-- Phase arc, Lead Identity, and Facilitator are inherited from the base — never overridden.
-- Extension's Mode-Specific Rules are additive-only — they cannot remove or contradict base rules.
-- Extension's Lead Allowlist additions are additive-only — Permitted additions expand what the lead may do, Forbidden additions expand what the lead must not do. Neither can remove or weaken a base-mode forbidden entry.
-- Extension's Suggest-Members Guidance supplements the base — it does not replace it.
-- If an extension appears to violate this contract (e.g., redefines phase semantics, removes a base-mode forbidden item), treat it as malformed and surface the issue to the user before proceeding.
+**Extension modes.** If the invoked mode skill's frontmatter declares `extends:` naming a base (e.g., `extends: swarm:code-mode`), it is an extension mode. Read the frontmatter directly from the file at `.claude/skills/<name>/SKILL.md` to detect this — do not infer from body prose. Invoke the named base mode skill via the Skill tool **immediately after** the extension, then combine the two per the **Invoke your mode skill** section and **Extension hard contract** in the governance spec (`swarm:workflow-rules`, invoked at launch.md Step 1): the base provides lead identity, facilitator, phase arc, and base rules; the extension's contributions are additive-only; a violating extension is malformed — surface it to the user before proceeding.
 
 If the mode skill (or its base) includes Pre-flight Reads, read those files before spawning.

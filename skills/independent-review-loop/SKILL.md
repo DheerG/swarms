@@ -78,7 +78,7 @@ The closing affirmative-clean instruction is load-bearing: it is what lets the t
 
 Telling the reviewer the outcome and asking only for functional findings is the steer that keeps the loop on-scope — the input-side guard, paired with the lead's triage on the output side.
 
-<!-- SYNC: the steer's "Format:" clause above and the "Output format" section below must stay identical. If either changes, update both — termination treats an off-format response as a FAILED review, and the oscillation key parses `title + file:line` from this exact shape, so drift breaks both. (Same convention as launch.md Step 1 ↔ workflow-rules.) -->
+<!-- SYNC: the steer's "Format:" clause above and the "Output format" section below must stay identical. If either changes, update both — termination treats an off-format response as a FAILED review, and the oscillation key parses `title + file:line` from this exact shape, so drift breaks both. -->
 
 ## Codex path
 

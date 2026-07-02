@@ -106,7 +106,7 @@ Implementation framing has the team comparing Redis and Memcached. Outcome frami
 
 ### Everything is a prompt
 
-Most agent frameworks bury what's actually running behind config and abstraction, so changing how the agents behave means digging through someone else's machinery. Swarm keeps the whole coordination system, from pre-flight through delivery, in one readable markdown file you can open:
+Most agent frameworks bury what's actually running behind config and abstraction, so changing how the agents behave means digging through someone else's machinery. Swarm keeps the whole coordination system, from pre-flight through delivery, in readable markdown you can open:
 
 ```markdown
 # /swarm:launch
@@ -114,7 +114,7 @@ Most agent frameworks bury what's actually running behind config and abstraction
 You are launching an agent team using the Swarm plugin. Follow every step below in exact order...
 ```
 
-No imports, no runtime composition. To change how a team works, you edit the prompt. Read the whole thing: [commands/launch.md](commands/launch.md).
+No imports, no build step. To change how a team works, you edit the prompt. Read it all: the launch flow in [commands/launch.md](commands/launch.md), the governance rules in [skills/workflow-rules/SKILL.md](skills/workflow-rules/SKILL.md).
 
 ### Recursive review until it's ready
 
