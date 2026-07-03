@@ -114,7 +114,7 @@ Once the user picks, configure silently and bring the team forward for approval 
 1. **Mode**: Infer from the outcomes per the Step 3 reference. If genuinely ambiguous, ask just the Step 3 mode question — one question — then continue in the same response.
 2. **Cost tier**: the one the user selected — Ultra or Balanced.
 3. **Lead research**: No.
-4. **Team**: You MUST use the **Skill** tool to invoke `swarm:suggest-members`, passing the inferred mode and the outcomes as the `args` parameter (e.g., "Mode: Writing\n\n[outcomes]"). Do NOT compose the team yourself. Then present the skill's suggestion and ask the Step 4 team question ("Does this team look right?") — invoke the skill, present the suggestion, and call AskUserQuestion in the same response, with no intervening prose or pause. Presenting means carrying the full roster — every member named, each with its identity line — inside the AskUserQuestion's own question text; a bare count, a prose-only roster, or a roster left in an earlier turn does not satisfy the gate.
+4. **Team**: You MUST use the **Skill** tool to invoke `swarm:suggest-members`, passing the inferred mode and the outcomes as the `args` parameter (e.g., "Mode: Writing\n\n[outcomes]"). Do NOT compose the team yourself. Then present the skill's suggestion and ask the Step 4 team question ("Does this team look right?") — invoke the skill, present the suggestion, and call AskUserQuestion in the same response, with no intervening pause. Present per the Step 4 two-container rule: the full roster as formatted markdown in the main window, and a self-sufficient plain-text digest (each member's name + one-line identity) inside the modal's question text.
 
 **STOP HERE. Wait for the team to be confirmed.** When the user confirms the team ("Yes, looks good" — or confirms it after adjustments), proceed in the same response to **Step 7 (Confirmation)** and present the full summary with AskUserQuestion.
 
@@ -153,7 +153,12 @@ Store the selected mode ("None of these" maps to General, the general-purpose fa
 
 ### Step 4: Team members
 
-The lead and the facilitator are always included. Present the `swarm:suggest-members` suggestion (per Step 2) by carrying the full roster — every member named, with its identity line — inside the question text of the **AskUserQuestion** below, ahead of the question phrase: the user reads the modal, not the prose around it — a focus-capturing modal renders over same-turn prose, which can go unread, so prose is fallback/overflow only. A bare count, a prose-only roster, or an earlier-turn roster does not satisfy this gate.
+The lead and the facilitator are always included. Present the `swarm:suggest-members` suggestion (per Step 2) in two containers, each with its own job:
+
+- **Main window — what the user reads.** Render the full roster as formatted markdown: a numbered list, every member named with its identity line. The main window renders markdown and stays in scrollback, so this is the readable, durable copy the user can reference while typing adjustments.
+- **Modal — what the user decides.** The question text of the **AskUserQuestion** below carries a plain-text digest: every member's name plus its one-line identity, with no markdown syntax (the modal's question field renders plain text, so `##`/`**` show as literal noise). The identities are the decision content at this gate — names alone are not enough. The digest must be self-sufficient: a modal that forces the user to scroll up to the plan to decide does not satisfy this gate. Do not carry the full markdown block into the modal.
+
+If the same-turn modal covers the freshly-rendered roster, that is NOT a reason to move the plan into the modal — the roster remains in scrollback, and the modal is self-sufficient by design.
 
 - question: "Does this team look right?"
 - header: "Team"
@@ -204,7 +209,7 @@ Present a summary of the team plan:
 >
 > **Rules:** Active
 
-Then use the **AskUserQuestion** tool, carrying the full Team Plan verbatim inside the question text itself — decision-critical lines (Team, Cost tier) front-loaded, never split into the option descriptions (length-limited): the user reads the modal, not the prose around it, so the summary block above is fallback/overflow only. An elided, summarized, or prose-only plan does not satisfy the gate:
+The summary block above is the readable, durable copy — render it as formatted markdown in the main window, where it stays in scrollback for the user to reference while typing changes (the modal's question field renders plain text, so markdown there shows as literal noise). Then use the **AskUserQuestion** tool with a self-sufficient plain-text digest inside the question text: the team was already approved at Step 4, so this gate authorizes the launch — a name-only roster, cost tier, mode, ship definition, and a compressed outcomes line (a few plain-text lines; outcomes are adjustable at this gate, so they are decision content) are enough to decide, front-loaded (Team + Cost tier first, to survive a silent render-clip), never split into the option descriptions (over-length text there truncates silently). Do not carry the full Team Plan block into the modal; a same-turn modal covering the rendered summary is not a reason to move it there (it remains in scrollback), and a digest that forces a scroll-up to decide does not satisfy the gate:
 
 - question: "Is this plan final, or do you have remaining inputs?"
 - header: "Confirm"
@@ -226,7 +231,7 @@ Then use the **AskUserQuestion** tool, carrying the full Team Plan verbatim insi
 
 Once the user confirms, execute the following:
 
-**Before proceeding: did you carry the Step 7 summary block (the full Team Plan with Mode, Outcomes, Team, Cost tier, Ship definition, and Rules) inside the Launch ask's own question text AND receive an explicit "Launch the team" selection — via AskUserQuestion, or the user's explicit typed answer to its durable plain-text restatement if that modal AFK-timed-out? If no to either, go back and do it now. Outcomes passed inline as `$ARGUMENTS` do not exempt any gate — the Step 2 setup pick, the Step 4 team confirmation, and this Step 7 launch confirmation all still happen.**
+**Before proceeding: did you RENDER the Step 7 summary block (the full Team Plan with Mode, Outcomes, Team, Cost tier, Ship definition, and Rules) as formatted markdown in the main window, carry a self-sufficient plain-text digest (name-only roster, tier, mode, ship definition, compressed outcomes) inside the Launch ask's own question text, AND receive an explicit "Launch the team" selection — via AskUserQuestion, or the user's explicit typed answer to its durable plain-text restatement if that modal AFK-timed-out? If no to any, go back and do it now. Outcomes passed inline as `$ARGUMENTS` do not exempt any gate — the Step 2 setup pick, the Step 4 team confirmation, and this Step 7 launch confirmation all still happen.**
 
 ### 8a: Create the team
 
