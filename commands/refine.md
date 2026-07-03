@@ -38,7 +38,7 @@ $ARGUMENTS
 
 2. **Outcomes.** If User-Provided Context is non-empty, use as outcomes. Otherwise ask the outcomes question (plain text, not AskUserQuestion). Do NOT echo the outcomes back verbatim — run the outcome reflection instead: You MUST use the **Skill** tool to invoke `swarm:reflect-outcome` with the user's exact words as `args`, and do not author its wording yourself. If it returns `NO FORK` (the common case), show nothing — no echo, no confirmation beat — and carry the outcome into the Step 3 plan-confirmation summary, which already displays the outcomes verbatim (that is where the user sees their words carried forward). If it returns a ready-to-render fork, present it with AskUserQuestion exactly as returned — transport it, do not reword the question or labels, and do not add a third option (the fork is sealed at exactly two) — then resolve the user's pick per the skill (Option A keeps the wording; Option B re-authors into a new verbatim, which loops back through this Step 2 reflection). Store no separate supplement. The user's verbatim words are captured for the briefs (launch.md verbatim-capture rule).
 
-3. **Confirmation.** Present the team plan summary as a blockquote (matching launch.md Step 7's format):
+3. **Confirmation.** Present the team plan summary as a blockquote rendered as formatted markdown in the main window — the readable, durable copy that stays in scrollback (the same two-container rule as launch.md Step 7):
 
    > **Team Plan**
    >
@@ -73,9 +73,7 @@ $ARGUMENTS
    >
    > **Rules:** Active
 
-   If the diff base is the default-branch fallback (no PR detected), add a distinct bold line below the summary so it is not missed: **Note:** no PR detected — diff base falls back to the repo's default branch (`<resolved-default>`). Verify before launch.
-
-   Then AskUserQuestion: question "Is this plan final, or do you have remaining inputs?", header "Confirm", options "Launch the team" / "I have changes". Step 7 is mandatory.
+   Then AskUserQuestion with a self-sufficient plain-text digest inside the question text (no markdown syntax — the modal's question field renders plain text), front-loaded in this order: **Diff base** first — it is the correctness pivot at this gate, silently inferred, and not changeable from this prompt; then the PR state (the PR URL, or `(no open PR detected)`); then, when the diff base is the default-branch fallback (no PR detected), this warning inline in the modal so it cannot be missed: `no PR detected — diff base falls back to the repo's default branch (<resolved-default>). Verify before launch.`; then a compressed outcomes line (a few plain-text lines; outcomes are adjustable at this gate via Step 2 re-entry, so they are decision content); then the branch under review; then the changes (the one-line diff stat). Do NOT include the fixed fields (Mode, Cost tier, roster, phase arc) — they cannot change at this gate, so they are not decision content; the blockquote above remains the full durable copy in scrollback, and a covered same-turn blockquote is not a reason to move it into the modal. Question "Is this plan final, or do you have remaining inputs?", header "Confirm", options "Launch the team" / "I have changes". Step 7 is mandatory.
 
    If the user picks "I have changes," surface the recoverability scope before re-prompting: the diff base (`<base>`) is inferred from the open PR or falls back to the repo's default branch and cannot be changed from this prompt. To use a different base, open a PR with the correct base branch or check out a different branch. Outcomes can be re-stated by re-entering Step 2; roster and tier are fixed for `/swarm:refine` and not adjustable.
 
