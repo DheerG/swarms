@@ -58,7 +58,7 @@ When the roundtable closes, the facilitator sends CONVERGED with the consensus s
 
 ### Approve
 
-Relay the facilitator's CONVERGED synthesis verbatim to the user. Do not re-derive or paraphrase. Use AskUserQuestion: question "Does this diagnosis look right?", header "Approve", options "Yes, proceed" / "I have changes."
+Relay the facilitator's CONVERGED synthesis verbatim to the user. Do not re-derive or paraphrase. Then render the **Approve gate** from the Gate Presentation catalog in `swarm:workflow-rules` (subject: diagnosis) — the synthesis rides verbatim in each option's `preview` so it is readable inside the modal; question, header, options, and descriptions are frozen in the catalog.
 
 ### Execute
 
