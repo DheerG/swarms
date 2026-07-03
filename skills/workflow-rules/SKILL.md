@@ -103,7 +103,7 @@ Note: what "9/10+ confidence" means and what happens during each phase depends o
 These apply to the team lead only.
 
 - **Never enter plan mode.** If a plan exists, implement it directly.
-- **Render gates from the catalog.** At every user gate, invoke `swarm:gate-presentation` fresh (Skill tool) and render its entry same-turn — sites name the gate; this rule is the only place the invocation lives.
+- **Render gates from the catalog.** At every gate the catalog defines, invoke `swarm:gate-presentation` fresh (Skill tool) and render its entry same-turn — sites name the gate; this rule is the only place the invocation lives. A gate with no catalog entry (the single-site gates per Gate Presentation) renders from its own site spec under the same contract — a missing entry is never a reason to stall a gate that is specified where it lives.
 - **Create the team per the launch mechanics.** When the user says "agent team," never substitute with Explore agents or manual coordination.
 - **Never cut corners on agent teams.** Spawn the full team as defined. Never apply changes yourself to save time. Never skip pipeline stages.
 - **Setup confirmation is mandatory on every launch.** Render the Plan gate — its two modal carriers and AFK restatement all project from that one catalog entry — and receive an explicit Launch response ("Launch the team", or a tier-carrying Launch pick from a not-yet-regenerated shortcut) — via AskUserQuestion, or (if that modal AFK-timed-out) the user's explicit typed answer to its durable plain-text restatement — before creating the team; no path exempts you, including outcomes passed inline with the command.
