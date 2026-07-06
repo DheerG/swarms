@@ -98,7 +98,7 @@ When the roundtable closes, the facilitator sends CONVERGED with the consensus s
 
 ### Approve
 
-Relay the facilitator's CONVERGED direction document verbatim to the user. Do not re-derive or paraphrase. Use AskUserQuestion: question "Does this direction look right?", header "Approve", options "Yes, proceed" / "I have changes."
+Relay the facilitator's CONVERGED direction document verbatim to the user. Do not re-derive or paraphrase. Then render the **Approve gate** (subject: direction) — the direction document rides verbatim in each option's `preview` so it is readable inside the modal.
 
 ### Execute
 
@@ -126,7 +126,7 @@ Use the `swarm:writing-style` skill to run structural pattern analysis during re
 
 Apply the Rung Commit Rule from `swarm:workflow-rules` for every commit in this phase.
 
-When the team reaches 9/10+ confidence, the lead commits the current state (`checkpoint: rung 9 — <one-line summary>`), then asks the user via AskUserQuestion: question "9/10+ confidence reached. Run recursive refinement?", header "Refine", options "Run recursive refinement (9.25 → 9.5 → 9.75 → 10) (Recommended)" / "Deliver now".
+When the team reaches 9/10+ confidence, the lead commits the current state (`checkpoint: rung 9 — <one-line summary>`), then asks the user the **Refine gate** with AskUserQuestion — its question, header, options, and descriptions are frozen in the catalog.
 
 If "Deliver now": skip to Deliver. If "Run recursive refinement": starting at 9.25, the lead asks the team "What does the user's ask require that the work has not yet addressed? No new arguments — but factual errors, logical gaps, and unsupported claims count." Lead implements, team re-reviews. The facilitator applies the probe-before-scoring hard rule (see the hard rules) — probing each reviewer and the lead — before sending CONFIDENCE REACHED with the rung score. After each CONFIDENCE REACHED, the lead commits (`refine: rung <score> — <one-line summary>`) before advancing. The sequence is 9.25 → 9.5 → 9.75 → 10. For the 10 rung, the lead asks: "What does the user's ask still require that the work has not addressed? If nothing, say so explicitly." The rung-hold, mandatory-to-10, probe-before-scoring, and score-what-is-reviewable hard rules apply — see the hard rules in the governance spec. This loop runs to 10 once the user opts in. After 10 is confirmed and committed, proceed to Deliver.
 

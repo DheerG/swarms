@@ -71,6 +71,7 @@ You MUST use the **Skill** tool to invoke `swarm:workflow-rules`. Do NOT recite 
 
 - the **General Rules** and **Team Lead Rules** — non-negotiable; they govern all team behavior for the rest of this run (the General Rules section is what the briefing templates paste into member briefs — keep it intact in context)
 - the **briefing templates** (Facilitator Brief, Member Brief)
+- the **Gate Presentation contract** (the transport contract, three renders, and partition rule every gate renders under — the frozen per-gate constants live in `swarm:gate-presentation`, invoked fresh at each gate)
 - the **launch mechanics** (team creation, spawn parameters, run-state task list, pulse setup)
 - the **Rung Commit Rule** and the **universal execution rules** (live-team gate prompts, file-based commit/PR input, shutdown pulse-delete)
 
@@ -93,19 +94,11 @@ $ARGUMENTS
 **Outcome reflection (replaces the verbatim echo).** Once the outcome is captured — from `$ARGUMENTS` or the question above — You MUST use the **Skill** tool to invoke `swarm:reflect-outcome`, passing the user's exact words as the `args` parameter. Do NOT perform this step yourself, and do NOT author the reflection's wording — the skill returns it pre-formed so your own framing never enters the user's view. Apply its result:
 
 - **`NO FORK`** (the common case): show the user nothing — no echo, no "are these right?" beat, no confirmation gate. Carry the outcome forward so it is *visibly* the premise of the Step 7 summary, which restates it verbatim. The user is heard by seeing their own words steer the plan, not by a confirmation beat. They can still adjust at Step 7.
-- **A ready-to-render fork question**: present it with **AskUserQuestion** exactly as returned — transport it, never reword the question or the option labels, and do not stack any other question in the same turn. Resolve the user's pick per the skill's fork-resolution rule: Option A keeps their wording as the verbatim (nothing recorded); Option B re-authors it — ask, with an open prompt, for a restatement in their own words, which re-enters the reflection and becomes the verbatim. Store no separate supplement. (Option A surfaces as a "Scope:" line in the Step 7 summary — see Step 7.)
+- **A ready-to-render fork question**: present it with **AskUserQuestion** exactly as returned per the governance spec's transport contract, and do not stack any other question in the same turn. Resolve the user's pick per the skill's fork-resolution rule: Option A keeps their wording as the verbatim (nothing recorded); Option B re-authors it — ask, with an open prompt, for a restatement in their own words, which re-enters the reflection and becomes the verbatim. Store no separate supplement. (Option A surfaces as a scope line in the Step 7 question digest — see the Plan gate entry.)
 
 **Verbatim capture rule (mandatory).** The user's original words are the PRIMARY reference for all downstream team briefings. Capture them verbatim and store as a literal string for Step 8c and 8d substitution. Any deviation between the user's exact words and what appears in team briefs is a hard rules violation. The user's most recent self-authored wording is the verbatim: if the user re-authors at the reflection fork (Option B), that restatement becomes the verbatim and flows unchanged — the system never edits the user's words, only the user revises them.
 
-**After the outcome reflection** (the fork resolved, or `NO FORK` carried forward), use the **AskUserQuestion** tool — the cost tier is an explicit pick, so no one lands on a tier they didn't choose. This gate applies on every path, including when the outcomes arrived inline as `$ARGUMENTS` — passing outcomes with the command is context, not consent to skip the setup gates:
-
-- question: "How would you like to set up the team?"
-- header: "Setup"
-- options:
-  - label: "Defaults — Ultra (Recommended)"
-    description: "Auto-configure mode, team, and research. Full team on the stronger model — reliable rule-following."
-  - label: "Defaults — Balanced"
-    description: "Same auto-config, but members run a cheaper model — lower cost, less reliable rule-following."
+**After the outcome reflection** (the fork resolved, or `NO FORK` carried forward), render the **Setup gate** with **AskUserQuestion** — the cost tier is an explicit pick, so no one lands on a tier they didn't choose. This gate applies on every path, including when the outcomes arrived inline as `$ARGUMENTS` — passing outcomes with the command is context, not consent to skip the setup gates.
 
 **STOP HERE. Wait for the user's selection.**
 
@@ -114,7 +107,7 @@ Once the user picks, configure silently and bring the team forward for approval 
 1. **Mode**: Infer from the outcomes per the Step 3 reference. If genuinely ambiguous, ask just the Step 3 mode question — one question — then continue in the same response.
 2. **Cost tier**: the one the user selected — Ultra or Balanced.
 3. **Lead research**: No.
-4. **Team**: You MUST use the **Skill** tool to invoke `swarm:suggest-members`, passing the inferred mode and the outcomes as the `args` parameter (e.g., "Mode: Writing\n\n[outcomes]"). Do NOT compose the team yourself. Then present the skill's suggestion and ask the Step 4 team question ("Does this team look right?") — invoke the skill, present the suggestion, and call AskUserQuestion in the same response, with no intervening pause. Present per the Step 4 two-carrier rule: the full roster as formatted markdown in the `preview` of each option, and a self-sufficient plain-text digest (each member's name + one-line identity) inside the modal's question text.
+4. **Team**: You MUST use the **Skill** tool to invoke `swarm:suggest-members`, passing the inferred mode and the outcomes as the `args` parameter (e.g., "Mode: Writing\n\n[outcomes]"). Do NOT compose the team yourself. Then present the skill's suggestion and ask the Step 4 team question ("Does this team look right?") — invoke the skill, present the suggestion, and call AskUserQuestion in the same response, with no intervening pause. Render the **Team gate**: roster handles in the question text, full identity lines in each option's `preview`.
 
 **STOP HERE. Wait for the team to be confirmed.** When the user confirms the team ("Yes, looks good" — or confirms it after adjustments), proceed in the same response to **Step 7 (Confirmation)** and present the full summary with AskUserQuestion.
 
@@ -149,28 +142,17 @@ When an outcome could be Code or Triage, the deciding question is whether the us
   - label: "None of these"
     description: "A general-purpose team for work that doesn't fit a specific mode"
 
-Store the selected mode ("None of these" maps to General, the general-purpose fallback). It informs suggest-members guidance and the Step 8 phase arc and team identity. On a mode change at Step 7, re-invoke `swarm:suggest-members` with the new mode and the outcomes — the old mode's roster does not carry over — and run the refreshed suggestion through the Step 4 team question ("Does this team look right?") before re-presenting the Step 7 summary; a regenerated roster is never launched unapproved.
+Store the selected mode ("None of these" maps to General, the general-purpose fallback). It informs suggest-members guidance and the Step 8 phase arc and team identity. On a mode change at Step 7, re-invoke `swarm:suggest-members` with the new mode and the outcomes — the old mode's roster does not carry over — and run the refreshed suggestion through the Step 4 team question ("Does this team look right?") before re-presenting the Step 7 confirmation; a regenerated roster is never launched unapproved.
 
 ### Step 4: Team members
 
-The lead and the facilitator are always included. Present the `swarm:suggest-members` suggestion (per Step 2) in two carriers inside the **AskUserQuestion** below, each with its own job:
+The lead and the facilitator are always included. Present the `swarm:suggest-members` suggestion (per Step 2) by rendering the **Team gate** — the question text carries each member's name plus a short role axis (handles), each option's `preview` carries the full roster with identity lines (elaboration); question, header, options, and the carrier split are all fixed by its catalog entry.
 
-- **Option `preview` — what the user reads.** Attach the full roster as formatted markdown — a numbered list, every member named with its identity line — as the `preview` of EACH option (the same content on both). Previews render markdown in a side-by-side pane when an option is focused, so this is the readable copy, visible inside the modal itself.
-- **Question text — what the user decides.** The question text carries a plain-text digest: every member's name plus its one-line identity, with no markdown syntax (the question field renders plain text, so `##`/`**` show as literal noise). The identities are the decision content at this gate — names alone are not enough. The digest must be self-sufficient — the decision must not depend on the preview pane being noticed. Do not carry the full markdown block into the question text.
-
-- question: "Does this team look right?"
-- header: "Team"
-- options:
-  - label: "Yes, looks good"
-    description: "Proceed with this team composition"
-  - label: "I want to adjust"
-    description: "Swap a member, add more members, or remove some"
-
-**If "I want to adjust"**: ask what to change (free text) — the user can point at a member to swap, name additional members by role (e.g., "security reviewer, test engineer") or focus area, or trim the roster. Apply the changes, re-render the updated roster the same way, then confirm again with the same question. Advisory: 3-5 total members is the sweet spot; up to 8 is viable. The same adjust flow serves a team change requested via "I have changes" at Step 7.
+**If "I want to adjust"**: ask what to change (free text) — the user can point at a member to swap, name additional members by role (e.g., "security reviewer, test engineer") or focus area, or trim the roster. Apply the changes, re-render the updated roster through the same Team gate, then confirm again. Advisory: 3-5 total members is the sweet spot; up to 8 is viable. The same adjust flow serves a team change requested via "I have changes" at Step 7.
 
 ### Step 5: Cost tier
 
-Picked by the user at the Step 2 setup question ("Defaults — Ultra" / "Defaults — Balanced") — never a silent default:
+Picked by the user at the Step 2 Setup gate — never a silent default:
 - **Ultra (Recommended)** — full team on the stronger model; reliable rule-following across the whole team.
 - **Balanced** — cheaper model for members; lower cost, less reliable rule-following. Good for well-scoped, lower-stakes work.
 
@@ -184,38 +166,24 @@ Default: **No** — the lead focuses on coordination; teammates handle research.
 
 ## Step 7: Confirmation
 
-Compose a summary of the team plan (markdown — it is carried inside the modal per the instruction below the template):
+Render the **Plan gate** (launch variant) with **AskUserQuestion**. Both modal carriers project from its catalog entry — the launch-variant digest fills the question text, and each option's `preview` carries the elaboration only:
+
+- **Question digest slots** (order fixed by the catalog): the ship definition in one line [for **Triage** mode, ship definition does not apply — the line reads "In-session diagnosis — no branch, commit, or PR. Writing the diagnosis to an issue/Sentry is a per-run opt-in." For all other modes: the contents of `.claude/swarm-ship.md` in plain language — e.g., "Create a PR against main from branch feat/<description>" — or "Will be auto-detected before work begins." if it doesn't exist yet]; the compressed outcomes line; the scope line only if the reflection fork kept a pin (Option A — "\<their word> specifically", echoing the user's own selection; omit entirely otherwise, including every NO-FORK run and after an Option B re-author); then the handles — name-only roster, cost tier, mode.
+- **Preview** (same markdown on both options):
 
 > **Team Plan**
 >
-> **Mode:** [Code / Triage / Writing / General]
->
 > **Outcomes:**
 > [list each confirmed outcome numbered — use the exact confirmed wording, do NOT paraphrase]
->
-> **Scope:**
-> [only if the outcome reflection fired a fork AND the user chose Option A (keep their wording) — show "\<their word> specifically", echoing the user's own selection so the kept-pin choice is visible. Omit this line entirely otherwise — including on every NO-FORK run and after an Option B re-author.]
 >
 > **Team:**
 > 1. Team lead — (main session) [research: yes/no]
 > 2. [facilitator title from mode skill] — Socratic facilitator, read-only
 > [3-N. Additional members — personality and behavioral identity, not task assignments or focus areas]
 >
-> **Cost tier:** [the selected tier — Ultra or Balanced]
->
-> **Ship definition:** [for **Triage** mode, ship definition does not apply — show "In-session diagnosis — no branch, commit, or PR. Writing the diagnosis to an issue/Sentry is a per-run opt-in." For all other modes: if `.claude/swarm-ship.md` exists, show its contents in plain language — e.g., "Create a PR against main from branch feat/<description>". If it doesn't exist yet, show "Will be auto-detected before work begins."]
->
 > **Rules:** Active
 
-Then use the **AskUserQuestion** tool carrying the plan in two carriers. Attach the full Team Plan summary above as formatted markdown in the `preview` of EACH option (the same content on both — previews render markdown in a side-by-side pane when an option is focused, so the plan is readable inside the modal itself). Put a self-sufficient plain-text digest inside the question text: the team was already approved at Step 4, so this gate authorizes the launch — a name-only roster, cost tier, mode, ship definition, and a compressed outcomes line (a few plain-text lines; outcomes are adjustable at this gate, so they are decision content) are enough to decide, front-loaded (Team + Cost tier first, to survive a silent render-clip), never split into the option descriptions (over-length text there truncates silently; the question field renders plain text, so markdown there shows as literal noise). The digest must not depend on the preview pane being noticed, and do not carry the full markdown block into the question text:
-
-- question: "Is this plan final, or do you have remaining inputs?"
-- header: "Confirm"
-- options:
-  - label: "Launch the team"
-    description: "Plan is final — start creating the team now"
-  - label: "I have changes"
-    description: "Adjust outcomes, mode, members, tier, or research first."
+Mode, cost tier, and ship definition live in the question digest at their only fidelity — do not restate them in the preview (the governance spec's partition rule: the preview never restates the question's handles, and the question never carries the preview's elaboration).
 
 **If "Launch the team"**: Proceed to Step 8.
 
@@ -229,7 +197,7 @@ Then use the **AskUserQuestion** tool carrying the plan in two carriers. Attach 
 
 Once the user confirms, execute the following:
 
-**Before proceeding: did you carry the Step 7 summary block (the full Team Plan with Mode, Outcomes, Team, Cost tier, Ship definition, and Rules) as formatted markdown in the `preview` of each Launch-ask option, carry a self-sufficient plain-text digest (name-only roster, tier, mode, ship definition, compressed outcomes) inside the Launch ask's own question text, AND receive an explicit "Launch the team" selection — via AskUserQuestion, or the user's explicit typed answer to its durable plain-text restatement if that modal AFK-timed-out? If no to any, go back and do it now. Outcomes passed inline as `$ARGUMENTS` do not exempt any gate — the Step 2 setup pick, the Step 4 team confirmation, and this Step 7 launch confirmation all still happen.**
+**Before proceeding: did you render Step 7's Plan gate per its catalog entry (the launch-variant digest inside the question text, the elaboration preview on each option), AND receive an explicit "Launch the team" selection — via AskUserQuestion, or the user's explicit typed answer to its durable plain-text restatement if that modal AFK-timed-out? If no to any, go back and do it now. Outcomes passed inline as `$ARGUMENTS` do not exempt any gate — the Step 2 setup pick, the Step 4 team confirmation, and this Step 7 launch confirmation all still happen.**
 
 ### 8a: Create the team
 
