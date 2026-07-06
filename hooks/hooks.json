@@ -19,7 +19,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/scripts/confirm-shutdown.sh"
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/confirm-shutdown.sh\""
           }
         ]
       }
