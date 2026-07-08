@@ -2,7 +2,7 @@
 name: gate-presentation
 user-invocable: false
 description: |
-  Returns the frozen gate constants — question, header, option labels and descriptions, digest field-list, and preview content — for every catalog gate. Invoked by the team lead at each gate, fresh per render, in the same turn as the render. The transport contract, three renders, partition rule, and authoring rubric live in swarm:workflow-rules.
+  Returns the frozen gate constants — question, header, option labels and descriptions, digest field-list, and preview content — for every catalog gate. Invoked by the team lead fresh on arrival at each gate and on pulse re-emissions, in the same turn as the render. The transport contract, three renders, partition rule, and authoring rubric live in swarm:workflow-rules.
 keywords: gate presentation, catalog, gate constants, question, preview, digest
 ---
 
@@ -36,7 +36,7 @@ Return the following gate constants verbatim to the team lead. Do not summarize 
 - digest: none beyond the question — the synthesis is unsplittable verbatim content; a lead-authored compression would breach the verbatim-relay rule.
 - preview (same on both options): the facilitator's CONVERGED synthesis verbatim. The main-window relay still happens per the phase arc (it is the scrollback record and the AFK projection's source); the preview is what makes the synthesis readable inside the modal.
 - standalone-sufficiency carve-out: this gate's sufficiency source is the verbatim relay that immediately precedes the modal, not a digest — compressing the synthesis into the question would paraphrase it.
-- declared AFK carrier: every re-emission of this gate (an AFK restatement, a pulse re-emission, post-compaction) re-carries the synthesis verbatim. The re-read is uniform and structural, never a reliability judgment (silent compaction drift defeats self-detection — the same premise as the constants' unconditional re-fetch): every re-emission, the first AFK restatement included, re-reads the synthesis from the facilitator's on-disk transcript (the Team Lead disk-read rule) unconditionally. Never reconstruct it from memory; if the disk read itself fails, do not fall back to an in-context copy — surface the failure once, then hold the gate.
+- declared AFK carrier: every re-emission of this gate (an AFK restatement, a pulse re-emission, post-compaction) re-carries the synthesis verbatim. The lead's same-turn AFK restatement reuses the just-relayed verbatim synthesis in context; a cross-turn re-emission (the pulse's, or post-compaction) re-reads it from the facilitator's on-disk transcript (the Team Lead disk-read rule) unconditionally — drift is a cross-turn property, and silent compaction drift defeats self-detection. On that cross-turn path, never reconstruct it from memory; if the disk read fails, do not fall back to an in-context copy — surface the failure once, then hold the gate.
 
 **Finish gate** — code-mode Refine (the unified pre-ship gate).
 - question: "9/10+ confidence reached. How should the team finish?" · header: "Finish"
