@@ -207,7 +207,7 @@ multiSelect gates have no preview — everything decision-grade collapses into t
 
 ### Create the team
 
-Derive a descriptive team name from the outcomes (use it in spawn prompts and the setup summary). Do not call TeamCreate — the team forms implicitly at the first member spawn. Swarm requires Claude Code v2.1.178+, where TeamCreate no longer exists; enforce the floor here: if `ToolSearch(select:TeamCreate)` resolves the tool, this Claude Code is older than the floor — do not spawn; tell the user swarm requires Claude Code v2.1.178 or newer and to update, then stop. (ToolSearch loads the schema only — never *call* TeamCreate as a probe; calling it writes team config to disk.)
+Derive a descriptive team name from the outcomes (use it in spawn prompts and the setup summary). Do not call TeamCreate — the team forms implicitly at the first member spawn.
 
 ### Invoke your mode skill
 
@@ -233,7 +233,7 @@ Use the **Agent** tool:
 
 Use the Facilitator Brief template above.
 
-**If the first spawn yields no working teammate** (none joins, or the spawn returns an internal error rather than a running agent), do not retry blindly or proceed solo — tell the user the team could not be formed and offer the remedies without asserting which applies: restart (flag set without one), retry (transient), or update Claude Code (outdated). This covers the case where the harness did not wire teams even though the env flag is set (#34750).
+**If the first spawn yields no working teammate** (none joins, or the spawn returns an internal error rather than a running agent), do not retry blindly or proceed solo — tell the user the team could not be formed and offer the remedies without asserting which applies: restart (flag set without one), retry (transient), or update Claude Code (outdated — swarm requires v2.1.178+). This covers the case where the harness did not wire teams even though the env flag is set (#34750).
 
 ### Spawn additional team members
 
