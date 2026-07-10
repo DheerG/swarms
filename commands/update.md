@@ -5,17 +5,21 @@ allowed-tools: Bash(claude plugin:*)
 
 # /swarm:update
 
-Run these commands in order using the Bash tool. The order is load-bearing: `marketplace update` must run first to refresh the local marketplace clone — otherwise `plugin update` reads a stale clone and reports "already at latest" even when a newer version exists.
+Run these commands in order using the Bash tool. The order is load-bearing: `marketplace update` must run first to refresh the local marketplace clone — otherwise `plugin update` reads a stale clone and reports "already at latest" even when a newer version exists. `plugin update` does not auto-detect the install scope (it defaults to `user`), so resolve the real scope from `plugin list` before updating.
 
 1. `claude plugin marketplace update swarms`
-2. `claude plugin update swarm@swarms --scope project`
+2. `claude plugin list --json` — read the entries whose `id` is `swarm@swarms` and resolve the install scope yourself (no extra tooling; read the JSON from the output):
+   - Exactly one entry → use its `scope`.
+   - Multiple entries → prefer the `project` entry whose `projectPath` matches the current project; otherwise the `user` entry; otherwise whichever remains (`local`, `managed`).
+   - No entry → treat as a failure: use the failure handling at the end of this file.
+3. `claude plugin update swarm@swarms --scope <resolved scope>`
 
-After both commands succeed, choose the message from the `plugin update` output. The reliable signal is the success token "updated from X to Y" (the command prints e.g. "updated from 0.5.3 to 0.5.4" — this also carries the version numbers to substitute):
+After the commands succeed, choose the message from the `plugin update` output. The reliable signal is the success token "updated from X to Y" (the command prints e.g. "updated from 0.5.3 to 0.5.4" — this also carries the version numbers to substitute):
 
 - **If the output contains "updated from X to Y"** (a new version was installed) — use the **update-applied** message and STOP directive below. Substitute the real X and Y; do not emit the literal placeholders "vX"/"vY". Do not soften the restart instruction, and do not offer `/reload-plugins` or any in-session reload as a shortcut.
-- **If both commands succeeded but the output does not contain "updated from X to Y"** (it reports you are already on the latest version) — use the **already-current** message below. No restart, no STOP, no version delta.
-- **If both commands succeeded but you cannot tell whether a new version was installed** — use the **update-applied** message. A needless restart is harmless; wrongly saying "already current" after a real update reintroduces the version mix.
-- If either command errored or exited non-zero, use the failure handling at the end of this file.
+- **If the commands succeeded but the output does not contain "updated from X to Y"** (it reports you are already on the latest version) — use the **already-current** message below. No restart, no STOP, no version delta.
+- **If the commands succeeded but you cannot tell whether a new version was installed** — use the **update-applied** message. A needless restart is harmless; wrongly saying "already current" after a real update reintroduces the version mix.
+- If any command errored or exited non-zero — regardless of which scope was resolved — use the failure handling at the end of this file.
 
 **Update-applied** (a new version was installed):
 
@@ -29,4 +33,8 @@ Then STOP and end your turn. Do not run any other swarm command and do not hand 
 
 Include the version only if the CLI printed one; otherwise say "Already on the latest version. Nothing to update — carry on."
 
-If either command errored or exited non-zero, show the error output and suggest the user try running the commands manually in their terminal.
+If any command errored or exited non-zero, or `swarm@swarms` was not found in the `plugin list` output, show the error output (if any), then give the user these concrete next steps:
+
+- If working in a git worktree, run `/swarm:update` from the main checkout, not the worktree — `claude plugin update` resolves project scope against the current directory and cannot see an install that lives at the main repo root.
+- Check `claude plugin list` for the actual install scope of `swarm@swarms`.
+- Try running the commands manually in a terminal.
