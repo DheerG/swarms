@@ -1,6 +1,6 @@
 ---
 description: Update the swarm plugin to the latest version
-allowed-tools: Bash(claude plugin:*)
+allowed-tools: Bash(claude plugin:*), Bash(cd:*), Bash(ls:*)
 ---
 
 # /swarm:update
@@ -12,7 +12,7 @@ Run these commands in order using the Bash tool. The order is load-bearing: `mar
    - Exactly one entry → use its `scope`.
    - Multiple entries → prefer the `project` entry whose `projectPath` matches the current project; otherwise the `user` entry; otherwise whichever remains (`local`, `managed`).
    - No entry → treat as a failure: use the failure handling at the end of this file.
-3. `claude plugin update swarm@swarms --scope <resolved scope>`
+3. `claude plugin update swarm@swarms --scope <resolved scope>` — for a project-scope install whose `projectPath` is not the current directory (e.g., running from a git worktree), run the update pinned to that path in a subshell so the session's working directory is unchanged: `(cd "<projectPath>" && claude plugin update swarm@swarms --scope project)`. If you need another way to locate the main checkout (e.g., `git rev-parse --git-common-dir`), use it even if it requires a permission approval — a prompt beats failing.
 
 After the commands succeed, choose the message from the `plugin update` output. The reliable signal is the success token "updated from X to Y" (the command prints e.g. "updated from 0.5.3 to 0.5.4" — this also carries the version numbers to substitute):
 
@@ -35,6 +35,6 @@ Include the version only if the CLI printed one; otherwise say "Already on the l
 
 If any command errored or exited non-zero, or `swarm@swarms` was not found in the `plugin list` output, show the error output (if any), then give the user these concrete next steps:
 
-- If working in a git worktree, run `/swarm:update` from the main checkout, not the worktree — `claude plugin update` resolves project scope against the current directory and cannot see an install that lives at the main repo root.
+- If working in a git worktree and the pinned update also failed, run `/swarm:update` from the main checkout, not the worktree — `claude plugin update` resolves project scope against the current directory and cannot see an install that lives at the main repo root.
 - Check `claude plugin list` for the actual install scope of `swarm@swarms`.
 - Try running the commands manually in a terminal.
