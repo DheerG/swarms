@@ -1,6 +1,6 @@
 ---
 description: Update the swarm plugin to the latest version
-allowed-tools: Bash(claude plugin:*), Bash(cd:*), Bash(ls:*)
+allowed-tools: Bash(claude plugin:*), Bash(cd:*), Bash(ls:*), Bash(git rev-parse:*)
 ---
 
 # /swarm:update
