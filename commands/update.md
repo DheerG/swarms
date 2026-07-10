@@ -10,7 +10,7 @@ Run these commands in order using the Bash tool. The order is load-bearing: `mar
 1. `claude plugin marketplace update swarms`
 2. `claude plugin list --json` — read the entries whose `id` is `swarm@swarms` and resolve the install scope yourself (no extra tooling; read the JSON from the output):
    - Exactly one entry → use its `scope`.
-   - Multiple entries → prefer the `project` entry whose `projectPath` matches the current project; otherwise the `user` entry; otherwise whichever remains (`local`, `managed`).
+   - Multiple entries → prefer the `project` entry whose `projectPath` matches the current project — in a git worktree, that is the main checkout (`git rev-parse --git-common-dir`; a permission prompt is acceptable), not the worktree path; otherwise the `user` entry; otherwise whichever remains (`local`, `managed`).
    - No entry → treat as a failure: use the failure handling at the end of this file.
 3. `claude plugin update swarm@swarms --scope <resolved scope>` — for a project-scope install whose `projectPath` is not the current directory (e.g., running from a git worktree), run the update pinned to that path in a subshell so the session's working directory is unchanged: `(cd "<projectPath>" && claude plugin update swarm@swarms --scope project)`. If you need another way to locate the main checkout (e.g., `git rev-parse --git-common-dir`), use it even if it requires a permission approval — a prompt beats failing.
 
