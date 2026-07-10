@@ -75,6 +75,8 @@ Research → Converge → Approve → Execute → Review → Refine → Deliver 
 - **All members except lead are read-only** (behavioral constraint in hard rules).
 - **Hard rules live once** in `skills/workflow-rules/SKILL.md` (canonical); launch.md Step 1 invokes it rather than mirroring it. Edits to the hard rules there are user customizations — preserve them during upgrades.
 - **Terse definitions.** One sentence for agent roles, few lines for skills. More context makes LLMs worse (VISION.md compression principle).
+- **When withholding capability "on principle," the only acceptable principle is end-user experience.** Deliberate limits that serve it (read-only members) stay; never deny a command what it needs to do its job — a permission prompt is acceptable, a dead end is not.
+- **Shipped commands are cross-platform.** They run on macOS, Linux, and Windows (Git Bash) — prefer portable instructions and let the executing model adapt to the local shell.
 
 ## Development Notes
 
